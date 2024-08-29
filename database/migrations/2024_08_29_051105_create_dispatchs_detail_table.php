@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('dispatchs_detail', function (Blueprint $table) {
             $table->id('dispatchs_detail_id');
-            $table->integer('dispatch_id');
-            $table->integer('inventory_id');
+            $table->foreignId('dispatch_id')->constrained('dispatchs', 'dispatch_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('dispatched_quantity');
             $table->timestamps();
         });

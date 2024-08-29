@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id('request_id');
             $table->integer('request_type');
-            $table->integer('requesting_user_id');
+            $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('status'); 
             $table->timestamps();
         
