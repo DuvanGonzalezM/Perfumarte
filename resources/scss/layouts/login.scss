@@ -1,0 +1,9 @@
+.card-login{
+    margin: 20% auto !important;
+    width: 30% !important;
+    align-items: center !important; 
+    * button{
+        background: $buttonColor !important;
+        color: $textBlack !important;
+    }
+}

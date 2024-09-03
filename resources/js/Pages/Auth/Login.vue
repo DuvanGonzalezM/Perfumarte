@@ -86,7 +86,7 @@ const submit = () => {
                 </Link>
 
                 <PrimaryButton class="ms-4 buton-test" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                    <i class="fa-solid fa-user"></i> Log in
                 </PrimaryButton>
             </div>
         </form>
