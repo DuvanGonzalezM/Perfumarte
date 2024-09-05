@@ -1,26 +1,57 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 const model = defineModel({
     type: String,
     required: true,
 });
 
-const input = ref(null);
-
-onMounted(() => {
-    if (input.value.hasAttribute('autofocus')) {
-        input.value.focus();
-    }
+const props = defineProps({
+    labelValue: {
+        type: String,
+    },
+    id: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    type: {
+        type: String,
+        required: true,
+    },
 });
 
-defineExpose({ focus: () => input.value.focus() });
+const input = ref(null);
+const label = ref(null);
 </script>
 
 <template>
-    <input
-        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-        v-model="model"
-        ref="input"
-    />
+    <div class="inputContainer">
+        <input 
+            :id="id"
+            :name="name"
+            :class="{ 'focus': hasFocus || (input && input.value.length) }"
+            :type="type"
+            @focus="hasFocus = true"
+            @blur="hasFocus = false"
+            v-model="model"
+            ref="input"
+        />
+        <label ref="label" :for="id" v-if="labelValue">
+            {{ labelValue }}
+        </label>
+    </div>
 </template>
+
+<script>
+export default {
+    data() {
+        return {
+            hasFocus: false
+        }
+    }
+}
+</script>
