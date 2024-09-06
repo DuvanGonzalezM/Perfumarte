@@ -14,5 +14,6 @@ const props = defineProps({
 <template>
     <div>
         <img src="assets/images/Logo_1.png" alt="">
+        <Notification/>
     </div>
 </template>
