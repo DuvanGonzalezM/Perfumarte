@@ -1,0 +1,55 @@
+<template>
+    <div class="notifications">
+        <div class="notification bubble">
+            <div class="alert aalert alert-warning" role="alert">
+                <div>
+                    Este es un ejemplo de una notificacion..
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+body {
+    background-color: #f0f0f0;
+}
+
+.notifications {
+    width: 200px;
+}
+
+.notifications .notification {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.notifications .notification p {
+    margin: 0 0 10px 0;
+}
+
+.bubble {
+    position: relative;
+    background-color: #000;
+    padding: 20px;
+    color: #222;
+    border-radius: 3px;
+    margin-left: 20px;
+}
+
+.bubble:after {
+    content: "";
+    display: block;
+    position: absolute;
+
+    top: 15px;
+    margin-left: -35px;
+
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+
+    border-top-left-radius: 15px solid #fff;
+}
+</style>

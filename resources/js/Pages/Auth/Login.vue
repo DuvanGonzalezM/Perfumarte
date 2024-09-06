@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
+
 defineProps({
     status: {
         type: String,
@@ -26,6 +27,8 @@ const submit = () => {
 </script>
 
 <template>
+
+
     <GuestLayout>
         <Head title="Inicio de Sesión" />
 
@@ -43,9 +46,8 @@ const submit = () => {
                     v-model="form.username"
                     required
                 />
-
+                <InputError class="mt-2" :message="form.errors.username" />
             </div>
-
             <div class="mt-4">
                 <TextInput
                     labelValue="Contraseña"
@@ -56,10 +58,8 @@ const submit = () => {
                     autocomplete="current-password"
                     required
                 />
-
+                <InputError class="mt-2" :message="form.errors.password" />
             </div>
-            <InputError class="mt-2" :message="form.errors.username" />
-            <InputError class="mt-2" :message="form.errors.password" />
             <div class="d-flex justify-content-center mt-5">
                 <PrimaryButton :disabled="form.processing">
                     Ingresar
