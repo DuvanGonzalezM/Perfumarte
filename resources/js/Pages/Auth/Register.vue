@@ -7,8 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    name: '',
-    email: '',
+    username: '',
     password: '',
     password_confirmation: '',
 });
@@ -29,43 +28,27 @@ const submit = () => {
                 <InputLabel for="name" value="Name" />
 
                 <TextInput
-                    id="name"
+                    labelValue="Nombre de usuario"
+                    id="username"
+                    name="username"
                     type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
+                    v-model="form.username"
                     required
-                    autofocus
-                    autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
                 <InputLabel for="password" value="Password" />
-
+                
                 <TextInput
+                    labelValue="Contraseña"
                     id="password"
+                    name="password"
                     type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password"
+                    autocomplete="current-password"
                     required
-                    autocomplete="new-password"
                 />
 
                 <InputError class="mt-2" :message="form.errors.password" />
@@ -76,11 +59,11 @@ const submit = () => {
 
                 <TextInput
                     id="password_confirmation"
+                    name="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password_confirmation"
-                    required
                     autocomplete="new-password"
+                    required
                 />
 
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
