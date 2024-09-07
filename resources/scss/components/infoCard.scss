@@ -1,0 +1,36 @@
+.card-prais {
+    max-width: 284px !important;
+    height: 119px !important;
+    background-color: $bacgroundComponent !important;
+
+    i {
+        position: absolute;
+        top: 29px;
+        left: 21px;
+        font-size: 30px;
+    }
+
+    .over-card {
+        position: absolute;
+        top: -30px;
+        left: 25px;
+        width: 80px;
+        height: 90px;
+        border-radius: 10px !important;
+        background: $gradient !important;
+    }
+
+    .text-card {
+        position: absolute;
+        top: 5px;
+        left: 170px;
+        width: 100px;
+        font-size: 17px;
+        font-family: monserrat !important;
+        color: aliceblue !important;
+
+        div {
+            font-size: 30px !important;
+        }
+    }
+}
