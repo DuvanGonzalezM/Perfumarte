@@ -8,12 +8,12 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="card">
-        <div class="login-logo">
-            <!--<Image src="assets\images\Logo_3.png" />-->
+    <div class="card card-login align-items-center">
+        <div class="over-card position-relative align-items-center d-flex flex-column">
+            <Image  src="assets\images\Logo_3.png" />
             <h3>Inicio de Sesión</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body position-relative">
             <slot />
 
         </div>
