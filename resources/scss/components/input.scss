@@ -1,32 +1,31 @@
-.inputContainer{
-    position: relative !important;
-    > label{
-        position: absolute !important;
+.inputContainer {
+    label {
         top: 10px !important;
         left: 10px !important;
-        pointer-events: none !important;
         transition: all 0.2s ease-in-out !important;
     }
-    > .focus + label {
+
+    .focus+label {
         top: -5px !important;
         left: 0 !important;
         font-size: 12px !important;
         color: $textBlack !important;
     }
-    > input{
+
+    input {
         width: 100%;
         padding: 10px;
-        transition: all 0.2s ease-in-out;
         border-radius: 0.3rem !important;
         border: 2px solid $textBlack !important;
-        border-top: 0 !important;
-        border-bottom: 1px solid $textBlack;
         box-shadow: 0px 2px 4px 0px $textBlack;
+        -webkit-transition: all 0.5s ease;                  
+        -moz-transition: all 0.5s ease;                 
+        -o-transition: all 0.5s ease;   
+        -ms-transition: all 0.5s ease;          
+        transition: all 0.5s ease;
+    }
+    input:focus{
+        outline: none !important;
+        border-top: 0 !important;
     }
 }
-//         :focus{
-//             border-top: 0 !important;
-//         }
-//     }
-    
-// }
