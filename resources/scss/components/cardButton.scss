@@ -1,0 +1,32 @@
+.button-stock {
+    max-width: 200px !important;
+    height: 200px !important;
+    background-color: $bacgroundComponent !important;
+    border: 2.5px solid $borderColor !important;
+
+    .card-icon{
+        position: absolute; 
+        top: 33px !important; 
+        left: 64px !important; 
+        width: 60px !important; 
+        height: 60px !important; 
+        background: $gradient !important;
+    }
+
+    i {
+        position: absolute; 
+        top: 18px !important; 
+        left: 13px !important;
+        font-size: 25px !important;
+    }
+
+    .button-text{
+    position: absolute; 
+    top: 130px; 
+    left: 38px; 
+    width: 6rem; 
+    font-family: Montserrat !important; 
+    font-size: 20px; 
+    color:aliceblue;
+    }
+}

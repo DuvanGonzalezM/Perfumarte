@@ -1,5 +1,12 @@
 <template>
-    <div class="card">
-        <button type="button" style="background-color: #161311 !important; color: aliceblue !important;">Warning</button>
+    <div class="card mb-3 d-flex text-end button-stock">
+        <div class="card-body">
+            <div class="card card-icon">
+                <div class="card-header">
+                    <i class="fa-solid fa-warehouse"></i>
+                </div>
+            </div>
+            <div class="card-text button-text">Bodega 1</div>
+        </div>
     </div>
 </template>
