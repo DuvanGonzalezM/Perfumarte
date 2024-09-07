@@ -47,10 +47,9 @@ const submit = () => {
                     required
                 />
 
-                <InputError class="mt-2" :message="form.errors.username" />
             </div>
 
-            <div class="mt-4 mb-5">
+            <div class="mt-4">
                 <TextInput
                     labelValue="Contraseña"
                     id="password"
@@ -61,9 +60,10 @@ const submit = () => {
                     required
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
-            <div class="d-flex justify-content-center">
+            <InputError class="mt-2" :message="form.errors.username" />
+            <InputError class="mt-2" :message="form.errors.password" />
+            <div class="d-flex justify-content-center mt-5">
                 <PrimaryButton :disabled="form.processing">
                     Ingresar
                 </PrimaryButton>

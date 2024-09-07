@@ -29,7 +29,7 @@ const label = ref(null);
 </script>
 
 <template>
-    <div class="inputContainer">
+    <div class="inputContainer position-relative">
         <input 
             :id="id"
             :name="name"
@@ -40,7 +40,7 @@ const label = ref(null);
             v-model="model"
             ref="input"
         />
-        <label ref="label" :for="id" v-if="labelValue">
+        <label class="position-absolute pe-none" ref="label" :for="id" v-if="labelValue">
             {{ labelValue }}
         </label>
     </div>
