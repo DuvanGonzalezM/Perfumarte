@@ -1,0 +1,18 @@
+.section-prais{
+    margin-top: 70px !important;
+    background-color: $bacgroundContent !important;
+    min-height: 700px !important;
+    border-radius: 10px !important;
+    border: 1px solid $borderColor !important;
+    .over-section{
+        width: 85% !important;
+        min-height: 120px !important;
+        background: $gradient !important;
+        top: -4rem !important;
+        border-radius: 1.2rem !important;
+        border: 1px solid $textBlack !important;
+        * {
+            font-size: 25px !important;
+        }
+    }
+}
