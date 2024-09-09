@@ -1,5 +1,6 @@
 <script setup>
 import Image from '@/Components/Image.vue';
+import Sidebar from '@/Components/Sidebar.vue';
 </script>
 <template>
     <div class="card card-login align-items-center">
@@ -10,5 +11,6 @@ import Image from '@/Components/Image.vue';
         <div class="card-body position-relative">
             <slot />
         </div>
+        <Sidebar />
     </div>
 </template>

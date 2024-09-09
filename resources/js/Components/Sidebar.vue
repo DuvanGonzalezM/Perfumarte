@@ -3,61 +3,50 @@ import ButtonSidebar from './ButtonSidebar.vue';
 </script>
 
 <template>
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white sidebar-card">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            
-            <span class="fs-4">Sidebar</span>
+            <img src="assets\images\Logo_1.png" style="width: 80px; height: 80px;" />
+            <span class="mx-4"style="font-size: 21px;">Jefe de operaciones</span>
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <ButtonSidebar />
-                <a href="#" class="nav-link active " aria-current="page">
-                   
+                <ButtonSidebar href="#">
+                    <i class="fa-solid fa-house-chimney me-4 i"></i>
                     Inicio
-                </a>
+                </ButtonSidebar>
             </li>
             <li>
-                <a href="#" class="nav-link text-white">
-                   
-                    Dashboard
-                </a>
+                <ButtonSidebar href="#">
+                    <i class="fa-solid fa-rectangle-list me-4 i"></i>
+                    Ordenes de compra
+                </ButtonSidebar>
             </li>
             <li>
-                <a href="#" class="nav-link text-white">
-                  
-                    Orders
-                </a>
+                <ButtonSidebar href="#">
+                    <i class="fa-solid fa-truck me-4 i"></i>
+                    Despachos
+                </ButtonSidebar>
             </li>
             <li>
-                <a href="#" class="nav-link text-white">
-                   
-                    Products
-                </a>
+                <ButtonSidebar href="#">
+                    <i class="fa-brands fa-wpforms me-4 i"></i>
+                    Solicitud insumos
+                </ButtonSidebar>
             </li>
             <li>
-                <a href="#" class="nav-link text-white">
-                  
-                    Customers
-                </a>
+                <ButtonSidebar href="#">
+                    <i class="fa-solid fa-flask me-4 i"></i>
+                    Transformaciones
+                </ButtonSidebar>
+            </li>
+            <li>
+                <ButtonSidebar href="#">
+                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4 i"></i>
+                    Stock
+                </ButtonSidebar>
             </li>
         </ul>
         <hr>
-        <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                <strong>mdo</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                <li><a class="dropdown-item" href="#">New project...</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
-            </ul>
-        </div>
     </div>
 </template>
