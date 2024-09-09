@@ -1,6 +1,5 @@
 <script setup>
 import Image from '@/Components/Image.vue';
-import Sidebar from '@/Components/Sidebar.vue';
 </script>
 
 <template>
