@@ -1,5 +1,11 @@
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+    font-weight: bold !important;
+}
 body {
     background-color: $backgroundColor !important;
     font-family: Montserrat !important;
     font-size: 15px !important;
+}
+.container-prais{
+    padding: 35px !important;
 }
