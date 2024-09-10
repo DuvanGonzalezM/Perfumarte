@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transformations', function (Blueprint $table) {
             $table->id('transformation_id');
-            $table->integer('request_id');
+            $table->foreignId('request_id')->constrained('request', 'request_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('type');
             $table->timestamps();
         });
