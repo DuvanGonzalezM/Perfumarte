@@ -1,11 +1,10 @@
 <template>
-    <div class="notifications">
-        <div class="card notification bubble">
-            <div class="alert aalert alert-warning" role="alert">
-                <div>
-                    Este es un ejemplo de una notificacion..
-                </div>
-            </div>
+    <div class="card notifications ">
+        <div class="alert alert-warning" role="alert">
+            Este es un ejemplo de una notificacion..
+        </div>
+        <div class="alert alert-warning" role="alert">
+            Este es un ejemplo de otra notificacion..
         </div>
     </div>
 </template>
