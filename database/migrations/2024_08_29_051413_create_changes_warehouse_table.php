@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('changes_warehouse', function (Blueprint $table) {
             $table->id('change_warehouse_id');
-            $table->integer('inventory_id');
+            $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity');
             $table->timestamps();
         });

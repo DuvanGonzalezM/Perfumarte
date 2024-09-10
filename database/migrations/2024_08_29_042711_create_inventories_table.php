@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id('inventory_id');
-            $table->integer('warehouse_id')->constrained('warehouses', 'warehouse_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->integer('product_id')->constrained('products', 'product_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('warehouse_id')->constrained('warehouses', 'warehouse_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products', 'product_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity');
             $table->timestamps();
         });
