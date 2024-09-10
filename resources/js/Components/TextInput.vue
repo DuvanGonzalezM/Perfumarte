@@ -24,6 +24,7 @@ const props = defineProps({
     },
 });
 
+const hasFocus = ref(false);
 const input = ref(null);
 const label = ref(null);
 </script>
@@ -45,13 +46,3 @@ const label = ref(null);
         </label>
     </div>
 </template>
-
-<script>
-export default {
-    data() {
-        return {
-            hasFocus: false
-        }
-    }
-}
-</script>
