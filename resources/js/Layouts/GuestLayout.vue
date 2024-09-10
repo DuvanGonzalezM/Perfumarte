@@ -1,4 +1,7 @@
 <script setup>
+import Notification from '@/Components/Notification.vue';
+import Alert from '@/Components/Alert.vue';
+
 import Image from '@/Components/Image.vue';
 </script>
 <template>
@@ -12,5 +15,7 @@ import Image from '@/Components/Image.vue';
                 <slot />
             </div>
         </div>
+
     </div>
+
 </template>

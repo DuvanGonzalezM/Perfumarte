@@ -16,6 +16,8 @@ const submit = () => {
 </script>
 
 <template>
+
+
     <GuestLayout>
         <Head title="Inicio de Sesión" />
         <form @submit.prevent="submit">
