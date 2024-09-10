@@ -1,34 +1,20 @@
 .inputContainer {
-<<<<<<< HEAD
     position: relative !important;
 
-    >label {
-        position: absolute !important;
-=======
     label {
->>>>>>> 842d2e2755172ca9d826ef2e6cf3f0d17538d224
         top: 10px !important;
         left: 10px !important;
         transition: all 0.2s ease-in-out !important;
     }
 
-<<<<<<< HEAD
-    >.focus+label {
-        top: -15.5px !important;
-=======
     .focus+label {
-        top: -5px !important;
->>>>>>> 842d2e2755172ca9d826ef2e6cf3f0d17538d224
+        top: -15.5px !important;
         left: 0 !important;
         font-size: 12px !important; 
         color: $textBlack !important;
     }
 
-<<<<<<< HEAD
-    >input {
-=======
     input {
->>>>>>> 842d2e2755172ca9d826ef2e6cf3f0d17538d224
         width: 100%;
         padding: 10px;
         border-radius: 0.3rem !important;
@@ -40,19 +26,8 @@
         -ms-transition: all 0.5s ease;          
         transition: all 0.5s ease;
     }
-<<<<<<< HEAD
-}
-
-//         :focus{
-//             border-top: 0 !important;
-//         }
-//     }
-
-// }
-=======
     input:focus{
         outline: none !important;
         border-top: 0 !important;
     }
 }
->>>>>>> 842d2e2755172ca9d826ef2e6cf3f0d17538d224
