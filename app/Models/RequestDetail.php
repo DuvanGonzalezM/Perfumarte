@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Request;
 
 class RequestDetail extends Model
 {
@@ -17,4 +20,15 @@ class RequestDetail extends Model
     ]
 
     ;
+
+    public function Request(): BelongsTo
+    {
+        return $this->belongsTo(Request::class);
+    }
+
+    public function inventoryRequestDetail(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
 }

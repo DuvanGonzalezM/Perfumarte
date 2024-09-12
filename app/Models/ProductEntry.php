@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductEntry extends Model
 {
@@ -16,4 +17,14 @@ class ProductEntry extends Model
         'product_id',
         'quantity',
     ];
+
+    public function product(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function orderpurchase(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
 }
