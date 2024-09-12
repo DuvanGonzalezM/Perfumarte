@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DispatchDetail extends Model
 {
@@ -16,7 +17,16 @@ class DispatchDetail extends Model
         'inventory_id',
         'dispatched_quantity',
     ];
+    public function dispatch(): HasMany
+    {
+        return $this->hasMany(Dispatch:: class);
+    }
 
-
+    public function inventory(): HasMany
+    {
+        return $this->hasMany(Inventory:: class);
+    }
 
 }
+    
+    
