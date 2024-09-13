@@ -1,0 +1,16 @@
+.table-prais {
+    table {
+        text-align: center !important;
+    }
+
+    .page-link {
+        color: $textBlack !important;
+    }
+
+    .active {
+        button {
+            color: $textBlack !important;
+            background: $gradient !important;
+        }
+    }
+}

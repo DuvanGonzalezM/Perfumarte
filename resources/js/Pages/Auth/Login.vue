@@ -32,6 +32,7 @@ const submit = () => {
                 />
                 <InputError class="mt-2" :message="form.errors.username" />
             </div>
+
             <div class="mt-4">
                 <TextInput
                     labelValue="Contraseña"

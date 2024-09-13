@@ -6,12 +6,38 @@ import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
+const columnsTable = [
+    {
+        data: 'age',
+        title: 'Edad'
+    },
+    {
+        data: 'first_name',
+        title: 'Nombre'
+    },
+    {
+        data: 'last_name',
+        title: 'Apellido'
+    },
+];
 const itemsTable = [
-        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-        { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-        { age: 38, first_name: 'Jami', last_name: 'Carney' }
-    ];
+    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+    { age: 38, first_name: 'Jami', last_name: 'Carney' },
+    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+    { age: 38, first_name: 'Jami', last_name: 'Carney' },
+    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+    { age: 38, first_name: 'Jami', last_name: 'Carney' },
+    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+    { age: 38, first_name: 'Jami', last_name: 'Carney' },
+];
 </script>
 
 <template>
@@ -20,6 +46,7 @@ const itemsTable = [
 
     <BaseLayout>
         <template #header>
+            <Alert />
             <h1>Inicio</h1>
         </template>
 
@@ -28,9 +55,8 @@ const itemsTable = [
                 <strong>{{ $page.props.auth.user.username }}</strong>
             </template>
             <div class="container">
-                <Alert/>
-                <Notification/>
-                <Table :items="itemsTable" :perPage="10" />
+                <Table :data="itemsTable" :columns="columnsTable" />
+                <Notification />
             </div>
         </SectionCard>
     </BaseLayout>
