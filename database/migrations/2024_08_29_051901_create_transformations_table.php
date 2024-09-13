@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transformations_detail', function (Blueprint $table) {
-            $table->id('transformation_detail_id');
-            $table->foreignId('transformation_id')->constrained('transformations', 'transformation_id')->cascadeOnUpdate()->cascadeOnDelete();
+        Schema::create('transformations', function (Blueprint $table) {
+            $table->id('transformation_id');
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity');
             $table->timestamps();
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transformations_detail');
+        Schema::dropIfExists('transformations');
     }
 };
