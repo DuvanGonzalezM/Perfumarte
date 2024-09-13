@@ -4,7 +4,6 @@ import Alert from '@/Components/Alert.vue';
 
 import Image from '@/Components/Image.vue';
 </script>
-
 <template>
     <div class="container">
         <div class="card card-login align-items-center">

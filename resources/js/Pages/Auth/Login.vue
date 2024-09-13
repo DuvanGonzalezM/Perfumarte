@@ -1,18 +1,9 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-
-
-defineProps({
-    status: {
-        type: String,
-    },
-});
 
 const form = useForm({
     username: '',
@@ -20,9 +11,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+    form.post(route('login'));
 };
 </script>
 
@@ -31,11 +20,6 @@ const submit = () => {
 
     <GuestLayout>
         <Head title="Inicio de Sesión" />
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
         <form @submit.prevent="submit">
             <div>
                 <TextInput
@@ -46,7 +30,7 @@ const submit = () => {
                     v-model="form.username"
                     required
                 />
-
+                <InputError class="mt-2" :message="form.errors.username" />
             </div>
 
             <div class="mt-4">
@@ -59,10 +43,8 @@ const submit = () => {
                     autocomplete="current-password"
                     required
                 />
-
+                <InputError class="mt-2" :message="form.errors.password" />
             </div>
-            <InputError class="mt-2" :message="form.errors.username" />
-            <InputError class="mt-2" :message="form.errors.password" />
             <div class="d-flex justify-content-center mt-5">
                 <PrimaryButton :disabled="form.processing">
                     Ingresar
