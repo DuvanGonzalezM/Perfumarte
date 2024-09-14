@@ -22,6 +22,6 @@ class Dispatch extends Model
 
     public function dispatchDetail(): BelongsTo
     {
-        return $this->belongsTo(DispatchDetail::class);
+        return $this->belongsTo(DispatchDetail::class,'dispatch_id');
     }
 }

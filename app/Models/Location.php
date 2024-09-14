@@ -24,11 +24,11 @@ class Location extends Model
 
     public function userLocation(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class,'location_id');
     }
 
     public function warehouse(): HasMany
     {
-        return $this->hasMany(Warehouse::class);
+        return $this->hasMany(Warehouse::class,'location_id');
     }
 }
