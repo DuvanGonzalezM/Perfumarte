@@ -24,11 +24,11 @@ class DispatchDetail extends Model
 
     public function dispatch(): HasMany
     {
-        return $this->hasMany(Dispatch::class);
+        return $this->hasMany(Dispatch::class,'dispatch_id');
     }
 
     public function inventory(): HasMany
     {
-        return $this->hasMany(Inventory::class);
+        return $this->hasMany(Inventory::class,'inventory_id');
     }
 }
