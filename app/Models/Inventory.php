@@ -25,31 +25,31 @@ class Inventory extends Model
 
     public function changeWarehouse(): HasMany
     {
-        return $this->hasMany(ChangeWarehouse::class);
+        return $this->hasMany(ChangeWarehouse::class,'inventory_id');
     }
 
     public function warehouse(): HasMany
     {
-        return $this->hasMany(Warehouse::class);
+        return $this->hasMany(Warehouse::class,'warehouse_id');
     }
 
     public function requestDetail(): BelongsTo
     {
-        return $this->belongsTo(RequestDetail::class);
+        return $this->belongsTo(RequestDetail::class,'inventory_id');
     }
 
     public function product(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class,'product_id');
     }
 
     public function trasnformation(): BelongsTo
     {
-        return $this->belongsTo(Transformation::class);
+        return $this->belongsTo(Transformation::class,'inventory_id');
     }
 
     public function detailDispatch(): BelongsTo
     {
-        return $this->belongsTo(DispatchDetail::class);
+        return $this->belongsTo(DispatchDetail::class,'inventory_id');
     }
 }
