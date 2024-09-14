@@ -16,9 +16,13 @@ class Transformation extends Model
         'inventory_id',
         'quantity',
     ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
 
     public function Inventory(): HasMany
     {
-        return $this->hasMany(Inventory:: class);
+        return $this->hasMany(Inventory::class);
     }
 }

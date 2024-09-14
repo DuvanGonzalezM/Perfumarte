@@ -11,13 +11,16 @@ class Inventory extends Model
 {
     use HasFactory;
 
-
     protected $primaryKey = 'inventory_id';
 
     protected $fillable = [
         'warehouse_id',
         'product_id',
         'quantity',
+    ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
     ];
 
     public function changeWarehouse(): HasMany
@@ -50,4 +53,3 @@ class Inventory extends Model
         return $this->belongsTo(DispatchDetail::class);
     }
 }
-

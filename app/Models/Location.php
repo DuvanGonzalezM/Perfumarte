@@ -17,6 +17,11 @@ class Location extends Model
         'address',
     ];
 
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
+
     public function userLocation(): HasMany
     {
         return $this->hasMany(User::class);

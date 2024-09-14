@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Request;
 
 class RequestDetail extends Model
 {
@@ -17,9 +16,11 @@ class RequestDetail extends Model
         'request_id',
         'inventory_id',
         'quantity',
-    ]
-
-    ;
+    ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
 
     public function Request(): BelongsTo
     {
@@ -30,5 +31,4 @@ class RequestDetail extends Model
     {
         return $this->hasMany(Inventory::class);
     }
-
 }

@@ -17,6 +17,10 @@ class ProductEntry extends Model
         'product_id',
         'quantity',
     ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
 
     public function product(): HasMany
     {

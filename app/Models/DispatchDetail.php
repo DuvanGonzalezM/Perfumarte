@@ -17,16 +17,18 @@ class DispatchDetail extends Model
         'inventory_id',
         'dispatched_quantity',
     ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
+
     public function dispatch(): HasMany
     {
-        return $this->hasMany(Dispatch:: class);
+        return $this->hasMany(Dispatch::class);
     }
 
     public function inventory(): HasMany
     {
-        return $this->hasMany(Inventory:: class);
+        return $this->hasMany(Inventory::class);
     }
-
 }
-    
-    

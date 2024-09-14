@@ -16,7 +16,10 @@ class Warehouse extends Model
         'location_id',
         'name',
     ];
-
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
@@ -26,5 +29,4 @@ class Warehouse extends Model
     {
         return $this->belongsTo(Inventory::class);
     }
-
 }

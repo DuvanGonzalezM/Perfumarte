@@ -15,9 +15,13 @@ class Dispatch extends Model
     protected $fillable = [
         'status',
     ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
 
     public function dispatchDetail(): BelongsTo
     {
-        return $this->belongsTo(DispatchDetail:: class);
+        return $this->belongsTo(DispatchDetail::class);
     }
 }

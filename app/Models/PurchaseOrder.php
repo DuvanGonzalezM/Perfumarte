@@ -14,6 +14,10 @@ class PurchaseOrder extends Model
     protected $fillable = [
         'supplier_order',
     ];
+    protected $casts = [
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
+    ];
 
     public function productEntryOrder(): BelongsTo
     {

@@ -34,6 +34,8 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'created_at' => 'datatime',
+        'updated_at' => 'datatime'
     ];
 
     public function rol(): BelongsTo
@@ -50,6 +52,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Request::class);
     }
-
-
 }
