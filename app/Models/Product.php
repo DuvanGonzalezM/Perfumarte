@@ -18,13 +18,13 @@ class Product extends Model
         'supplier_id',
     ];
     protected $casts = [
-        'created_at' => 'datatime',
-        'updated_at' => 'datatime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     public function inventoryProduct(): BelongsTo

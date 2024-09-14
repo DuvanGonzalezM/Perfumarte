@@ -19,8 +19,8 @@ class Request extends Model
         'status',
     ];
     protected $casts = [
-        'created_at' => 'datatime',
-        'updated_at' => 'datatime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function userRequest(): BelongsTo

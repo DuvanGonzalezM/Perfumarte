@@ -16,8 +16,8 @@ class ChangeWarehouse extends Model
         'quantity',
     ];
     protected $casts = [
-        'created_at' => 'datatime',
-        'updated_at' => 'datatime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function invetory(): BelongsTo

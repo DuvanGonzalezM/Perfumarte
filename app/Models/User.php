@@ -34,8 +34,8 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
-        'created_at' => 'datatime',
-        'updated_at' => 'datatime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function rol(): BelongsTo

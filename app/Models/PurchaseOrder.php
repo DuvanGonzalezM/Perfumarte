@@ -15,8 +15,8 @@ class PurchaseOrder extends Model
         'supplier_order',
     ];
     protected $casts = [
-        'created_at' => 'datatime',
-        'updated_at' => 'datatime'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function productEntryOrder(): BelongsTo
