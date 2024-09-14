@@ -24,11 +24,11 @@ class RequestDetail extends Model
 
     public function Request(): BelongsTo
     {
-        return $this->belongsTo(Request::class);
+        return $this->belongsTo(Request::class, foreignKey:'request_id');
     }
 
-    public function inventoryRequestDetail(): HasMany
+    public function inventory(): HasMany
     {
-        return $this->hasMany(Inventory::class);
+        return $this->hasMany(Inventory::class,foreignKey:'inventory_id');
     }
 }

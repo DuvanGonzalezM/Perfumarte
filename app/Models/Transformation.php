@@ -23,6 +23,6 @@ class Transformation extends Model
 
     public function Inventory(): HasMany
     {
-        return $this->hasMany(Inventory::class);
+        return $this->hasMany(Inventory::class,foreignKey:'inventory_id');
     }
 }

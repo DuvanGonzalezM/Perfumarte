@@ -23,13 +23,13 @@ class Request extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function userRequest(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, foreignKey:'user_id');
     }
 
     public function detailRequest(): HasMany
     {
-        return $this->hasMany(RequestDetail::class);
+        return $this->hasMany(RequestDetail::class, foreignKey:'request_id');
     }
 }
