@@ -25,7 +25,7 @@ class Supplier extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function product(): HasMany
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'supplier_id');
     }

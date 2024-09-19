@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductEntry extends Model
 {
@@ -22,13 +22,13 @@ class ProductEntry extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function product(): HasMany
+    public function product(): BelongsTo
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function orderpurchase(): HasMany
+    public function orderpurchase(): BelongsTo
     {
-        return $this->hasMany(PurchaseOrder::class);
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
     }
 }
