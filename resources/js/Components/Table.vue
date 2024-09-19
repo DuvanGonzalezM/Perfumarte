@@ -12,20 +12,17 @@ const options = {
 const props = defineProps({
     columns: {
         type: Array,
-        required: true,
     },
     data: {
         type: Array,
-        required: true,
     },
 });
 </script>
 
 <template>
-    <div class="table-responsive table-prais">
-        <DataTable :options="options" :columns="columns" :data="data" class="table table-hover table-striped">
-            <thead class="table-dark">
-            </thead>
+    <div class="table-responsive table-prais m-auto">
+        <DataTable :options="options" :columns="columns" :data="data" class="table table-hover">
+            <slot />
         </DataTable>
     </div>
 </template>

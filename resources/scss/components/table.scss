@@ -1,6 +1,10 @@
 .table-prais {
+    width: 85% !important;
     table {
         text-align: center !important;
+        tr{
+            border-color: $textBlack !important;
+        }
     }
 
     .page-link {

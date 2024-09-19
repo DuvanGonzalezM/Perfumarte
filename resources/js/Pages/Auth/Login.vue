@@ -46,7 +46,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
             <div class="d-flex justify-content-center mt-5">
-                <PrimaryButton :disabled="form.processing">
+                <PrimaryButton type="submit" :disabled="form.processing">
                     Ingresar
                 </PrimaryButton>
             </div>

@@ -47,18 +47,7 @@ const itemsTable = [
 
     <BaseLayout>
         <template #header>
-            <Alert />
             <h1>Inicio</h1>
         </template>
-
-        <SectionCard>
-            <template #headerSection>
-                <strong>{{ $page.props.auth.user.username }}</strong>
-            </template>
-            <div class="container">
-                <Table :data="itemsTable" :columns="columnsTable" />
-                <Notification />
-            </div>
-        </SectionCard>
     </BaseLayout>
 </template>

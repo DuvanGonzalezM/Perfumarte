@@ -31,6 +31,7 @@
         "datatables.net-select": "^2.1.0",
         "datatables.net-vue3": "^3.0.2",
         "laravel-vite-plugin": "^1.0.0",
+        "moment": "^2.30.1",
         "postcss": "^8.4.31",
         "vite": "^5.0.0",
         "vue": "^3.4.0"
