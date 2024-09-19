@@ -12,7 +12,9 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id('purchase_order_id');
             $table->String('supplier_order');
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         
        });
     }

@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('dispatchs', function (Blueprint $table) {
             $table->id('dispatch_id');
             $table->string('status');
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -19,9 +19,9 @@ class ChangeWarehouse extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
-
+   
     public function invetory(): BelongsTo
     {
-        return $this->belongsTo(Inventory::class,'inventory_id');
+        return $this->belongsTo(Inventory::class,foreignKey: 'inventory_id');
     }
 }

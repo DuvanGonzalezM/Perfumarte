@@ -14,7 +14,9 @@ return new class extends Migration
             $table->foreignId('purchase_order_id')->constrained('purchase_orders', 'purchase_order_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products', 'product_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity');
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         
        });
     }

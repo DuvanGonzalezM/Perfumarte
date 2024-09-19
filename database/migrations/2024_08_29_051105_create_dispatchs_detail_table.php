@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('dispatch_id')->constrained('dispatchs', 'dispatch_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('dispatched_quantity');
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

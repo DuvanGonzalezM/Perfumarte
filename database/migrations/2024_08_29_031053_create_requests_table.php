@@ -14,7 +14,9 @@ return new class extends Migration
             $table->integer('request_type');
             $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('status'); 
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         
        });
     }

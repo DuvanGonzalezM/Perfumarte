@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('reference');
             $table->string('measurement_unit');
             $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->timestamps();
+            $table->boolean('enable')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         
        });
     }

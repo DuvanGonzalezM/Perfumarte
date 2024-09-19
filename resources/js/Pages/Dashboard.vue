@@ -19,6 +19,7 @@ const columnsTable = [
         data: 'last_name',
         title: 'Apellido'
     },
+    
 ];
 const itemsTable = [
     { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
