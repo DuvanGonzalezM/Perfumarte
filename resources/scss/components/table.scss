@@ -1,9 +1,17 @@
 .table-prais {
-    width: 85% !important;
     table {
         text-align: center !important;
-        tr{
+
+        tr {
             border-color: $textBlack !important;
+        }
+
+        td{
+            vertical-align: middle !important;
+        }
+
+        input {
+            width: 50% !important;
         }
     }
 
