@@ -1,6 +1,5 @@
 <script setup>
 import Alert from '@/Components/Alert.vue';
-import Notification from '@/Components/Notification.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
@@ -56,7 +55,6 @@ const itemsTable = [
             </template>
             <div class="container">
                 <Table :data="itemsTable" :columns="columnsTable" />
-                <Notification />
             </div>
         </SectionCard>
     </BaseLayout>

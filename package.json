@@ -33,6 +33,7 @@
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.31",
         "vite": "^5.0.0",
-        "vue": "^3.4.0"
+        "vue": "^3.4.0",
+        "vue-select": "^4.0.0-beta.6"
     }
 }
