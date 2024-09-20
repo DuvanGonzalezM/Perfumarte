@@ -20,7 +20,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="table-responsive table-prais m-auto">
+    <div class="table-responsive table-prais">
         <DataTable :options="options" :columns="columns" :data="data" class="table table-hover">
             <slot />
         </DataTable>

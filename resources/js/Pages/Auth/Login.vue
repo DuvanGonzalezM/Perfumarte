@@ -40,13 +40,12 @@ const submit = () => {
                     name="password"
                     type="password"
                     v-model="form.password"
-                    autocomplete="current-password"
                     required
                 />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
             <div class="d-flex justify-content-center mt-5">
-                <PrimaryButton type="submit" :disabled="form.processing">
+                <PrimaryButton @click="submit" :disabled="form.processing">
                     Ingresar
                 </PrimaryButton>
             </div>
