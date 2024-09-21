@@ -1,6 +1,7 @@
 <script setup>
 import ButtonSidebar from './ButtonSidebar.vue';
 import { Link } from '@inertiajs/vue3';
+
 </script>
 
 <template>
@@ -12,13 +13,13 @@ import { Link } from '@inertiajs/vue3';
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <ButtonSidebar href="#">
+                <ButtonSidebar :href="route('dashboard')" :class="{'active': $page.component.startsWith('Dashboard')}">
                     <i class="fa-solid fa-house-chimney me-4 i"></i>
                     Inicio
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar :href="route('orders.list')">
+                <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('ChiefOperating')}">
                     <i class="fa-solid fa-rectangle-list me-4 i"></i>
                     Ordenes de compra
                 </ButtonSidebar>
