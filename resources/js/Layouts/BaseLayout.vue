@@ -15,7 +15,7 @@ import AccountControls from '@/Components/AccountControls.vue';
                 <header class="container p-0">
                     <div class="row mb-3">
                         <div class="col-md-10">
-                            <Breadcrumbs />
+                            <!-- <Breadcrumbs /> -->
                         </div>
                         <div class="col-md-2 d-flex justify-content-end">
                             <AccountControls />
