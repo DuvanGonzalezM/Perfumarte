@@ -8,10 +8,15 @@
 
         td{
             vertical-align: middle !important;
+            height: 1px !important;
         }
 
         input {
-            width: 50% !important;
+            width: 25% !important;
+        }
+
+        a{
+            color: $textBlack !important;
         }
     }
 

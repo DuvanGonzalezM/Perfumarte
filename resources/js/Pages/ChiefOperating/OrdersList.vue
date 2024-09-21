@@ -33,9 +33,9 @@ const columnsTable = [
     },
     {
         data: "purchase_order_id",
-        title: 'Fecha de registro',
+        title: 'Editar',
         render: function (data) {
-            return '<a href="'+ route("orders.create") +'"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="'+ route("orders.edit", data) +'"><i class="fa-solid fa-pen-to-square"></i></a>';
         }
     },
 ];
