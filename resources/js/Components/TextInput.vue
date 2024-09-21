@@ -1,10 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
-const model = defineModel({
-    type: String,
-    required: true,
-});
+const model = defineModel();
 
 const props = defineProps({
     labelValue: {

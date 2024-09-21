@@ -1,39 +1,27 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
+import SelectSearch from '@/Components/SelectSearch.vue';
 import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
-    suppliers: {
-        type: Array,
+    purchaseOrder: {
+        type: Object,
     },
 });
+
 const form = useForm({
-    supplier: props.suppliers[0].supplier_id,
-    supplier_order: '',
-    references: [{
-        'reference': '',
-        'quantity': ''
-    }],
+    supplier_order: props.purchaseOrder.supplier_order,
+    references: props.purchaseOrder.product_entry_order.map(entry => [{'reference': entry.product.product_id, 'quantity': entry.quantity, 'product_entry_id': entry.product_entry_id}])[0],
 });
-const selectSuplier = ref('0');
-var countProducts = 0;
+
 const unity = ref('KG');
-const productsAll = ref(props.suppliers[0].products);
-const products = productsAll;
-const selectProduct = ref(products.value.slice(0, 1)[0].product_id);
-const selectedSupplier = () => {
-    form.supplier = props.suppliers[selectSuplier.value].supplier_id;
-    products.value = props.suppliers[selectSuplier.value].products;
-    console.log(products.value.slice(0, 1)[0].product_id);
-    selectProduct.value = products.value.slice(0, 1)[0].product_id;
-}
-const selectedProduct = () => {
-    form.references[countProducts]['reference'] = selectProduct.value;
-    unity.value = products.value.filter((product) => product.product_id == selectProduct.value)[0].measurement_unit;
+const products = ref(props.purchaseOrder.product_entry_order[0].product.supplier.products);
+const selectedProduct = (index) => {
+    unity.value = products.value.filter((product) => product.product_id == form.references[index]['reference'])[0].measurement_unit;
 }
 const submit = () => {
     form.post(route('orders.store'));
@@ -57,12 +45,7 @@ const submit = () => {
                 <form class="table-responsive table-prais">
                     <div class="row">
                         <div class="col-md-6 py-3 align-middle">
-                            <select class="selectsearch" name="supplier" id="supplier" v-model="selectSuplier" @change="selectedSupplier()"
-                                placeholder="Proveedores">
-                                <option v-for="(supplier, index) in suppliers" :value="index" data-index="index">{{
-                                    supplier.name }}
-                                </option>
-                            </select>
+                            {{ props.purchaseOrder.product_entry_order[0].product.supplier.name }}
                         </div>
                         <div class="col-md-6 py-3 align-middle">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
@@ -78,9 +61,9 @@ const submit = () => {
                             </tr>
                         </thead>
                         <tbody id="productsList">
-                            <tr>
+                            <tr v-for="(product_entry_order, index) in purchaseOrder.product_entry_order">
                                 <td>
-                                    <select class="selectsearch" name="reference[]" v-model="selectProduct" @change="selectedProduct()"
+                                    <select class="selectsearch" name="reference[]" v-model="form.references[index]['reference']" @change="selectedProduct(index)"
                                         placeholder="Proveedores">
                                         <option v-for="product in products" :value="product.product_id">{{
                                             product.reference }}
@@ -89,7 +72,7 @@ const submit = () => {
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="form.references[countProducts]['quantity']" />
+                                        v-model="form.references[index]['quantity']" />
                                 </td>
                                 <td>
                                     {{ unity }}
