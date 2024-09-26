@@ -7,6 +7,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+
 const props = defineProps({
     purchaseOrder: {
         type: Object,
@@ -15,7 +16,7 @@ const props = defineProps({
 
 const form = useForm({
     supplier_order: props.purchaseOrder.supplier_order,
-    references: props.purchaseOrder.product_entry_order.map(entry => [{'reference': entry.product.product_id, 'quantity': entry.quantity, 'product_entry_id': entry.product_entry_id}])[0],
+    references: props.purchaseOrder.product_entry_order.map(entry => [{ 'reference': entry.product.product_id, 'quantity': entry.quantity, 'product_entry_id': entry.product_entry_id }])[0],
 });
 
 const unity = ref('KG');
@@ -24,8 +25,9 @@ const selectedProduct = (index) => {
     unity.value = products.value.filter((product) => product.product_id == form.references[index]['reference'])[0].measurement_unit;
 }
 const submit = () => {
-    form.post(route('orders.store'));
+    form.put(route('orders.update', props.purchaseOrder.purchase_order_id));
 };
+
 </script>
 
 <template>
@@ -33,13 +35,14 @@ const submit = () => {
     <Head title="Nueva registro" />
 
     <BaseLayout>
+        
         <template #header>
-            <h1>Nueva registro</h1>
+            <h1>Editar Orden de Compra</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Nueva registro</strong>
+                <strong>Editar Orden de Compra</strong>
             </template>
             <div class="container px-0">
                 <form class="table-responsive table-prais">
@@ -63,7 +66,8 @@ const submit = () => {
                         <tbody id="productsList">
                             <tr v-for="(product_entry_order, index) in purchaseOrder.product_entry_order">
                                 <td>
-                                    <select class="selectsearch" name="reference[]" v-model="form.references[index]['reference']" @change="selectedProduct(index)"
+                                    <select class="selectsearch" name="reference[]"
+                                        v-model="form.references[index]['reference']" @change="selectedProduct(index)"
                                         placeholder="Proveedores">
                                         <option v-for="product in products" :value="product.product_id">{{
                                             product.reference }}
@@ -82,12 +86,14 @@ const submit = () => {
                     </table>
                     <i class="fa-solid fa-plus"></i>
                 </form>
-                <PrimaryButton :href="route('orders.list')">
+                <PrimaryButton :href="route('orders.list') "style="margin-right: 20px;">
                     Volver
                 </PrimaryButton>
-                <PrimaryButton @click="submit">
-                    Enviar
+
+                <PrimaryButton @click="submit"style="margin-right: 20px;">
+                    Actualizar
                 </PrimaryButton>
+                
             </div>
         </SectionCard>
     </BaseLayout>

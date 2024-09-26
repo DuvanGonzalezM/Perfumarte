@@ -1,4 +1,5 @@
 <script setup>
+import Dashboard from '@/Pages/Dashboard.vue';
 import ButtonSidebar from './ButtonSidebar.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
@@ -12,7 +13,7 @@ import { Link } from '@inertiajs/vue3';
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <ButtonSidebar href="#">
+                <ButtonSidebar :href= "route('login')">
                     <i class="fa-solid fa-house-chimney me-4 i"></i>
                     Inicio
                 </ButtonSidebar>

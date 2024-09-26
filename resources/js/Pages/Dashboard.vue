@@ -1,5 +1,6 @@
 <script setup>
 import Alert from '@/Components/Alert.vue';
+import InformationCard from '@/Components/informationCard.vue';
 import Notification from '@/Components/Notification.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
@@ -44,9 +45,24 @@ const itemsTable = [
 
     <Head title="Inicio" />
 
+
+
     <BaseLayout>
         <template #header>
-            <h1>Inicio</h1>
+            <div>
+                <h1>Inicio</h1>
+                <br></br>
+                <br></br>
+                <br></br>
+            </div>
+
+            <!-- Contenedor con clases de Bootstrap para organizar horizontalmente -->
+            <div class="row">
+                <div class="col-md-4">
+                    <InformationCard />
+                </div>
+            </div>
         </template>
     </BaseLayout>
+
 </template>
