@@ -9,7 +9,7 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-    purchaseOrders: {
+        purchaseOrders: {
         type: Array,
     },
 });
