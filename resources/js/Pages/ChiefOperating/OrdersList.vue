@@ -38,7 +38,7 @@ const columnsTable = [
             return formattedDate;
         }
     },
-    {
+    {x
         data: "purchase_order_id",
         title: 'Fecha de registro',
         render: function (data) {
