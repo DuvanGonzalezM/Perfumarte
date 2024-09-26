@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ProductEntry;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Redirect;
 
 class PurchaseOrderController extends Controller
 {
@@ -47,7 +49,7 @@ class PurchaseOrderController extends Controller
 
     public function editOrders($orderId)
     {
-        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', $orderId)->get();
+        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', '=', $orderId)->get();
         if (!$purchaseOrder->isEmpty()) {
             return Inertia::render('ChiefOperating/EditOrders', ['purchaseOrder' => $purchaseOrder[0]]);
         } else {
@@ -55,10 +57,29 @@ class PurchaseOrderController extends Controller
         }
     }
 
-    public function updateOrders(Request $request, ProductEntry $productEntry)
+    public function updateOrders(Request $request, $purchaseOrderId): RedirectResponse
     {
-        $request->validate(['quantity' => 'required']);
-        $productEntry->update($request->input());
-        return redirect('productEntryOrder');
+
+        $request->validate([
+            'supplier_order' => 'required',
+            'references' => 'required|array',
+
+        ]);
+
+
+        $purchaseOrder = PurchaseOrder::where('purchase_order_id', '=', $purchaseOrderId)->update([
+            'supplier_order' => $request->supplier_order
+        ]);
+
+        foreach ($request->references as $reference) {
+
+            if (isset($reference['product_entry_id'])) {
+                ProductEntry::where('product_entry_id', '=', $reference['product_entry_id'])->update([
+                    'product_id' => $reference['reference'],
+                    'quantity' => $reference['quantity']
+                ]);
+            }
+        }
+        return redirect()->route('orders.edit', $purchaseOrderId);
     }
 }

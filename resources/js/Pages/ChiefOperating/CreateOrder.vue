@@ -99,10 +99,10 @@ const submit = () => {
                     </table>
                     <i class="fa-solid fa-plus"></i>
                 </form>
-                <PrimaryButton :href="route('orders.list')">
+                <PrimaryButton :href="route('orders.list')"style="margin-right: 20px;">
                     Volver
                 </PrimaryButton>
-                <PrimaryButton @click="submit">
+                <PrimaryButton @click="submit"style="margin-right: 20px;">
                     Enviar
                 </PrimaryButton>
             </div>

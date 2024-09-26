@@ -1,4 +1,5 @@
 <script setup>
+import Dashboard from '@/Pages/Dashboard.vue';
 import ButtonSidebar from './ButtonSidebar.vue';
 import { Link } from '@inertiajs/vue3';
 
