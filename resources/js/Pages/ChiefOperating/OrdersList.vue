@@ -13,6 +13,13 @@ const props = defineProps({
         type: Array,
     },
 });
+   
+const deleteOrder=(id) => {
+    
+    if (confirm('¿Estás seguro de querer eliminar el registro?')) {
+        Inertia.delete(route('order.destroy', id))
+    }
+}
 
 const columnsTable = [
     {
@@ -35,7 +42,7 @@ const columnsTable = [
         data: "purchase_order_id",
         title: 'Fecha de registro',
         render: function (data) {
-            return '<a href="'+ route("orders.create") +'"><i class="fa-solid fa-eye"></i></a>';
+            return `<a @click.prevent="deleteOrder(${data})"><i class="fa-solid fa-eye"></i></a>`;
         }
     },
 ];

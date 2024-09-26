@@ -37,7 +37,8 @@ const selectedProduct = () => {
 }
 const submit = () => {
     form.post(route('orders.store'));
-};
+}
+
 </script>
 
 <template>
