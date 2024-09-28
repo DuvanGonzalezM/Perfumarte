@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id('product_id');
             $table->string('reference');
             $table->string('measurement_unit');
+            $table->string('commercial_reference');
+            $table->string('category');
             $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         

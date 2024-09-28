@@ -5,19 +5,29 @@
         tr {
             border-color: $textBlack !important;
         }
+    }
 
-        td{
-            vertical-align: middle !important;
-            height: 1px !important;
-        }
+    a {
+        color: $textBlack !important;
+    }
 
-        input {
-            width: 25% !important;
-        }
+    .removeItem {
+        margin-top: 50% !important;
+        color: $textBlack !important;
+        cursor: pointer !important;
+    }
 
-        a{
-            color: $textBlack !important;
-        }
+    .addItem {
+        background: $buttonColor !important;
+        font-size: 20px !important;
+        color: $textBlack !important;
+        cursor: pointer !important;
+        width: 5% !important;
+        border-radius: 50% !important;
+    }
+
+    .addItem:hover {
+        background: $gradient !important;
     }
 
     .page-link {
@@ -29,5 +39,21 @@
             color: $textBlack !important;
             background: $gradient !important;
         }
+    }
+
+    .size-prais-3 {
+        th {
+            width: calc(100%/3) !important;
+        }
+    }
+
+    .dt-search {
+        label {
+            display: none !important;
+        }
+    }
+
+    .row {
+        align-items: center !important;
     }
 }

@@ -16,6 +16,7 @@ class ProductEntry extends Model
         'purchase_order_id',
         'product_id',
         'quantity',
+        'batch',
     ];
     protected $casts = [
         'created_at' => 'datetime',

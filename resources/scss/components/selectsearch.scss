@@ -1,7 +1,28 @@
 .selectsearch {
+  position: relative !important;
   border-radius: 0.3rem !important;
   border: 2px solid $textBlack !important;
   box-shadow: 0px 2px 4px 0px $textBlack;
   width: 100% !important;
-  height: 100% !important;
+  // height: 100% !important;
+
+  .vs__dropdown-option:hover,
+  .vs__dropdown-option--selected,
+  .vs__dropdown-option--highlight {
+    background: $gradient !important;
+    color: $textBlack !important;
+  }
+
+  label {
+    top: 10px !important;
+    left: 10px !important;
+    transition: all 0.2s ease-in-out !important;
+  }
+
+  .focus+label {
+    top: -15.5px !important;
+    left: 3px !important;
+    font-size: 13px !important;
+    color: $textBlack !important;
+  }
 }

@@ -17,6 +17,8 @@ class Product extends Model
         'reference',
         'measurement_unit',
         'supplier_id',
+        'commercial_reference',
+        'category',
     ];
     protected $casts = [
         'created_at' => 'datetime',
