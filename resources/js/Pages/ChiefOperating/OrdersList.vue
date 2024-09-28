@@ -57,7 +57,7 @@ const columnsTable = [
                 <strong>Ordenes de compra</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('orders.create')">
+                <PrimaryButton :href="route('orders.create')" class="position-absolute">
                     Nuevo registro
                 </PrimaryButton>
                 <Table :data="purchaseOrders" :columns="columnsTable" />

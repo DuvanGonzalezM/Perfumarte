@@ -13,9 +13,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+    form.post(route('register'));
 };
 </script>
 
@@ -77,7 +75,7 @@ const submit = () => {
                     Already registered?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton @click="submit" :disabled="form.processing">
                     Register
                 </PrimaryButton>
             </div>

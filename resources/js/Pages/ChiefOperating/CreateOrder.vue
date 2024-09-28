@@ -1,6 +1,7 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
+import SelectSearch from '@/Components/SelectSearch.vue';
 import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -14,30 +15,40 @@ const props = defineProps({
 const form = useForm({
     supplier: props.suppliers[0].supplier_id,
     supplier_order: '',
-    references: [{
-        'reference': '',
-        'quantity': ''
-    }],
+    references: [
+        {
+            'reference': '',
+            'quantity': '',
+            'batch': '',
+        }
+    ],
 });
-const selectSuplier = ref('0');
-var countProducts = 0;
 const unity = ref('KG');
 const productsAll = ref(props.suppliers[0].products);
 const products = productsAll;
 const selectProduct = ref(products.value.slice(0, 1)[0].product_id);
+const optionSuppliers = ref(props.suppliers.map((supplier, index) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
+const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
 const selectedSupplier = () => {
-    form.supplier = props.suppliers[selectSuplier.value].supplier_id;
-    products.value = props.suppliers[selectSuplier.value].products;
-    console.log(products.value.slice(0, 1)[0].product_id);
-    selectProduct.value = products.value.slice(0, 1)[0].product_id;
-}
-const selectedProduct = () => {
-    form.references[countProducts]['reference'] = selectProduct.value;
-    unity.value = products.value.filter((product) => product.product_id == selectProduct.value)[0].measurement_unit;
+    if (form.supplier != null) {
+        optionProduts.value = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]);
+    }
 }
 const submit = () => {
     form.post(route('orders.store'));
 };
+
+const addReference = () => {
+    form.references.push({
+        'reference': '',
+        'quantity': '',
+        'batch': '',
+    });
+}
+
+const removeReference = (index) => {
+    form.references.splice(index, 1);
+}
 </script>
 
 <template>
@@ -54,57 +65,63 @@ const submit = () => {
                 <strong>Nueva registro</strong>
             </template>
             <div class="container px-0">
-                <form class="table-responsive table-prais">
+                <form class="table-prais">
                     <div class="row">
                         <div class="col-md-6 py-3 align-middle">
-                            <select class="selectsearch" name="supplier" id="supplier" v-model="selectSuplier" @change="selectedSupplier()"
-                                placeholder="Proveedores">
-                                <option v-for="(supplier, index) in suppliers" :value="index" data-index="index">{{
-                                    supplier.name }}
-                                </option>
-                            </select>
+                            <SelectSearch v-model="form.supplier" :options="optionSuppliers"
+                                :change="selectedSupplier()" labelValue="Proveedor"/>
                         </div>
                         <div class="col-md-6 py-3 align-middle">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
                                 v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" />
                         </div>
                     </div>
-                    <table class="table table-hover dt-body-nowrap">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-3 align-middle">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
-                                <th>CANTIDAD</th>
-                                <th>UNIDAD DE MEDIDA</th>
+                                <th>CANTIDAD (KG)</th>
+                                <th>N° LOTE</th>
                             </tr>
                         </thead>
                         <tbody id="productsList">
-                            <tr>
+                            <tr v-for="(reference, index) in form.references">
                                 <td>
-                                    <select class="selectsearch" name="reference[]" v-model="selectProduct" @change="selectedProduct()"
-                                        placeholder="Proveedores">
-                                        <option v-for="product in products" :value="product.product_id">{{
-                                            product.reference }}
-                                        </option>
-                                    </select>
+                                    <SelectSearch v-model="form.references[index]['reference']"
+                                        :options="optionProduts" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="form.references[countProducts]['quantity']" />
+                                        v-model="form.references[index]['quantity']" />
                                 </td>
                                 <td>
-                                    {{ unity }}
+                                    <TextInput type="number" name="batch[]" id="batch[]"
+                                        v-model="form.references[index]['batch']" />
                                 </td>
+                                <div class="removeItem" @click="removeReference(index)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
                             </tr>
                         </tbody>
                     </table>
-                    <i class="fa-solid fa-plus"></i>
+                    <div class="row text-center justify-content-center my-5">
+                        <div class="addItem" @click="addReference">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                    </div>
+                    <div class="row my-5">
+                        <div class="col-6">
+                            <PrimaryButton :href="route('orders.list')" class="px-5">
+                                Volver
+                            </PrimaryButton>
+                        </div>
+                        <div class="col-6 text-end">
+                            <PrimaryButton @click="submit" class="px-5">
+                                Enviar
+                            </PrimaryButton>
+                        </div>
+                    </div>
                 </form>
-                <PrimaryButton :href="route('orders.list')"style="margin-right: 20px;">
-                    Volver
-                </PrimaryButton>
-                <PrimaryButton @click="submit"style="margin-right: 20px;">
-                    Enviar
-                </PrimaryButton>
             </div>
         </SectionCard>
     </BaseLayout>

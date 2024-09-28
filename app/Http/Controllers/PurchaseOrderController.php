@@ -40,7 +40,8 @@ class PurchaseOrderController extends Controller
             ProductEntry::create([
                 'purchase_order_id' => $purchaseOrder->purchase_order_id,
                 'product_id' => $reference['reference'],
-                'quantity' => $reference['quantity']
+                'quantity' => $reference['quantity'],
+                'batch' => $reference['batch']
             ]);
         }
 
