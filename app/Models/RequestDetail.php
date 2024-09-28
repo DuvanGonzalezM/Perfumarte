@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class RequestDetail extends Model
 {
     use HasFactory;
+
+    protected $table = 'requests_detail';
     protected $primaryKey = 'request_detail_id';
 
     protected $fillable = [
@@ -24,7 +26,7 @@ class RequestDetail extends Model
 
     public function Request(): BelongsTo
     {
-        return $this->belongsTo(Request::class, foreignKey:'request_id');
+        return $this->belongsTo(RequestDetail::class, foreignKey:'request_id');
     }
 
     public function inventory(): HasMany

@@ -9,19 +9,19 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-        purchaseOrders: {
+    detailRequest: {
         type: Array,
     },
 });
 
 const columnsTable = [
     {
-        data: 'purchase_order_id',
-        title: 'Codigo'
+        data: '',
+        title: 'REFERENCIA / INSUMO'
     },
     {
-        data: 'product_entry_order[0].product.supplier.name',
-        title: 'Proveedor'
+        data: '',
+        title: 'CANTIDAD'
     },
     {
         data: "created_at",
@@ -31,35 +31,28 @@ const columnsTable = [
             return formattedDate;
         }
     },
-    {
-        data: "purchase_order_id",
-        title: 'Editar',
-        render: function (data) {
-            return '<a href="'+ route("orders.edit", data) +'"><i class="fa-solid fa-pen-to-square"></i></a>';
-        }
-    },
+
 ];
 
 </script>
 
 <template>
 
-    <Head title="Ordenes de compra" />
+    <Head title="Detalle de Solicitud" />
 
     <BaseLayout>
         <template #header>
-            <h1>Ordenes de compra</h1>
+            <!-- <Alert /> -->
+            <h1>Detalle de Solicitud</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Ordenes de compra</strong>
+                <strong>Detalle de Solicitud</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('orders.create')">
-                    Nuevo registro
-                </PrimaryButton>
-                <Table :data="purchaseOrders" :columns="columnsTable" />
+
+                <Table :data="detailRequest" :columns="columnsTable" />
             </div>
         </SectionCard>
     </BaseLayout>
