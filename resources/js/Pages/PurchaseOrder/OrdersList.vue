@@ -17,15 +17,15 @@ const props = defineProps({
 const columnsTable = [
     {
         data: 'purchase_order_id',
-        title: 'Codigo'
+        title: 'CODIGO'
     },
     {
-        data: 'product_entry_order[0].product.supplier.name',
-        title: 'Proveedor'
+        data: 'product_entry_order.0.product.supplier.name',
+        title: 'PROVEEDOR'
     },
     {
         data: "created_at",
-        title: 'Fecha de registro',
+        title: 'FECHA DE REGISTRO',
         render: function (data) {
             const formattedDate = moment(data).format('DD/MM/Y');
             return formattedDate;
@@ -33,9 +33,9 @@ const columnsTable = [
     },
     {
         data: "purchase_order_id",
-        title: 'Editar',
+        title: 'DETALLE',
         render: function (data) {
-            return '<a href="'+ route("orders.edit", data) +'"><i class="fa-solid fa-pen-to-square"></i></a>';
+            return '<a href="'+ route("orders.detail", data) +'"><i class="fa-solid fa-eye"></i></a>';
         }
     },
 ];

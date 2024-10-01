@@ -20,7 +20,7 @@ import { Link } from '@inertiajs/vue3';
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('ChiefOperating')}">
+                <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('PurchaseOrder')}">
                     <i class="fa-solid fa-rectangle-list me-4 i"></i>
                     Ordenes de compra
                 </ButtonSidebar>
