@@ -48,7 +48,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
             <h1>Ordenes de compra</h1>
         </template>
 

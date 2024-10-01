@@ -47,6 +47,11 @@
         }
     }
 
+    .size-prais-5 {
+        th {
+            width: calc(100%/5) !important;
+        }
+    }
     .dt-search {
         label {
             display: none !important;

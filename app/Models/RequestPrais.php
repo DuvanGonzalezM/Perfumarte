@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class RequestPrais extends Model
 {
     use HasFactory;
+    protected $table = 'requests';
 
     protected $primaryKey = 'request_id';
 

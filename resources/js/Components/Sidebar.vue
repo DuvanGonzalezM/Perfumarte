@@ -32,8 +32,8 @@ import { Link } from '@inertiajs/vue3';
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar href="#">
-                    <i class="fa-brands fa-wpforms me-4 "></i>
+                <ButtonSidebar :href="route('suppliesrequest.list')" :class="{'active': $page.component.startsWith('Requests')}">
+                    <i class="fa-brands fa-wpforms me-4 i"></i>
                     Solicitud insumos
                 </ButtonSidebar>
             </li>
