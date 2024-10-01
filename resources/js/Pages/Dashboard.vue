@@ -20,6 +20,14 @@ const props = defineProps({
     finalized: {
         type: Array,
     },
+
+    pendingDispatches: {
+        type: Array,
+    },
+
+    pendingTransformation: {
+        type: Array,
+    },
 });
 
 
@@ -52,7 +60,7 @@ const props = defineProps({
 
         <div class="row mt-5">
             <div class="col-md-4 ">
-                <InformationCard title="Solicitudes pendientes despachos" number="35"
+                <InformationCard title="Solicitudes pendientes despachos" :number="props.pendingDispatches.length"
                     icon-class="fa-sharp-duotone fa-solid fa-rectangle-list" />
             </div>
             <div class="col-md-4">

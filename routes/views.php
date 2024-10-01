@@ -5,13 +5,10 @@ use App\Http\Controllers\PurchaseOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Ruta dashboard
-
 // Rutas ordenes de compra
 Route::middleware('auth')->group(function () {
     Route::get('ordenes compra', [PurchaseOrderController::class, 'getAllOrders'])->name('orders.list');
     Route::get('/dashboard', [DashboardController::class, 'getDataInventory'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'getDataDispatch'])->name('dashboard.dispatch');
     Route::get('ordenes compra/nueva orden', [PurchaseOrderController::class, 'createOrder'])->name('orders.create');
     Route::post('ordenes compra/nueva orden', [PurchaseOrderController::class, 'storeOrder'])->name('orders.store');
     Route::get('ordenes compra/editar orden/{orderId}', [PurchaseOrderController::class, 'editOrders'])->name('orders.edit');
