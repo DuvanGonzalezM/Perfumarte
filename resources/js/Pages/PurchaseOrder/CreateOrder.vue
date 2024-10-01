@@ -48,9 +48,11 @@ const selectedSupplier = () => {
 }
 
 const selectedReference = (reference) => {
-    let product = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference);
-    if (product) {
-        reference.unity = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference).measurement_unit;
+    if (form.supplier != null) {
+        let product = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference);
+        if (product) {
+            reference.unity = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference).measurement_unit;
+        }
     }
 }
 

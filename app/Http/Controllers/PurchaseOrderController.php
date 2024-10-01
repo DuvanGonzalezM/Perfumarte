@@ -45,7 +45,7 @@ class PurchaseOrderController extends Controller
 
             $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
             if ($inventory) {
-                $quantity = $inventory->quantity + $reference['quantity'];
+                $quantity = $inventory->quantity + ($reference['quantity'] * 1000);
                 Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->update([
                     'quantity' => $quantity
                 ]);
@@ -53,7 +53,7 @@ class PurchaseOrderController extends Controller
                 Inventory::create([
                     'warehouse_id' => $warehouse,
                     'product_id' => $reference['reference'],
-                    'quantity' => $reference['quantity']
+                    'quantity' => ($reference['quantity'] * 1000)
                 ]);
             }
 

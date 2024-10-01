@@ -9,7 +9,7 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-        purchaseOrder: {
+    purchaseOrder: {
         type: Object,
     },
 });
@@ -24,7 +24,7 @@ const columnsTable = [
         title: 'CANTIDAD',
         render: function (data, type, row) {
             const formattedDate = moment(data).format('DD/MM/Y');
-            return row.quantity + ' ' + row.product.measurement_unit;
+            return row.quantity + ' ' + row.product.measurement_unit.replace('KG', 'ml');
         }
     },
     {
@@ -37,19 +37,40 @@ const columnsTable = [
 
 <template>
 
-    <Head title="Ordenes de compra" />
+    <Head :title="'Orden de compra ' + purchaseOrder.purchase_order_id" />
 
     <BaseLayout>
         <template #header>
-            <h1>Ordenes de compra</h1>
+            <h1>Orden de compra</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :idSection="purchaseOrder.purchase_order_id" :subtitle="moment(purchaseOrder.created_at).format('DD/MM/Y')">
             <template #headerSection>
-                <strong>Ordenes de compra</strong>
+                <strong>Orden de compra</strong>
             </template>
             <div class="container">
+                <div class="row">
+                    <div class="col-6 p-2 cardboxprais cardpurcheorder">
+                        <strong>Proveedor: </strong>
+                        <span>{{ props.purchaseOrder.product_entry_order[0].product.supplier.name }}</span><br>
+                        <strong>Nit: </strong>
+                        <span>{{ props.purchaseOrder.product_entry_order[0].product.supplier.nit }}</span><br>
+                        <strong>Pais: </strong>
+                        <span>{{ props.purchaseOrder.product_entry_order[0].product.supplier.country }}</span><br>
+                        <strong>Contacto: </strong>
+                        <a :href="'mailto:'+purchaseOrder.product_entry_order[0].product.supplier.email">{{ props.purchaseOrder.product_entry_order[0].product.supplier.email }}</a><br>
+                        <strong>Orden de compra: </strong>
+                        <span>{{ props.purchaseOrder.supplier_order }}</span><br>
+                    </div>
+                </div>
                 <Table :data="purchaseOrder.product_entry_order" :columns="columnsTable" />
+                <div class="row my-5 text-center">
+                    <div class="col">
+                        <PrimaryButton :href="route('orders.list')" class="px-5">
+                            Volver
+                        </PrimaryButton>
+                    </div>
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>
