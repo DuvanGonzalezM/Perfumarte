@@ -64,7 +64,7 @@ const props = defineProps({
                     icon-class="fa-sharp-duotone fa-solid fa-rectangle-list" />
             </div>
             <div class="col-md-4">
-                <InformationCard title="Solicitudes pendientes transformaciones" number="30"
+                <InformationCard title="Solicitudes pendientes transformaciones" :number="props.pendingTransformation.length"
                     icon-class="fa-solid fa-flask" />
             </div>
             <div class="col-md-4">
