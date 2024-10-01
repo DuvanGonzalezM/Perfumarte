@@ -38,14 +38,15 @@ class PurchaseOrderController extends Controller
         ]);
 
         foreach ($request->references as $reference) {
-            $warehouse = 1;
-            if (strtoupper($reference['unity']) != 'KG') {
+            $warehouse = 3;
+            if (strtoupper($reference['unity']) == 'KG') {
                 $warehouse = 3;
+                $reference['quantity'] *= 1000;
             }
 
             $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
             if ($inventory) {
-                $quantity = $inventory->quantity + ($reference['quantity'] * 1000);
+                $quantity = $inventory->quantity + $reference['quantity'];
                 Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->update([
                     'quantity' => $quantity
                 ]);
@@ -53,7 +54,7 @@ class PurchaseOrderController extends Controller
                 Inventory::create([
                     'warehouse_id' => $warehouse,
                     'product_id' => $reference['reference'],
-                    'quantity' => ($reference['quantity'] * 1000)
+                    'quantity' => $reference['quantity']
                 ]);
             }
 
