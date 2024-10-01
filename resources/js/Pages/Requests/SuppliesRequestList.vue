@@ -59,7 +59,7 @@ const columnsTable = [
                 <strong>Solicitud Insumos</strong>
             </template>
             <div class="container">
-                <Table :data="suppliesRequest" :columns="columnsTable" />
+                <Table class="size-prais-5" :data="suppliesRequest" :columns="columnsTable" />
             </div>
         </SectionCard>
     </BaseLayout>

@@ -9,29 +9,25 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-    detailRequest: {
+    requestPrais: {
+        type: Object,
+        required: true,
+    },
+    details: {
         type: Array,
+        required: true,
     },
 });
 
 const columnsTable = [
     {
-        data: '',
-        title: 'REFERENCIA / INSUMO'
+        data: 'inventory[0].product[0].reference',
+        title: 'REFERENCIA / INSUMO',
     },
     {
-        data: '',
+        data: 'quantity',
         title: 'CANTIDAD'
     },
-    {
-        data: "created_at",
-        title: 'Fecha de registro',
-        render: function (data) {
-            const formattedDate = moment(data).format('DD/MM/Y');
-            return formattedDate;
-        }
-    },
-
 ];
 
 </script>
@@ -42,7 +38,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
             <h1>Detalle de Solicitud</h1>
         </template>
 
@@ -51,9 +46,26 @@ const columnsTable = [
                 <strong>Detalle de Solicitud</strong>
             </template>
             <div class="container">
-
-                <Table :data="detailRequest" :columns="columnsTable" />
+                <div class="cardboxprais row" >
+                    <div class="col-md-4 py-3">
+                        <strong>Sede</strong><br>
+                        <span>{{ props.requestPrais.user?.location?.name || 'No disponible' }}</span>
+                    </div>
+                    <div class="col-md-4 py-3">
+                        <strong>Usuario</strong><br>
+                        <span>{{ props.requestPrais.user?.username || 'No disponible' }}</span>
+                    </div>
+                    <div class="col-md-4 py-3">
+                        <strong>Fecha</strong><br>
+                        <span>{{ moment(props.requestPrais.created_at).format('DD/MM/Y')
+                            }}</span>
+                    </div>
+                </div>
+                <Table :data="details" :columns="columnsTable" />
             </div>
+            <PrimaryButton :href="route('suppliesrequest.list')" style="margin-right: 20px;">
+                Volver
+            </PrimaryButton>
         </SectionCard>
     </BaseLayout>
 </template>
