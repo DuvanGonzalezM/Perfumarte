@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Request extends Model
+class RequestPrais extends Model
 {
     use HasFactory;
+    protected $table = 'requests';
 
     protected $primaryKey = 'request_id';
 
