@@ -4,9 +4,6 @@
     background-color: $bacgroundComponent !important;
 
     i {
-        position: absolute;
-        top: 29px;
-        left: 21px;
         font-size: 30px;
     }
 
@@ -18,13 +15,16 @@
         height: 90px;
         border-radius: 10px !important;
         background: $gradient !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
     .text-card {
         position: absolute;
         top: 5px;
-        left: 170px;
-        width: 100px;
+        left: 120px;
+        width: 150px;
         font-size: 17px;
         font-family: monserrat !important;
         color: aliceblue !important;
