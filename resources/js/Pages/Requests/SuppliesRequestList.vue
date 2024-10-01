@@ -1,7 +1,5 @@
 <script setup>
-import Alert from '@/Components/Alert.vue';
-import Notification from '@/Components/Notification.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
@@ -9,33 +7,37 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-        purchaseOrders: {
+    suppliesRequest: {
         type: Array,
     },
 });
 
 const columnsTable = [
     {
-        data: 'purchase_order_id',
-        title: 'CODIGO'
+        data: 'request_id',
+        title: 'CODIGO SOLICITUD'
     },
     {
-        data: 'product_entry_order.0.product.supplier.name',
-        title: 'PROVEEDOR'
+        data: 'user.username',
+        title: 'SOLICITADO POR'
+    },
+    {
+        data: 'user.location.name',
+        title: 'SEDE'
     },
     {
         data: "created_at",
-        title: 'FECHA DE REGISTRO',
+        title: 'FECHA DE SOLICITUD',
         render: function (data) {
             const formattedDate = moment(data).format('DD/MM/Y');
             return formattedDate;
         }
     },
     {
-        data: "purchase_order_id",
+        data: "request_id",
         title: 'DETALLE',
         render: function (data) {
-            return '<a href="'+ route("orders.detail", data) +'"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("suppliesrequest.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
         }
     },
 ];
@@ -44,22 +46,20 @@ const columnsTable = [
 
 <template>
 
-    <Head title="Ordenes de compra" />
+    <Head title="Solicitud de Insumos" />
 
     <BaseLayout>
         <template #header>
-            <h1>Ordenes de compra</h1>
+            <!-- <Alert /> -->
+            <h1>Solicitud Insumos</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Ordenes de compra</strong>
+                <strong>Solicitud Insumos</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('orders.create')" class="position-absolute">
-                    Nuevo registro
-                </PrimaryButton>
-                <Table :data="purchaseOrders" :columns="columnsTable" />
+                <Table class="size-prais-5" :data="suppliesRequest" :columns="columnsTable" />
             </div>
         </SectionCard>
     </BaseLayout>
