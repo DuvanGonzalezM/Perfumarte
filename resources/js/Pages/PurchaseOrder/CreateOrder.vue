@@ -1,4 +1,5 @@
 <script setup>
+import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
@@ -20,34 +21,56 @@ const form = useForm({
             'reference': '',
             'quantity': '',
             'batch': '',
+            'unity': '',
         }
     ],
 });
-const unity = ref('KG');
-const productsAll = ref(props.suppliers[0].products);
-const products = productsAll;
-const selectProduct = ref(products.value.slice(0, 1)[0].product_id);
+const products = ref(props.suppliers[0].products);
 const optionSuppliers = ref(props.suppliers.map((supplier, index) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
 const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
-const selectedSupplier = () => {
-    if (form.supplier != null) {
-        optionProduts.value = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]);
-    }
-}
+const showAddButtom = ref(form.references.length < optionProduts.value.length);
+
 const submit = () => {
     form.post(route('orders.store'));
 };
 
-const addReference = () => {
-    form.references.push({
+const selectedSupplier = () => {
+    form.references = [{
         'reference': '',
         'quantity': '',
         'batch': '',
-    });
+        'unity': '',
+    }];
+    showAddButtom.value = form.references.length < optionProduts.value.length;
+    if (form.supplier != null) {
+        optionProduts.value = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]);
+    }
+}
+
+const selectedReference = (reference) => {
+    if (form.supplier != null) {
+        let product = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference);
+        if (product) {
+            reference.unity = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference).measurement_unit;
+        }
+    }
+}
+
+const addReference = () => {
+    showAddButtom.value = form.references.length < (optionProduts.value.length - 1);
+    if (form.references.length < optionProduts.value.length) {
+        form.references.push({
+            'reference': '',
+            'quantity': '',
+            'batch': '',
+            'unity': '',
+        });
+    }
 }
 
 const removeReference = (index) => {
     form.references.splice(index, 1);
+    showAddButtom.value = form.references.length < optionProduts.value.length;
 }
 </script>
 
@@ -65,38 +88,41 @@ const removeReference = (index) => {
                 <strong>Nueva registro</strong>
             </template>
             <div class="container px-0">
-                <form class="table-prais">
+                <form  @submit.prevent="submit" class="table-prais">
                     <div class="row">
                         <div class="col-md-6 py-3 align-middle">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"
-                                :change="selectedSupplier()" labelValue="Proveedor"/>
+                                :changeFunction="selectedSupplier" labelValue="Proveedor" />
                         </div>
                         <div class="col-md-6 py-3 align-middle">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
-                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" />
+                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" :required="true" />
                         </div>
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-3 align-middle">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 align-middle">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
-                                <th>CANTIDAD (KG)</th>
                                 <th>N° LOTE</th>
+                                <th>CANTIDAD</th>
+                                <th>UNIDAD DE MEDIDA</th>
                             </tr>
                         </thead>
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references">
                                 <td>
-                                    <SelectSearch v-model="form.references[index]['reference']"
-                                        :options="optionProduts" />
+                                    <SelectSearch v-model="reference['reference']" :options="optionProduts"
+                                        :changeFunction="selectedReference(reference)" />
+                                </td>
+                                <td>
+                                    <TextInput type="number" name="batch[]" id="batch[]" v-model="reference['batch']" :required="true" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="form.references[index]['quantity']" />
+                                        v-model="reference['quantity']" :required="true" />
                                 </td>
                                 <td>
-                                    <TextInput type="number" name="batch[]" id="batch[]"
-                                        v-model="form.references[index]['batch']" />
+                                    {{ reference.unity }}
                                 </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
@@ -105,7 +131,7 @@ const removeReference = (index) => {
                         </tbody>
                     </table>
                     <div class="row text-center justify-content-center my-5">
-                        <div class="addItem" @click="addReference">
+                        <div class="addItem" @click="addReference" v-if="showAddButtom">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                     </div>
