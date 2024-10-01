@@ -38,10 +38,10 @@ import { Link } from '@inertiajs/vue3';
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar href="#">
+                <ButtonSidebar :href="route('transformationRequest.list')" :class="{'active': $page.component.startsWith('RequestTransformation')}">
                     <i class="fa-solid fa-flask me-4 "></i>
                     Transformaciones
-                </ButtonSidebar>
+                </ButtonSidebar>  
             </li>
             <li>
                 <ButtonSidebar href="#">

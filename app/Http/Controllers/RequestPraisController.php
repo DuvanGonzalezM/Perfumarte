@@ -11,7 +11,7 @@ class RequestPraisController extends Controller
 {
     public function getAllRequest()
     {
-        $suppliesRequest = RequestPrais::with('user.location')->get();
+        $suppliesRequest = RequestPrais::with('user.location')->where('request_type', '=', '1')->get();
         return Inertia::render('Requests/SuppliesRequestList', props: ['suppliesRequest' => $suppliesRequest]);
     }
     public function detailRequest($requestId)
@@ -25,5 +25,11 @@ class RequestPraisController extends Controller
             'requestPrais' => $suppliesRequest,
             'details' => $suppliesRequest->detailRequest
         ]);
+    }
+
+    public function getAllRequestTransformation()
+    {
+        $transformationRequest = RequestPrais::where('request_type', '=', '2')->get();
+        return Inertia::render('RequestTransformation/TransformationRequestList', props: ['transformationRequest' => $transformationRequest]);
     }
 }
