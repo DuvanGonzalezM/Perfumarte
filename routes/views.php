@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestPraisController;
 use Illuminate\Support\Facades\Route;
@@ -12,4 +13,6 @@ Route::middleware('auth')->group(function () {
     Route::put('ordenes compra/update orden/{orderId}', [PurchaseOrderController::class,'updateOrders'])->name('orders.update');
     Route::get('solicitudes insumos', [RequestPraisController::class, 'getAllRequest'])->name('suppliesrequest.list');
     Route::get('detalle solicitudes insumos/{requestId}', [RequestPraisController::class, 'detailRequest'])->name('suppliesrequest.detail');
+    Route::get('despachos', [DispatchController::class, 'getAllDispatch'])->name('dispatch.list');
+    Route::get('detalle despachos/{dispatchId}', [DispatchController::class, 'detailDispatch'])->name('dispatch.detail');
 });

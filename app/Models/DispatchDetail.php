@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class DispatchDetail extends Model
 {
     use HasFactory;
+    protected $table = 'dispatches_detail';
 
     protected $primaryKey = 'dispatchs_detail_id';
 
