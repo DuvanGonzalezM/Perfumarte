@@ -22,11 +22,11 @@ class Warehouse extends Model
     ];
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, foreignKey:'location:_id');
+        return $this->belongsTo(Location::class, 'location:_id');
     }
 
     public function inventory(): BelongsTo
     {
-        return $this->belongsTo(Inventory::class,foreignKey:'warehouse_id');
+        return $this->belongsTo(Inventory::class,'warehouse_id');
     }
 }

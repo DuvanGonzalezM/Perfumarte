@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dispatch extends Model
 {
@@ -20,8 +20,8 @@ class Dispatch extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function dispatchDetail(): BelongsTo
+    public function dispatchDetail(): HasMany
     {
-        return $this->belongsTo(DispatchDetail::class,'dispatch_id');
+        return $this->hasMany(DispatchDetail::class,'dispatch_id');
     }
 }

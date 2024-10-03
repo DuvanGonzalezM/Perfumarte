@@ -71,7 +71,7 @@ class PurchaseOrderController extends Controller
 
     public function detailOrder($orderId)
     {
-        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', '=', $orderId)->first();
+        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->findOrFail($orderId);
         if ($purchaseOrder) {
             return Inertia::render('PurchaseOrder/OrderDetail', ['purchaseOrder' => $purchaseOrder]);
         } else {
