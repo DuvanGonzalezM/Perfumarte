@@ -40,16 +40,16 @@ class User extends Authenticatable
 
     public function rol(): BelongsTo
     {
-        return $this->belongsTo(Rol::class, foreignKey:'rol_id');
+        return $this->belongsTo(Rol::class, 'rol_id');
     }
 
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, foreignKey:'location_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function request(): HasMany
     {
-        return $this->hasMany(Request::class,foreignKey:'user_id');
+        return $this->hasMany(Request::class, 'user_id');
     }
 }

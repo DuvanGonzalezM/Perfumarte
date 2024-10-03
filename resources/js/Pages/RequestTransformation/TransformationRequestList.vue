@@ -59,7 +59,7 @@ const columnsTable = [
             </template>
             <div class="container">
                 <div class="container">
-                    <PrimaryButton :href="route('orders.create')" class="position-absolute">
+                    <PrimaryButton :href="route('transformation.create')" class="position-absolute">
                         Nuevo Registro
                     </PrimaryButton>
                 </div>
