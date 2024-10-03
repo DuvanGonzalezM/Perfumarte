@@ -15,12 +15,12 @@ import { Link } from '@inertiajs/vue3';
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
                 <ButtonSidebar :href="route('dashboard')" :class="{'active': $page.component.startsWith('Dashboard')}">
-                    <i class="fa-solid fa-house-chimney me-4 i"></i>
+                    <i class="fa-solid fa-house-chimney me-4 "></i>
                     Inicio
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('ChiefOperating')}">
+                <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('PurchaseOrder')}">
                     <i class="fa-solid fa-rectangle-list me-4 i"></i>
                     Ordenes de compra
                 </ButtonSidebar>
@@ -39,13 +39,13 @@ import { Link } from '@inertiajs/vue3';
             </li>
             <li>
                 <ButtonSidebar href="#">
-                    <i class="fa-solid fa-flask me-4 i"></i>
+                    <i class="fa-solid fa-flask me-4 "></i>
                     Transformaciones
                 </ButtonSidebar>
             </li>
             <li>
                 <ButtonSidebar href="#">
-                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4 i"></i>
+                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4 "></i>
                     Stock
                 </ButtonSidebar>
             </li>

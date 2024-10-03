@@ -33,9 +33,9 @@ class Inventory extends Model
         return $this->hasMany(Warehouse::class,'warehouse_id');
     }
 
-    public function requestDetail(): BelongsTo
+    public function requestDetail(): HasMany
     {
-        return $this->belongsTo(RequestDetail::class,'inventory_id');
+        return $this->hasMany(RequestDetail::class,'inventory_id');
     }
 
     public function product(): HasMany
@@ -48,8 +48,8 @@ class Inventory extends Model
         return $this->belongsTo(Transformation::class,'inventory_id');
     }
 
-    public function detailDispatch(): BelongsTo
+    public function detailDispatch(): HasMany
     {
-        return $this->belongsTo(DispatchDetail::class,'inventory_id');
+        return $this->hasMany(DispatchDetail::class,'inventory_id');
     }
 }

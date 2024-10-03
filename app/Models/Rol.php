@@ -21,6 +21,6 @@ class Rol extends Model
 
     public function user(): HasMany 
     {
-        return $this->hasMany(User::class, foreignKey:'rol_is');
+        return $this->hasMany(User::class, 'rol_id');
     }
 }

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RequestDetail extends Model
 {
@@ -26,11 +25,11 @@ class RequestDetail extends Model
 
     public function Request(): BelongsTo
     {
-        return $this->belongsTo(RequestPrais::class, foreignKey:'request_id');
+        return $this->belongsTo(RequestPrais::class,  'request_id');
     }
 
-    public function inventory(): HasMany
+    public function inventory(): BelongsTo
     {
-        return $this->hasMany(Inventory::class,foreignKey:'inventory_id');
+        return $this->belongsTo(Inventory::class, 'inventory_id');
     }
 }

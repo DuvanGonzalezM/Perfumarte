@@ -41,17 +41,6 @@
         }
     }
 
-    .size-prais-3 {
-        th {
-            width: calc(100%/3) !important;
-        }
-    }
-
-    .size-prais-5 {
-        th {
-            width: calc(100%/5) !important;
-        }
-    }
     .dt-search {
         label {
             display: none !important;
@@ -60,5 +49,23 @@
 
     .row {
         align-items: center !important;
+    }
+
+    .size-prais-3 {
+        th {
+            width: calc(100%/2.5) !important;
+        }
+    }
+
+    .size-prais-4 {
+        th {
+            width: calc(100%/3.5) !important;
+        }
+    }
+
+    .size-prais-5 {
+        th {
+            width: calc(100%/5) !important;
+        }
     }
 }

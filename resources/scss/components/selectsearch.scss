@@ -13,14 +13,34 @@
     color: $textBlack !important;
   }
 
+  .v-select:not(.vs--open) .vs__selected+.vs__search {
+    width: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    height: 0;
+  }
+
+  .vs__selected-options {
+    width: 0;
+  }
+
+  .vs__selected {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
   label {
-    top: 10px !important;
+    top: 6px !important;
     left: 10px !important;
     transition: all 0.2s ease-in-out !important;
   }
 
   .focus+label {
-    top: -15.5px !important;
+    top: -17.5px !important;
     left: 3px !important;
     font-size: 13px !important;
     color: $textBlack !important;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\ProductEntry;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
@@ -10,20 +11,19 @@ use App\Models\RequestDetail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Redirect;
 
 class PurchaseOrderController extends Controller
 {
     public function getAllOrders()
     {
         $purchaseOrders = PurchaseOrder::with('productEntryOrder.product.supplier')->get();
-        return Inertia::render('ChiefOperating/OrdersList', props: ['purchaseOrders' => $purchaseOrders]);
+        return Inertia::render('PurchaseOrder/OrdersList', ['purchaseOrders' => $purchaseOrders]);
     }
 
     public function createOrder()
     {
         $suppliers = Supplier::with('products')->get();
-        return Inertia::render('ChiefOperating/CreateOrder', ['suppliers' => $suppliers]);
+        return Inertia::render('PurchaseOrder/CreateOrder', ['suppliers' => $suppliers]);
     }
 
     public function storeOrder(Request $request)
@@ -33,12 +33,31 @@ class PurchaseOrderController extends Controller
             'supplier_order' => 'required',
             'references' => 'required|array',
         ]);
-
         $purchaseOrder = PurchaseOrder::create([
             'supplier_order' => $request->supplier_order
         ]);
 
         foreach ($request->references as $reference) {
+            $warehouse = 3;
+            if (strtoupper($reference['unity']) == 'KG') {
+                $warehouse = 3;
+                $reference['quantity'] *= 1000;
+            }
+
+            $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
+            if ($inventory) {
+                $quantity = $inventory->quantity + $reference['quantity'];
+                Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->update([
+                    'quantity' => $quantity
+                ]);
+            } else{
+                Inventory::create([
+                    'warehouse_id' => $warehouse,
+                    'product_id' => $reference['reference'],
+                    'quantity' => $reference['quantity']
+                ]);
+            }
+
             ProductEntry::create([
                 'purchase_order_id' => $purchaseOrder->purchase_order_id,
                 'product_id' => $reference['reference'],
@@ -47,14 +66,23 @@ class PurchaseOrderController extends Controller
             ]);
         }
 
-        return redirect()->route('orders.list');
+        return redirect()->route('orders.list', ['message' => '', 'status' => 200]);
     }
 
+    public function detailOrder($orderId)
+    {
+        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->findOrFail($orderId);
+        if ($purchaseOrder) {
+            return Inertia::render('PurchaseOrder/OrderDetail', ['purchaseOrder' => $purchaseOrder]);
+        } else {
+            return redirect()->route('orders.list');
+        }
+    }
     public function editOrders($orderId)
     {
         $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', '=', $orderId)->get();
         if (!$purchaseOrder->isEmpty()) {
-            return Inertia::render('ChiefOperating/EditOrders', ['purchaseOrder' => $purchaseOrder[0]]);
+            return Inertia::render('PurchaseOrder/EditOrders', ['purchaseOrder' => $purchaseOrder[0]]);
         } else {
             return redirect()->route('orders.list');
         }
