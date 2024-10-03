@@ -16,7 +16,7 @@ const props = defineProps({
 
 const columnsTable = [
     {
-        data: 'inventory.0.product.0.reference',
+        data: 'inventory.product.0.reference',
         title: 'REFERENCIA / INSUMO',
     },
     {

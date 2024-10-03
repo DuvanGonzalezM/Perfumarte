@@ -4,15 +4,15 @@
     background-color: $backgroundComponent !important;
 
     i {
-        font-size: 30px;
+        font-size: 30px !important;
     }
 
     .over-card {
-        position: absolute;
-        top: -30px;
-        left: 25px;
-        width: 80px;
-        height: 90px;
+        position: absolute !important;
+        top: -30px !important;
+        left: 25px !important;
+        width: 80px !important;
+        height: 90px !important;
         border-radius: 10px !important;
         background: $gradient !important;
         display: flex !important;
@@ -21,16 +21,19 @@
     }
 
     .text-card {
-        position: absolute;
-        top: 5px;
-        left: 120px;
-        width: 150px;
-        font-size: 17px;
-        font-family: monserrat !important;
-        color: aliceblue !important;
+        position: absolute !important;
+        top: 5px !important;
+        right: 0 !important;
+        width: 180px !important;
+        font-size: 17px !important;
+        color: $textWhite !important;
+    }
 
-        div {
-            font-size: 30px !important;
-        }
+    .number{
+        color: $textWhite !important;
+        position: absolute !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        font-size: 30px !important;
     }
 }

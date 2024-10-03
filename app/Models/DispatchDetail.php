@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DispatchDetail extends Model
 {
@@ -22,13 +22,13 @@ class DispatchDetail extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function dispatch(): HasMany
+    public function dispatch(): BelongsTo
     {
-        return $this->hasMany(Dispatch::class,'dispatch_id');
+        return $this->belongsTo(Dispatch::class,'dispatch_id');
     }
 
-    public function inventory(): HasMany
+    public function inventory(): BelongsTo
     {
-        return $this->hasMany(Inventory::class,'inventory_id');
+        return $this->belongsTo(Inventory::class,'inventory_id');
     }
 }

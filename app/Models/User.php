@@ -50,6 +50,6 @@ class User extends Authenticatable
 
     public function request(): HasMany
     {
-        return $this->hasMany(Request::class, 'user_id');
+        return $this->hasMany(RequestPrais::class,'user_id');
     }
 }
