@@ -28,45 +28,49 @@ class PurchaseOrderController extends Controller
 
     public function storeOrder(Request $request)
     {
-        $request->validate([
-            'supplier' => 'required',
-            'supplier_order' => 'required',
-            'references' => 'required|array',
-        ]);
-        $purchaseOrder = PurchaseOrder::create([
-            'supplier_order' => $request->supplier_order
-        ]);
-
-        foreach ($request->references as $reference) {
-            $warehouse = 3;
-            if (strtoupper($reference['unity']) == 'KG') {
-                $warehouse = 3;
-                $reference['quantity'] *= 1000;
-            }
-
-            $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
-            if ($inventory) {
-                $quantity = $inventory->quantity + $reference['quantity'];
-                Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->update([
-                    'quantity' => $quantity
-                ]);
-            } else{
-                Inventory::create([
-                    'warehouse_id' => $warehouse,
-                    'product_id' => $reference['reference'],
-                    'quantity' => $reference['quantity']
-                ]);
-            }
-
-            ProductEntry::create([
-                'purchase_order_id' => $purchaseOrder->purchase_order_id,
-                'product_id' => $reference['reference'],
-                'quantity' => $reference['quantity'],
-                'batch' => $reference['batch']
+        try {
+            $request->validate([
+                'supplier' => 'required',
+                'supplier_order' => 'required',
+                'references' => 'required|array',
             ]);
+            $purchaseOrder = PurchaseOrder::create([
+                'supplier_order' => $request->supplier_order
+            ]);
+    
+            foreach ($request->references as $reference) {
+                $warehouse = 3;
+                if (strtoupper($reference['unity']) == 'KG') {
+                    $warehouse = 1;
+                    $reference['quantity'] *= 1000;
+                }
+    
+                $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
+                if ($inventory) {
+                    $quantity = $inventory->quantity + $reference['quantity'];
+                    $inventory->update([
+                        'quantity' => $quantity
+                    ]);
+                } else{
+                    Inventory::create([
+                        'warehouse_id' => $warehouse,
+                        'product_id' => $reference['reference'],
+                        'quantity' => $reference['quantity']
+                    ]);
+                }
+    
+                ProductEntry::create([
+                    'purchase_order_id' => $purchaseOrder->purchase_order_id,
+                    'product_id' => $reference['reference'],
+                    'quantity' => $reference['quantity'],
+                    'batch' => $reference['batch']
+                ]);
+            }
+    
+            return redirect()->route('orders.list', ['message' => '', 'status' => 200]);
+        } catch (\ErrorException $e) {
+            dd($e);
         }
-
-        return redirect()->route('orders.list', ['message' => '', 'status' => 200]);
     }
 
     public function detailOrder($orderId)
