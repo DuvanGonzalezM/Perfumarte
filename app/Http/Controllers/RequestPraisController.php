@@ -48,7 +48,9 @@ class RequestPraisController extends Controller
     // }
 
      public function createTransformation(){
+         
       $inventories = Inventory::with('product')->where('warehouse_id', '=', '1')->get();
+      
       return Inertia::render('RequestTransformation/CreateTransformation', ['inventories' => $inventories]);
     }
 }

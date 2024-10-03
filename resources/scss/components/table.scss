@@ -12,7 +12,7 @@
     }
 
     .removeItem {
-        margin-top: 50% !important;
+        margin-top: 9px !important;
         color: $textBlack !important;
         cursor: pointer !important;
     }
@@ -49,6 +49,12 @@
 
     .row {
         align-items: center !important;
+    }
+
+    .size-prais-2 {
+        th {
+            width: calc(100%/1.5) !important;
+        }
     }
 
     .size-prais-3 {
