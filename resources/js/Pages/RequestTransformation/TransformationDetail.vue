@@ -16,7 +16,7 @@ const props = defineProps({
 
 const columnsTable = [
     {
-        data: 'inventory.product.0.reference',
+        data: 'inventory.product.reference',
         title: 'REFERENCIA',
     },
     {
@@ -36,7 +36,7 @@ const columnsTable = [
             <h1>Detalle de Transformacion</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :idSection="transformationRequest.request_id" :subtitle="moment(transformationRequest.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Detalle de Transformacion</strong>
             </template>
