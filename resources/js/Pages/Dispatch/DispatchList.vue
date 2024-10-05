@@ -30,13 +30,13 @@ const columnsTable = [
         title: 'ESTADO'
     },
 
-    {
-        data: "dispatch_id",
-        title: 'DETALLE',
-        render: function (data) {
-            return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
-        }
-    },
+    // {
+    //     data: "dispatch_id",
+    //     title: 'DETALLE',
+    //     render: function (data) {
+    //         return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+    //     }
+   
 ];
 
 </script>

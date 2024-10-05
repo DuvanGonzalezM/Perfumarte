@@ -39,34 +39,29 @@ const columnsTable = [
             <h1>Detalle de Solicitud</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :idSection="requestPrais.request_id" :subtitle="moment(requestPrais.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Detalle de Solicitud</strong>
             </template>
             <div class="container">
-                <div class="cardboxprais row mb-5">
-                    <div class="col-4 py-3">
-                        <strong>Sede</strong><br>
-                        <span>{{ props.requestPrais.user?.location?.name || 'No disponible' }}</span>
-                    </div>
-                    <div class="col-4 py-3">
-                        <strong>Usuario</strong><br>
-                        <span>{{ props.requestPrais.user?.username || 'No disponible' }}</span>
-                    </div>
-                    <div class="col-4 py-3">
-                        <strong>Fecha</strong><br>
-                        <span>{{ moment(props.requestPrais.created_at).format('DD/MM/Y') }}</span>
-                    </div>
-                </div>
-                <Table :data="details" :columns="columnsTable" />
-                <div class="row my-5 text-center">
-                    <div class="col">
-                        <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">
-                            Volver
-                        </PrimaryButton>
-                    </div>
+                <div class="col-6 p-2 cardboxprais cardpurcheorder">
+                    <strong>Sede: </strong>
+                    <span>{{ props.requestPrais.user?.location?.name || 'No disponible' }}</span><br>
+                    <strong>Usuario: </strong>
+                    <span>{{ props.requestPrais.user?.username || 'No disponible' }}</span><br>
+                    <strong>Fecha: </strong>
+                    <span>{{ moment(props.requestPrais.created_at).format('DD/MM/Y') }}</span>
                 </div>
             </div>
+            <Table :data="details" :columns="columnsTable" />
+            <div class="row my-5 text-center">
+                <div class="col">
+                    <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">
+                        Volver
+                    </PrimaryButton>
+                </div>
+            </div>
+
         </SectionCard>
     </BaseLayout>
 </template>
