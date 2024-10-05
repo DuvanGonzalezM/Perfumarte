@@ -50,7 +50,7 @@ const columnsTable = [
                     <span>{{ moment(props.requestPrais.created_at).format('DD/MM/Y') }}</span>
                 </div>
             </div>
-            <Table :data="details" :columns="columnsTable" />
+            <Table :data="requestPrais.detail_request" :columns="columnsTable" />
             <div class="row my-5 text-center">
                 <div class="col">
                     <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">

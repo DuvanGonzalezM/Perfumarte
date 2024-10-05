@@ -42,15 +42,15 @@ const props = defineProps({
         <!-- Contenedor con clases de Bootstrap para organizar horizontalmente -->
         <div class="row mt-5">
             <div class="col-md-4 ">
-                <InformationCard title="Stock bodega 1" :number="props.inventory.length"
+                <InformationCard title="Stock bodega 1 Referencias:" :number=" props.inventory.length"
                     icon-class="fa-solid fa-warehouse" />
             </div>
             <div class="col-md-4">
-                <InformationCard title="Stock bodega 2" :number="props.inventory2.length"
+                <InformationCard title="Stock bodega 2 Referencias:" :number="props.inventory2.length"
                     icon-class="fa-solid fa-box" />
             </div>
             <div class="col-md-4">
-                <InformationCard title="Stock almacen" :number="props.inventoryAlmacen.length"
+                <InformationCard title="Stock almacen Articulos:" :number="props.inventoryAlmacen.length"
                     icon-class="fa-solid fa-box-archive" />
             </div>
         </div>
