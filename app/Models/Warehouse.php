@@ -22,7 +22,7 @@ class Warehouse extends Model
     ];
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'location:_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function inventory(): BelongsTo

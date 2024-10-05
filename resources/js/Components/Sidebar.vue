@@ -13,39 +13,39 @@ import { Link } from '@inertiajs/vue3';
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
+            <li>
                 <ButtonSidebar :href="route('dashboard')" :class="{'active': $page.component.startsWith('Dashboard')}">
-                    <i class="fa-solid fa-house-chimney me-4 "></i>
+                    <i class="fa-solid fa-house-chimney me-4"></i>
                     Inicio
                 </ButtonSidebar>
             </li>
             <li>
                 <ButtonSidebar :href="route('orders.list')" :class="{'active': $page.component.startsWith('PurchaseOrder')}">
-                    <i class="fa-solid fa-rectangle-list me-4 i"></i>
+                    <i class="fa-solid fa-rectangle-list me-4"></i>
                     Ordenes de compra
                 </ButtonSidebar>
             </li>
             <li>
                 <ButtonSidebar href="#">
-                    <i class="fa-solid fa-truck me-4 "></i>
+                    <i class="fa-solid fa-truck me-4"></i>
                     Despachos
                 </ButtonSidebar>
             </li>
             <li>
                 <ButtonSidebar :href="route('suppliesrequest.list')" :class="{'active': $page.component.startsWith('Requests')}">
-                    <i class="fa-brands fa-wpforms me-4 i"></i>
+                    <i class="fa-brands fa-wpforms me-4"></i>
                     Solicitud insumos
                 </ButtonSidebar>
             </li>
             <li>
                 <ButtonSidebar href="#">
-                    <i class="fa-solid fa-flask me-4 "></i>
+                    <i class="fa-solid fa-flask me-4"></i>
                     Transformaciones
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar href="#">
-                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4 "></i>
+                <ButtonSidebar :href="route('stock.dashboard')" :class="{'active': $page.component.startsWith('Stock')}">
+                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4"></i>
                     Stock
                 </ButtonSidebar>
             </li>
