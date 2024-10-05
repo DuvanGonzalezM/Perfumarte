@@ -26,7 +26,7 @@ const form = useForm({
     ],
 });
 const products = ref(props.suppliers[0].products);
-const optionSuppliers = ref(props.suppliers.map((supplier, index) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
+const optionSuppliers = ref(props.suppliers.map((supplier) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
 const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 
@@ -35,16 +35,18 @@ const submit = () => {
 };
 
 const selectedSupplier = () => {
-    form.references = [{
-        'reference': '',
-        'quantity': '',
-        'batch': '',
-        'unity': '',
-    }];
-    showAddButtom.value = form.references.length < optionProduts.value.length;
+    form.references = [
+        {
+            'reference': '',
+            'quantity': '',
+            'batch': '',
+            'unity': '',
+        }
+    ];
     if (form.supplier != null) {
         optionProduts.value = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]);
     }
+    showAddButtom.value = form.references.length < optionProduts.value.length;
 }
 
 const selectedReference = (reference) => {
@@ -59,12 +61,14 @@ const selectedReference = (reference) => {
 const addReference = () => {
     showAddButtom.value = form.references.length < (optionProduts.value.length - 1);
     if (form.references.length < optionProduts.value.length) {
-        form.references.push({
-            'reference': '',
-            'quantity': '',
-            'batch': '',
-            'unity': '',
-        });
+        form.references.push(
+            {
+                'reference': '',
+                'quantity': '',
+                'batch': '',
+                'unity': '',
+            }
+        );
     }
 }
 
@@ -88,7 +92,7 @@ const removeReference = (index) => {
                 <strong>Nueva registro</strong>
             </template>
             <div class="container px-0">
-                <form  @submit.prevent="submit" class="table-prais">
+                <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
                         <div class="col-md-6 py-3 align-middle">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"

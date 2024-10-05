@@ -29,9 +29,6 @@ const props = defineProps({
         type: Array,
     },
 });
-
-
-
 </script>
 
 <template>

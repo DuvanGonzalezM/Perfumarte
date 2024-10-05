@@ -23,7 +23,6 @@ const columnsTable = [
         data: 'null',
         title: 'CANTIDAD',
         render: function (data, type, row) {
-            const formattedDate = moment(data).format('DD/MM/Y');
             return row.quantity + ' ' + row.product.measurement_unit.replace('KG', 'ml');
         }
     },
