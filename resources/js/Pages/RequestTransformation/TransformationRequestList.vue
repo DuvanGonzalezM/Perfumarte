@@ -35,7 +35,7 @@ const columnsTable = [
         data: "request_id",
         title: 'DETALLE',
         render: function (data) {
-            return '<a href="' + route("suppliesrequest.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("transformation.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
         }
     },
 ];

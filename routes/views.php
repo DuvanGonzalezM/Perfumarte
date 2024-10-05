@@ -19,4 +19,6 @@ Route::middleware('auth')->group(function () {
     Route::get('detalle solicitudes insumos/{requestId}', [RequestPraisController::class, 'detailRequest'])->name('suppliesrequest.detail');
     Route::get('transformaciones', [RequestPraisController::class, 'getAllRequestTransformation'])->name('transformationRequest.list');
     Route::get('transformaciones/nueva transformacion', [RequestPraisController::class, 'createTransformation'])->name('transformation.create');
+    Route::post('transformaciones/nueva transformacion', [RequestPraisController::class, 'storeTransformation'])->name('transformation.store');
+    Route::get('detalle solicitud de trasnformacion/{requestId}', [RequestPraisController::class, 'detailTransformation'])->name('transformation.detail');
 });

@@ -22,7 +22,7 @@ const form = useForm({
     ],
 });
 
-const optionProduts = ref(props.inventories.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product.product_id}][0]));
+const optionProduts = ref(props.inventories.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.inventory_id}][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 
 const addRow = () => {
@@ -40,7 +40,7 @@ const removeReference = (index) => {
     showAddButtom.value = form.references.length < optionProduts.value.length;
 }
 const submit = () => {
-    form.post(route('orders.store'));
+    form.post(route('transformation.store'));
 }
 
 </script>
