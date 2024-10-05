@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestPraisController;
@@ -28,10 +29,16 @@ Route::middleware('auth')->group(function () {
         Route::get('stock/multiple bodega', 'getMultipleInventory')->name('stock.multiple');
         Route::get('api/bodega/{warehouse_id}', 'getInventory')->name('api.warehouse');
     });
+    Route::controller(DispatchController::class)->group(function () {
+        Route::get('despachos', [DispatchController::class, 'getAllDispatch'])->name('dispatch.list');
+        Route::get('detalle despachos/{dispatchId}', [DispatchController::class, 'detailDispatch'])->name('dispatch.detail');
+    });
     Route::controller(RequestPraisController::class)->group(function () {
         Route::get('transformaciones', 'getAllRequestTransformation')->name('transformationRequest.list');
         Route::get('transformaciones/nueva transformacion', 'createTransformation')->name('transformation.create');
         Route::post('transformaciones/nueva transformacion', 'storeTransformation')->name('transformation.store');
         Route::get('transformaciones/transformacion/{requestId}', 'detailTransformation')->name('transformation.detail');
+        Route::get('solicitudes insumos', [RequestPraisController::class, 'getAllRequest'])->name('suppliesrequest.list');
+        Route::get('solicitudes insumos/solicitud insumos/{requestId}', [RequestPraisController::class, 'detailRequest'])->name('suppliesrequest.detail');
     });
 });

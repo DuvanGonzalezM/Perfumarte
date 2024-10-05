@@ -41,20 +41,6 @@ const columnsTable = [
                 <strong>Detalle de Transformacion</strong>
             </template>
             <div class="container">
-                <div class="cardboxprais row mb-5">
-                    <div class="col-4 py-3">
-                        <strong>Sede</strong><br>
-                        <span>{{ props.transformationRequest.user?.location?.name || 'No disponible' }}</span>
-                    </div>
-                    <div class="col-4 py-3">
-                        <strong>Usuario</strong><br>
-                        <span>{{ props.transformationRequest.user?.username || 'No disponible' }}</span>
-                    </div>
-                    <div class="col-4 py-3">
-                        <strong>Fecha</strong><br>
-                        <span>{{ moment(props.transformationRequest.created_at).format('DD/MM/Y') }}</span>
-                    </div>
-                </div>
                 <Table :data="transformationRequest.detail_request" :columns="columnsTable" />
                 <div class="row my-5 text-center">
                     <div class="col">

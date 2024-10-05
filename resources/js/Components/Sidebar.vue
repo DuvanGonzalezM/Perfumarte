@@ -26,7 +26,7 @@ import { Link } from '@inertiajs/vue3';
                 </ButtonSidebar>
             </li>
             <li>
-                <ButtonSidebar href="#">
+                <ButtonSidebar :href="route('dispatch.list')" :class="{'active': $page.component.startsWith('Dispatch')}">
                     <i class="fa-solid fa-truck me-4"></i>
                     Despachos
                 </ButtonSidebar>
