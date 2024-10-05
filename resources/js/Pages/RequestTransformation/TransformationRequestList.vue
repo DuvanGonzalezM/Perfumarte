@@ -5,26 +5,24 @@ import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
-    suppliesRequest: {
+    transformationRequest: {
         type: Array,
     },
 });
-    
+
 const columnsTable = [
     {
         data: 'request_id',
         title: 'CODIGO SOLICITUD'
     },
     {
-        data: 'user.username',
-        title: 'SOLICITADO POR'
+        data: 'status',
+        title: 'ESTADO'
     },
-    {
-        data: 'user.location.name',
-        title: 'SEDE'
-    },
+
     {
         data: "created_at",
         title: 'FECHA DE SOLICITUD',
@@ -37,7 +35,7 @@ const columnsTable = [
         data: "request_id",
         title: 'DETALLE',
         render: function (data) {
-            return '<a href="' + route("suppliesrequest.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("transformation.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
         }
     },
 ];
@@ -46,20 +44,26 @@ const columnsTable = [
 
 <template>
 
-    <Head title="Solicitud de Insumos" />
+    <Head title="Solicitud Transformaciones" />
 
     <BaseLayout>
         <template #header>
             <!-- <Alert /> -->
-            <h1>Solicitud Insumos</h1>
+            <h1>Solicitud Transformaciones</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Solicitud Insumos</strong>
+                <strong>Solicitud Transformaciones</strong>
+
             </template>
             <div class="container">
-                <Table class="size-prais-5" :data="suppliesRequest" :columns="columnsTable" />
+                <div class="container">
+                    <PrimaryButton :href="route('transformation.create')" class="position-absolute">
+                        Nuevo Registro
+                    </PrimaryButton>
+                </div>
+                <Table class="size-prais-5" :data="transformationRequest" :columns="columnsTable" />
             </div>
         </SectionCard>
     </BaseLayout>

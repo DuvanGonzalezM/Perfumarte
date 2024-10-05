@@ -28,9 +28,9 @@ class Inventory extends Model
         return $this->hasMany(ChangeWarehouse::class,'inventory_id');
     }
 
-    public function warehouse(): HasMany
+    public function warehouse(): BelongsTo
     {
-        return $this->hasMany(Warehouse::class,'warehouse_id');
+        return $this->belongsTo(Warehouse::class,'warehouse_id');
     }
 
     public function requestDetail(): HasMany
