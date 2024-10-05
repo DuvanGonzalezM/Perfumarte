@@ -50,9 +50,8 @@ import { Link } from '@inertiajs/vue3';
                 </ButtonSidebar>
             </li>
         </ul>
-        <Link :href="route('logout')" method="post" as="button">
-        Log Out
-        </Link>
         <hr>
-    </div>
+        <PrimaryButton :href="route('logout')" method="post">
+            Cerrar Sesión
+        </PrimaryButton>    </div>
 </template>

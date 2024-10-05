@@ -20,8 +20,11 @@ const columnsTable = [
         title: 'REFERENCIA',
     },
     {
-        data: 'quantity',
-        title: 'CANTIDAD'
+        data: 'null',
+        title: 'CANTIDAD',
+        render: function (data, type, row) {
+            return row.quantity + ' ' + row.inventory.product.measurement_unit.replace('KG', 'ml');
+        }
     },
 ];
 
