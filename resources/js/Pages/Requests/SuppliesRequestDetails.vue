@@ -11,15 +11,12 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    details: {
-        type: Array,
-        required: true,
-    },
+   
 });
 
 const columnsTable = [
     {
-        data: 'inventory.product.0.reference',
+        data: 'inventory.product.reference',
         title: 'REFERENCIA / INSUMO',
     },
     {
