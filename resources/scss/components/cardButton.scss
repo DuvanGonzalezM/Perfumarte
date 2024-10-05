@@ -3,6 +3,8 @@
     height: 200px !important;
     background-color: $backgroundComponent !important;
     border: 2.5px solid $borderColor !important;
+    border-radius: 10px !important;
+    transition: transform 0.3s ease-in-out !important;
 
     .card-icon {
         position: absolute;
@@ -14,19 +16,18 @@
     }
 
     i {
-        position: absolute;
-        top: 18px !important;
-        left: 13px !important;
         font-size: 25px !important;
     }
 
     .button-text {
         position: absolute;
-        top: 130px;
+        top: 120px;
         left: 38px;
         width: 6rem;
-        font-family: Montserrat !important;
         font-size: 20px;
-        color: aliceblue;
+        color: $textWhite;
     }
+}
+.button-stock:hover{
+    transform: scale(1.1);
 }

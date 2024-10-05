@@ -27,7 +27,7 @@ class Location extends Model
         return $this->hasMany(User::class,'location_id');
     }
 
-    public function warehouse(): HasMany
+    public function warehouses(): HasMany
     {
         return $this->hasMany(Warehouse::class,'location_id');
     }

@@ -1,12 +1,26 @@
+<script setup>
+const props = defineProps({
+    title: {
+        type: String,
+    },
+    icon: {
+        type: String,
+    },
+    link: {
+        type: String,
+    }
+});
+
+</script>
 <template>
-    <div class="card mb-3 d-flex text-end button-stock">
-        <div class="card-body">
-            <div class="card card-icon">
-                <div class="card-header">
-                    <i class="fa-solid fa-warehouse"></i>
+    <div>
+        <a class="card mb-3 d-flex text-end button-stock mx-auto" :href="link">
+            <div class="card-body">
+                <div class="card card-icon text-center justify-content-center">
+                    <i class="fa-solid " :class="icon"></i>
                 </div>
+                <div class="card-text button-text">{{ props.title }}</div>
             </div>
-            <div class="card-text button-text">Bodega 1</div>
-        </div>
+        </a>
     </div>
 </template>
