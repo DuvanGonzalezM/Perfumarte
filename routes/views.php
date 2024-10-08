@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -40,5 +41,12 @@ Route::middleware('auth')->group(function () {
         Route::get('transformaciones/transformacion/{requestId}', 'detailTransformation')->name('transformation.detail');
         Route::get('solicitudes insumos', [RequestPraisController::class, 'getAllRequest'])->name('suppliesrequest.list');
         Route::get('solicitudes insumos/solicitud insumos/{requestId}', [RequestPraisController::class, 'detailRequest'])->name('suppliesrequest.detail');
+    });
+    Route::controller(UserController::class)->group(function () {
+        Route::get('users', 'getUsers')->name('users.list');
+        Route::get('users/{user_id}', 'detailUser')->name('users.detail');
+        Route::get('permissions', 'getPermissions')->name('permissions.list');
+        Route::post('permissions', 'storePermission')->name('permissions.store');
+        Route::put('permissions', 'updatePermission')->name('permissions.update');
     });
 });

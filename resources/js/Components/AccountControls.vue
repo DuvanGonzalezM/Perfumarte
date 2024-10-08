@@ -14,7 +14,7 @@ import Notification from './Notification.vue';
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.username }}</strong>
                 <li class="my-2">
-                    <a :href="route('dispatch.list')">
+                    <a :href="route('users.list')">
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios
                     </a>
