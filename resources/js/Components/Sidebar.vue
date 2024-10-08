@@ -1,6 +1,7 @@
 <script setup>
 import ButtonSidebar from './ButtonSidebar.vue';
 import PrimaryButton from './PrimaryButton.vue';
+import { is, can } from 'laravel-permission-to-vuejs';
 
 </script>
 
@@ -54,9 +55,6 @@ import PrimaryButton from './PrimaryButton.vue';
                 </ButtonSidebar>
             </li>
         </ul>
-        <PrimaryButton :href="route('logout')" method="post" as="button">
-            Cerrar Sesión
-        </PrimaryButton>
         <hr>
     </div>
 </template>

@@ -1,3 +1,15 @@
-.accountControls{
+.accountControls {
     font-size: 20px !important;
+
+    .dropdown-menu.show {
+        min-width: 200px !important;
+        border-radius: 1rem !important;
+        border: 2px solid $textBlack !important;
+        padding: 10px !important;
+        a {
+            font-size: 13px !important;
+            color: $textBlack !important;
+            text-decoration: none !important;
+        }
+    }
 }

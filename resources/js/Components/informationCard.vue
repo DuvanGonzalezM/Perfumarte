@@ -5,7 +5,7 @@ const props = defineProps({
         type: String,
     },
     number: {
-        type: String,
+        type: Number,
         required: true,
     },
     iconClass: {
