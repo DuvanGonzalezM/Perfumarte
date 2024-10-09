@@ -1,6 +1,7 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
+import SelectSearch from '@/Components/SelectSearch.vue';
 import Table from '@/Components/Table.vue';
 import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
@@ -9,6 +10,9 @@ import { Modal } from 'bootstrap';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps({
+    roles: {
+        type: Array,
+    },
     permissions: {
         type: Array,
     },
@@ -30,24 +34,26 @@ onMounted(() => {
     myModal = new Modal('#permission', {})
 })
 
-const isModalVisible = ref(false);
-let methodPermission = 'create';
+let methodRole = 'create';
 const form = useForm({
     name: null,
     id: null,
+    permissions: null
 });
 
 const editClick = (row) => {
-    methodPermission = 'edit';
+    methodRole = 'edit';
     form.name = row.name;
     form.id = row.id;
+    form.permissions = row.permissions.length > 0 ? row.permissions.map((permission) => permission.id) : null;
     myModal.show();
 };
 
 const createClick = () => {
-    methodPermission = 'create';
+    methodRole = 'create';
     form.name = null;
     form.id = null;
+    form.permissions = null;
     myModal.show();
 };
 
@@ -56,32 +62,33 @@ const closeModal = () => {
 };
 
 const submit = () => {
-    if(methodPermission == 'create'){
-        form.post(route('permissions.store'));
-    } else if(methodPermission == 'edit') {
-        form.put(route('permissions.update', form.id));
+    if(methodRole == 'create'){
+        form.post(route('roles.store'));
+    } else if(methodRole == 'edit') {
+        form.put(route('roles.update', form.id));
     }
     myModal.hide();
 };
 
+const optionsPermission = ref(props.permissions.map((permission) => [{ 'title': permission.name, 'value': permission.id }][0]));
 </script>
 
 <template>
 
-    <Head title="Permisos" />
+    <Head title="Roles" />
     <BaseLayout>
         <template #header>
-            <h1>Permisos</h1>
+            <h1>Roles</h1>
         </template>
         <SectionCard>
             <template #headerSection>
-                <strong>Permisos</strong>
+                <strong>Roles</strong>
             </template>
             <div class="container">
                 <PrimaryButton class="px-5" @click="createClick()">
                     Agregar
                 </PrimaryButton>
-                <Table :data="permissions" :columns="columnsTable">
+                <Table :data="roles" :columns="columnsTable">
                     <template #templateRender="items">
                         <a href="#" @click="editClick(items.item.rowData)"> <i class="fa-solid fa-pen-to-square"></i> </a>
                     </template>
@@ -104,6 +111,8 @@ const submit = () => {
                                 <form @submit.prevent="submit">
                                     <TextInput type="text" name="permission_name" id="permission_name"
                                         v-model="form.name" :focus="form.name != null ? true : false" labelValue="Nombre del permiso" :required="true" />
+                                    
+                                    <SelectSearch :multiple="true" class="mt-5" v-model="form.permissions" :options="optionsPermission" labelValue="Permisos" />
                                 </form>
                             </div>
                             <div class="modal-footer">

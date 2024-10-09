@@ -29,8 +29,6 @@ const selectedWarehouse = async () => {
         inventory.value = response.data['inventory'];
         warehouse.value = response.data['warehouse'];
         showTable.value = true;
-        console.log(warehouse.value.name);
-        
     } catch (error) {
         showTable.value = false;
     }

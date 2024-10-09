@@ -13,7 +13,7 @@ const props = defineProps({
   multiple: {
     type: Boolean,
   },
-  changeFunction:{
+  changeFunction: {
     type: Function,
     required: false,
   }
@@ -25,7 +25,11 @@ const label = ref(null);
 
 <template>
   <div class="selectsearch">
-    <VueSelect :multiple="multiple" :options="options" @option:selected="props.changeFunction ? props.changeFunction() : ''" @search:blur="hasFocus = false" @search:focus="hasFocus = true" :value="model" :class="{ 'focus': hasFocus || model != null }" :reduce="(option) => option.value" label="title" v-model="model">
+    <VueSelect :multiple="multiple" :options="options"
+      @option:selected="props.changeFunction ? props.changeFunction() : ''"
+      @option:deselected="props.changeFunction ? props.changeFunction() : ''" @search:blur="hasFocus = false"
+      @search:focus="hasFocus = true" :value="model" :class="{ 'focus': hasFocus || model != null }"
+      :reduce="(option) => option.value" label="title" v-model="model">
       <template v-slot:no-options>
         <div class="no-options-message">
           No hay opciones disponibles

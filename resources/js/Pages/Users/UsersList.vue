@@ -20,7 +20,7 @@ const columnsTable = [
         data: "user_id",
         title: 'Roles / Permisos',
         render: function (data) {
-            return '<a href="' + route("users.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("users.detail", data) + '"><i class="fa-solid fa-user-shield"></i></a>';
         }
     },
 ];
@@ -41,7 +41,7 @@ const columnsTable = [
             <div class="container">
                 <div class="row my-5">
                     <div class="col-6">
-                        <PrimaryButton :href="route('permissions.list')" class="px-5">
+                        <PrimaryButton :href="route('roles.list')" class="px-5">
                             Roles
                         </PrimaryButton>
                     </div>
@@ -52,6 +52,13 @@ const columnsTable = [
                     </div>
                 </div>
                 <Table :data="users" :columns="columnsTable" />
+                <div class="row my-5 text-center">
+                    <div class="col">
+                        <PrimaryButton :href="route('users.list')" class="px-5">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </PrimaryButton>
+                    </div>
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>

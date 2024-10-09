@@ -45,8 +45,13 @@ Route::middleware('auth')->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
+        Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi');
+        Route::get('api/permissions_roles/{roles_id}', 'getPermissionRol')->name('api.permi_roles');
         Route::get('permissions', 'getPermissions')->name('permissions.list');
         Route::post('permissions', 'storePermission')->name('permissions.store');
         Route::put('permissions', 'updatePermission')->name('permissions.update');
+        Route::get('roles', 'getRoles')->name('roles.list');
+        Route::post('roles', 'storeRole')->name('roles.store');
+        Route::put('roles', 'updateRole')->name('roles.update');
     });
 });

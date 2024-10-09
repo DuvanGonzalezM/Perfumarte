@@ -30,7 +30,6 @@ onMounted(() => {
     myModal = new Modal('#permission', {})
 })
 
-const isModalVisible = ref(false);
 let methodPermission = 'create';
 const form = useForm({
     name: null,

@@ -5,6 +5,7 @@ import SelectSearch from '@/Components/SelectSearch.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     user: {
@@ -19,16 +20,25 @@ const props = defineProps({
 });
 
 const form = useForm({
-    roles: null,
-    permissions: null
+    roles: props.user.roles.length > 0 ? props.user.roles.map((role) => role.id) : null,
+    permissions: props.user.permissions.length > 0 ? props.user.permissions.map((permission) => permission.id) : null
 });
 
 const optionsRoles = ref(props.roles.map((rol) => [{ 'title': rol.name, 'value': rol.id }][0]));
 const optionsPermission = ref(props.permissions.map((permission) => [{ 'title': permission.name, 'value': permission.id }][0]));
 
 const submit = () => {
-    form.post(route('orders.store'));
+    form.post(route('users.role_permi', props.user.user_id));
 };
+
+const selectedRoles = async () => {
+    try {
+        const response = await axios.get(route('api.permi_roles', [form.roles]));
+        form.permissions = response.data.length > 0 ? response.data.map((permission) => permission.id) : null;
+    } catch (error) {
+        form.permissions = null;
+    }
+}
 </script>
 
 <template>
@@ -47,7 +57,7 @@ const submit = () => {
                 <div class="row">
                     <h4>Roles</h4>
                     <div class="col pb-5 align-middle">
-                        <SelectSearch :multiple="true" v-model="form.roles" :options="optionsRoles" />
+                        <SelectSearch :multiple="true" :changeFunction="selectedRoles"  v-model="form.roles" :options="optionsRoles" />
                     </div>
                 </div>
 
