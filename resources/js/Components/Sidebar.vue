@@ -49,6 +49,12 @@ import { Link } from '@inertiajs/vue3';
                     Stock
                 </ButtonSidebar>
             </li>
+            <li>
+                <ButtonSidebar :href="route('repackage.list')" :class="{'active': $page.component.startsWith('Repackage')}">
+                    <i class="fa-solid fa-vial me-4"></i>
+                    Reenvase
+                </ButtonSidebar>
+            </li>
         </ul>
         <Link :href="route('logout')" method="post" as="button">
         Log Out
