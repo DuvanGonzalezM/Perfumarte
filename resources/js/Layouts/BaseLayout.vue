@@ -2,9 +2,18 @@
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import Sidebar from '@/Components/Sidebar.vue';
 import AccountControls from '@/Components/AccountControls.vue';
+import { usePage } from '@inertiajs/vue3';
+import { watchEffect } from 'vue';
 
+const { props } = usePage();
+
+watchEffect(() => {
+     window.Laravel = window.Laravel || {}
+     if (props.jsPermissions) {  
+          window.Laravel.jsPermissions = props.jsPermissions;
+     }
+})
 </script>
-
 <template>
     <div class="container container-prais">
         <div class="row">

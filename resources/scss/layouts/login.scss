@@ -1,8 +1,10 @@
 .card-login {
-    margin: 30vh auto 0 auto !important;
     width: 25vw !important;
     border-radius: 0.6rem !important;
     border: 1px solid $borderColor !important;
+    position: absolute !important;
+    top: 35vh !important;
+    left: 38vw !important;
 
     .card-body {
         width: 60% !important;
@@ -27,4 +29,9 @@
             -webkit-text-stroke-width: 0.3px !important;
         }
     }
+}
+
+body:has(.body-login){
+    background-image: url('/assets/images/background.jpg') !important;
+    background-size: cover !important;
 }

@@ -22,6 +22,9 @@ const props = defineProps({
     required: {
         type: Boolean,
     },
+    focus: {
+        type: Boolean,
+    },
 });
 
 const hasFocus = ref(false);
@@ -34,12 +37,11 @@ const label = ref(null);
         <input 
             :id="id"
             :name="name"
-            :class="{ 'focus': hasFocus || (input && input.value.length) }"
+            :class="{ 'focus': hasFocus || model || focus }"
             :type="type"
             @focus="hasFocus = true"
             @blur="hasFocus = false"
             v-model="model"
-            ref="input"
             :required="required"
         />
         <label class="position-absolute pe-none" ref="label" :for="id" v-if="labelValue">
