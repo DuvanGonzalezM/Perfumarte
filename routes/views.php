@@ -3,6 +3,7 @@
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
@@ -43,4 +44,13 @@ Route::middleware('auth')->group(function () {
         Route::get('solicitudes insumos', [RequestPraisController::class, 'getAllRequest'])->name('suppliesrequest.list');
         Route::get('solicitudes insumos/solicitud insumos/{requestId}', [RequestPraisController::class, 'detailRequest'])->name('suppliesrequest.detail');
     });
+
+    //Rutas de laboratorio - Reenvase
+    Route::controller(RepackageController::class)->group(function () {
+        Route::get('reenvase', 'getrepackage')->name('repackage.list');
+        Route::get('reenvase/Nuevo reenvase', 'createRepackage')->name('create.repackage');
+        Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
+    });
+
+    
 });
