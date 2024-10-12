@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id('request_detail_id');
             $table->foreignId('request_id')->constrained('requests', 'request_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->integer('quantity');
+            $table->integer('quantity')->nullable();
             $table->timestamps();
         
        });

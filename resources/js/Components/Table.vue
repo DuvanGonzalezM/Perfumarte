@@ -27,6 +27,9 @@ const options = {
 <template>
     <div class="table-prais">
         <DataTable :options="options" :columns="columns" :data="data" class="table table-hover">
+            <template #render="item">
+                <slot name="templateRender" :item="item"/>
+            </template>
             <slot />
         </DataTable>
     </div>

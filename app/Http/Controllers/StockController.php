@@ -26,10 +26,9 @@ class StockController extends Controller
 
     public function getMultipleInventory()
     {
-        // $locations = Location::with('warehouses')->whereDoesntHave('userLocation', function ($query) {
-        //     return $query->where('user_id', '=', session('user_id'));
-        // })->get();
-        $locations = Location::with('warehouses')->get();
+        $locations = Location::with('warehouses')->whereDoesntHave('userLocation', function ($query) {
+            return $query->where('user_id', '=', session('user_id'));
+        })->get();
         return Inertia::render('Stock/InventoryMultiple', ['locations' => $locations]);
     }
 

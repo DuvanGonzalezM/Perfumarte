@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, LaravelPermissionToVueJS;
 
     protected $primaryKey = 'user_id';
 
@@ -37,11 +39,6 @@ class User extends Authenticatable
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
-
-    public function rol(): BelongsTo
-    {
-        return $this->belongsTo(Rol::class, 'rol_id');
-    }
 
     public function location(): BelongsTo
     {

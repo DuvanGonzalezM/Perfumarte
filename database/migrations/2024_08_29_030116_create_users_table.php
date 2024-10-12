@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('user_id');
             $table->string('username');
             $table->string('password');
-            $table->foreignId('rol_id')->constrained('roles', 'rol_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
