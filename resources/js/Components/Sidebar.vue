@@ -1,7 +1,7 @@
 <script setup>
 import ButtonSidebar from './ButtonSidebar.vue';
 import PrimaryButton from './PrimaryButton.vue';
-import { is, can } from 'laravel-permission-to-vuejs';
+import { can } from 'laravel-permission-to-vuejs';
 
 </script>
 
@@ -19,35 +19,35 @@ import { is, can } from 'laravel-permission-to-vuejs';
                     Inicio
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Ordenes de Compra')">
                 <ButtonSidebar :href="route('orders.list')"
                     :class="{ 'active': $page.component.startsWith('PurchaseOrder') }">
                     <i class="fa-solid fa-rectangle-list me-4"></i>
                     Ordenes de compra
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Despachos')">
                 <ButtonSidebar :href="route('dispatch.list')"
                     :class="{ 'active': $page.component.startsWith('Dispatch') }">
                     <i class="fa-solid fa-truck me-4"></i>
                     Despachos
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Solicitudes Insumos')">
                 <ButtonSidebar :href="route('suppliesrequest.list')"
                     :class="{ 'active': $page.component.startsWith('Requests') }">
                     <i class="fa-brands fa-wpforms me-4"></i>
                     Solicitud insumos
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Solicitudes Transformacion')">
                 <ButtonSidebar :href="route('transformationRequest.list')"
                     :class="{ 'active': $page.component.startsWith('RequestTransformation') }">
                     <i class="fa-solid fa-flask me-4"></i>
                     Transformaciones
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Stock')">
                 <ButtonSidebar :href="route('stock.dashboard')"
                     :class="{ 'active': $page.component.startsWith('Stock') }">
                     <i class="fa-duotone fa-solid fa-boxes-stacked me-4"></i>

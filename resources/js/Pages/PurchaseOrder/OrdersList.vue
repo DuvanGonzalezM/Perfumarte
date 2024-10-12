@@ -7,6 +7,7 @@ import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
+import { can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
         purchaseOrders: {
@@ -56,7 +57,7 @@ const columnsTable = [
                 <strong>Ordenes de compra</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('orders.create')" class="position-absolute">
+                <PrimaryButton :href="route('orders.create')" class="position-absolute" v-if="can('Crear Ordenes de Compra')">
                     Nuevo registro
                 </PrimaryButton>
                 <Table :data="purchaseOrders" :columns="columnsTable" />

@@ -6,8 +6,8 @@ import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
-import { onMounted, ref } from 'vue';
-import { is, can } from 'laravel-permission-to-vuejs';
+import { onMounted } from 'vue';
+import { can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
     permissions: {
@@ -96,7 +96,7 @@ const submit = () => {
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="Permission">Crear Permiso</h1>
+                                <h1 class="modal-title fs-5" id="Permission">Permisos</h1>
                                 <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body pt-4">

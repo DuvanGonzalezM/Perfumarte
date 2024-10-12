@@ -5,7 +5,7 @@ import Alert from '@/Components/Alert.vue';
 import Image from '@/Components/Image.vue';
 </script>
 <template>
-    <div class="container">
+    <div class="container body-login">
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
                 <Image src="assets\images\Logo_3.png" />
@@ -15,7 +15,5 @@ import Image from '@/Components/Image.vue';
                 <slot />
             </div>
         </div>
-
     </div>
-
 </template>
