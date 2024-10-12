@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ChangeWarehouse extends Model
 {
     use HasFactory;
+    protected $table = 'changes_warehouse';
 
     protected $primaryKey = 'change_warehouse_id';
     protected $fillable = [
@@ -20,7 +21,7 @@ class ChangeWarehouse extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function invetory(): BelongsTo
+    public function inventory(): BelongsTo
     {
         return $this->belongsTo(Inventory::class,'inventory_id');
     }

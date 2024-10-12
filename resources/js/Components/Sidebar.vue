@@ -54,6 +54,12 @@ import { can } from 'laravel-permission-to-vuejs';
                     Stock
                 </ButtonSidebar>
             </li>
+            <li>
+                <ButtonSidebar :href="route('repackage.list')" :class="{'active': $page.component.startsWith('Repackage')}">
+                    <i class="fa-solid fa-vial me-4"></i>
+                    Reenvase
+                </ButtonSidebar>
+            </li>
         </ul>
         <hr>
     </div>

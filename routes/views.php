@@ -3,6 +3,7 @@
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
@@ -68,4 +69,13 @@ Route::middleware('auth')->group(function () {
         Route::post('roles', 'storeRole')->name('roles.store');
         Route::put('roles', 'updateRole')->name('roles.update');
     });
+
+    //Rutas de laboratorio - Reenvase
+    Route::controller(RepackageController::class)->group(function () {
+        Route::get('reenvase', 'getrepackage')->name('repackage.list');
+        Route::get('reenvase/Nuevo reenvase', 'createRepackage')->name('create.repackage');
+        Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
+    });
+
+    
 });

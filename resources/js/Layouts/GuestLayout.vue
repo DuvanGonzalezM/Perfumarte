@@ -1,8 +1,8 @@
 <script setup>
 import Notification from '@/Components/Notification.vue';
 import Alert from '@/Components/Alert.vue';
-
 import Image from '@/Components/Image.vue';
+
 </script>
 <template>
     <div class="container body-login">
