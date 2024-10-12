@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function () {
             Route::get('despachos', [DispatchController::class, 'getAllDispatch'])->name('dispatch.list');
             Route::get('detalle despachos/{dispatchId}', [DispatchController::class, 'detailDispatch'])->name('dispatch.detail');
         });
+        Route::group(['middleware' => ['can:Crear Despachos']], function () {
+            Route::get('despachos /nuevo despacho', 'createDispatch')->name('dispatch.create');
+            Route::post('despachos /nuevo despacho', 'storeDispatch')->name('dispatch.store');
+        });
     });
     Route::controller(RequestPraisController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Solicitudes Insumos']], function () {
