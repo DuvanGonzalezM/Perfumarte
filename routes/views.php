@@ -69,13 +69,13 @@ Route::middleware('auth')->group(function () {
         Route::post('roles', 'storeRole')->name('roles.store');
         Route::put('roles', 'updateRole')->name('roles.update');
     });
-
-    //Rutas de laboratorio - Reenvase
     Route::controller(RepackageController::class)->group(function () {
-        Route::get('reenvase', 'getrepackage')->name('repackage.list');
-        Route::get('reenvase/Nuevo reenvase', 'createRepackage')->name('create.repackage');
-        Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
+        Route::group(['middleware' => ['can:Ver Reenvases']], function () {
+            Route::get('reenvase', 'getrepackage')->name('repackage.list');
+        });
+        Route::group(['middleware' => ['can:Crear Reenvases']], function () {
+            Route::get('reenvase/Nuevo reenvase', 'createRepackage')->name('create.repackage');
+            Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
+        });
     });
-
-    
 });

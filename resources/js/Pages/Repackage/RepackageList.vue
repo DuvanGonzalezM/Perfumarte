@@ -6,6 +6,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
     repackageList: {
@@ -58,7 +59,7 @@ const columnsTable = [
             </template>
             <div class="container">
                 <div class="container">
-                    <PrimaryButton :href="route('create.repackage')" class="position-absolute">
+                    <PrimaryButton :href="route('create.repackage')" class="position-absolute" v-if="can('Crear Reenvases')">
                         Nuevo Reenvase
                     </PrimaryButton>
                 </div>
