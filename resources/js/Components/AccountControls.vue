@@ -1,5 +1,6 @@
 <script setup>
 import Notification from './Notification.vue';
+import { is, can } from 'laravel-permission-to-vuejs';
 </script>
 <template>
     <div class="accountControls row">
@@ -14,7 +15,7 @@ import Notification from './Notification.vue';
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.username }}</strong>
                 <li class="my-2">
-                    <a :href="route('users.list')">
+                    <a :href="route('users.list')" v-if="is('Administrador')">
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios
                     </a>

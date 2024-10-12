@@ -19,7 +19,7 @@ class UserController extends Controller
     public function detailUser($user_id)
     {
         $user = User::with('roles', 'permissions')->findOrFail($user_id);
-        $roles = Role::all();
+        $roles = Role::with('permissions')->get();
         $permissions = Permission::all();
         if ($user) {
             return Inertia::render('Users/UserDetail', ['user' => $user, 'roles' => $roles, 'permissions' => $permissions]);
@@ -32,7 +32,6 @@ class UserController extends Controller
     {
         $request->validate([
             'roles' => 'required',
-            'permissions' => 'required',
         ]);
 
         $user = User::findOrFail($user_id);
@@ -67,6 +66,9 @@ class UserController extends Controller
         ]);
         $permission = Permission::make(['guard_name' => 'web','name' => $request->name]); 
         $permission->saveOrFail();
+        $roleAdministrador = Role::where('name', 'Administrador')->firstOrFail();
+        $roleAdministrador->givePermissionTo($permission);
+
         return redirect('permissions');
     }
 

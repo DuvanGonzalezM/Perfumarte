@@ -7,6 +7,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
 import { onMounted, ref } from 'vue';
+import { is, can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
     permissions: {
@@ -62,7 +63,6 @@ const submit = () => {
     }
     myModal.hide();
 };
-
 </script>
 
 <template>
@@ -77,7 +77,7 @@ const submit = () => {
                 <strong>Permisos</strong>
             </template>
             <div class="container">
-                <PrimaryButton class="px-5" @click="createClick()">
+                <PrimaryButton class="px-5" @click="createClick()" v-if="can('Crear Permisos')">
                     Agregar
                 </PrimaryButton>
                 <Table :data="permissions" :columns="columnsTable">

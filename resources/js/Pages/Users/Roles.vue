@@ -8,6 +8,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
 import { onMounted, ref } from 'vue';
+import { is, can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
     roles: {
