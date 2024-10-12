@@ -9,7 +9,7 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
 const props = defineProps({
-    dispatch: {
+    detaildispatch: {
         type: Object,
         required: true,
     },
@@ -17,11 +17,11 @@ const props = defineProps({
 
 const columnsTable = [
     {
-        data: '',
+        data: 'inventory.product.reference',
         title: 'REFERENCIA'
     },
     {
-        data: '',
+        data: 'inventory.quantity',
         title: 'CANTIDAD DESPACHADA',
         render: function (data, type, row) {
             return row.dispatched_quantity + ' ' + row.inventory.product.measurement_unit.replace('KG', 'ml');
@@ -33,33 +33,33 @@ const columnsTable = [
 </script>
 
 <template>
-    <Head :title="'Detalle del despacho ' + dispatch.dispatch_id" />
+
+    <Head :title="'Detalle del despacho ' + detaildispatch.dispatch_id" />
 
     <BaseLayout>
         <template #header>
             <h1>Detalle del despacho</h1>
         </template>
 
-        <SectionCard :idSection="dispatch.dispatch_id" :subtitle="moment(dispatch.created_at).format('DD/MM/Y') ">
+        <SectionCard :idSection="detaildispatch.dispatch_id"
+            :subtitle="moment(detaildispatch.dispatch.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Detalle del despacho</strong>
             </template>
 
             <div class="container">
-                <!-- <div class="row">
+                <div class="row">
                     <div class="col-6 p-2 cardboxprais cardpurcheorder">
                         <strong>Sede: </strong>
-                        <span>{{ dispatch.user?.location?.name || 'No disponible' }}</span><br>
-                        <strong>Usuario: </strong>
-                        <span>{{ dispatch.user?.username || 'No disponible' }}</span><br>
+                        <span>{{ detaildispatch.inventory.warehouse.location.name || 'No disponible' }}</span><br>
                         <strong>Fecha del Despacho: </strong>
-                        <span>{{ moment(dispatch.created_at).format('DD/MM/Y') }}</span><br>
+                        <span>{{ moment(detaildispatch.dispatch.created_at).format('DD/MM/Y') }}</span><br>
                         <strong>Estado del Despacho: </strong>
-                        <span>{{ dispatch.status }}</span><br>
+                        <span>{{ detaildispatch.dispatch.status }}</span><br>
                     </div>
-                </div> -->
+                </div>
 
-                <Table :data= "dispatch" :columns= "columnsTable" />
+                <Table class="size-prais-5" :data="detaildispatch" :columns="columnsTable" />
 
                 <div class="row my-5 text-center">
                     <div class="col">
