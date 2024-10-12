@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(DispatchController::class)->group(function () {
         Route::get('despachos', [DispatchController::class, 'getAllDispatch'])->name('dispatch.list');
+        Route::get('despachos /nuevo despacho', 'createDispatch')->name('dispatch.create');
+        Route::post('despachos /nuevo despacho', 'storeDispatch')->name('dispatch.store');
         Route::get('detalle despachos/{dispatchId}', [DispatchController::class, 'detailDispatch'])->name('dispatch.detail');
     });
     Route::controller(RequestPraisController::class)->group(function () {

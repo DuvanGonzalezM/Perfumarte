@@ -16,7 +16,9 @@ class DispatchDetail extends Model
     protected $fillable = [
         'dispatch_id',
         'inventory_id',
+        'warehouse_id',
         'dispatched_quantity',
+        'observations'
     ];
     protected $casts = [
         'created_at' => 'datetime',
@@ -25,11 +27,16 @@ class DispatchDetail extends Model
 
     public function dispatch(): BelongsTo
     {
-        return $this->belongsTo(Dispatch::class,'dispatch_id');
+        return $this->belongsTo(Dispatch::class, 'dispatch_id');
     }
 
     public function inventory(): BelongsTo
     {
-        return $this->belongsTo(Inventory::class,'inventory_id');
+        return $this->belongsTo(Inventory::class, 'inventory_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 }
