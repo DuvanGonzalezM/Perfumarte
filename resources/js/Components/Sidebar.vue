@@ -59,6 +59,12 @@ import PrimaryButton from './PrimaryButton.vue';
                     Reenvase
                 </ButtonSidebar>
             </li>
+            <li>
+                <ButtonSidebar :href="route('LabTransformation.list')" :class="{'active': $page.component.startsWith('LabTransformations')}">
+                    <i class="fa-solid fa-flask me-4"></i>
+                    TransformacionesLab
+                </ButtonSidebar>
+            </li>
         </ul>
         <PrimaryButton :href="route('logout')" method="post" as="button">
             Cerrar Sesión
