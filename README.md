@@ -12,10 +12,11 @@ Antes de comenzar, debes solicitar el archivo `.env`, que contiene las configura
 
 ### 2. Instalar dependencias
 
-Para instalar todas las dependencias de PHP, ejecuta el siguiente comando en la raíz del proyecto:
+Para instalar todas las dependencias de PHP y NodeJS, ejecuta el siguiente comando en la raíz del proyecto:
 
 ```bash
 composer install
+npm install
 ```
 
 ### 3. Compilación de activos
