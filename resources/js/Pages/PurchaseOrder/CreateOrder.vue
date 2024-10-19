@@ -1,5 +1,5 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
+import ModalPrais from '@/Components/ModalPrais.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
@@ -29,9 +29,11 @@ const products = ref(props.suppliers[0].products);
 const optionSuppliers = ref(props.suppliers.map((supplier) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
 const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
+const showModal = ref(false);
 
 const submit = () => {
     form.post(route('orders.store'));
+    showModal.value = false;
 };
 
 const selectedSupplier = () => {
@@ -80,16 +82,16 @@ const removeReference = (index) => {
 
 <template>
 
-    <Head title="Nueva registro" />
+    <Head title="Nueva orden de compra" />
 
     <BaseLayout>
         <template #header>
-            <h1>Nueva registro</h1>
+            <h1>Nueva orden de compra</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Nueva registro</strong>
+                <strong>Nueva orden de compra</strong>
             </template>
             <div class="container px-0">
                 <form @submit.prevent="submit" class="table-prais">
@@ -100,7 +102,8 @@ const removeReference = (index) => {
                         </div>
                         <div class="col-md-6 py-3 align-middle">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
-                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" :required="true" />
+                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor"
+                                :required="true" />
                         </div>
                     </div>
                     <table class="table table-hover text-center dt-body-nowrap size-prais-4 align-middle">
@@ -119,7 +122,8 @@ const removeReference = (index) => {
                                         :changeFunction="selectedReference(reference)" />
                                 </td>
                                 <td>
-                                    <TextInput type="number" name="batch[]" id="batch[]" v-model="reference['batch']" :required="true" />
+                                    <TextInput type="number" name="batch[]" id="batch[]" v-model="reference['batch']"
+                                        :required="true" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
@@ -146,11 +150,27 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="showModal = true" class="px-5">
                                 Enviar
                             </PrimaryButton>
                         </div>
                     </div>
+                    <ModalPrais v-model="showModal" @close="showModal = false">
+                        <template #header>
+                            Nueva orden de compra
+                        </template>
+                        <template #body>
+                            ¿Seguro quiera registra esta nueva orden de compra?
+                        </template>
+                        <template #footer>
+                            <PrimaryButton @click="submit" class="px-5">
+                                Si
+                            </PrimaryButton>
+                            <PrimaryButton @click="showModal = false" class="px-5">
+                                No
+                            </PrimaryButton>
+                        </template>
+                    </ModalPrais>
                 </form>
             </div>
         </SectionCard>
