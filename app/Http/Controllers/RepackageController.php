@@ -22,7 +22,7 @@ class RepackageController extends Controller
 
         $productsId = ['16', '17'];
 
-        $getProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereIn('product_id', $productsId)->get();
+        $getProduct = Inventory::with('product')->where('warehouse_id', '1')->whereIn('product_id', $productsId)->get();
 
         return Inertia::render('Repackage/CreateRepackage', ['getProduct' => $getProduct]);
     }
@@ -37,9 +37,9 @@ class RepackageController extends Controller
             'quantity' => 'required|numeric',
         ]);
 
-        $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $request['reference'])->first();
+        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
 
-        $inventoryOut = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', $request['reference'])->first();
+        $inventoryOut = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
 
         if ($inventory) {
             $quantity = $inventory->quantity + $request['quantity'];

@@ -16,7 +16,10 @@ const props = defineProps({
   changeFunction: {
     type: Function,
     required: false,
-  }
+  },
+  disabled: {
+    type: Boolean,
+  },
 });
 
 const hasFocus = ref(false);
@@ -25,7 +28,7 @@ const label = ref(null);
 
 <template>
   <div class="selectsearch">
-    <VueSelect :multiple="multiple" :options="options"
+    <VueSelect :multiple="multiple" :options="options" :disabled="disabled"
       @option:selected="props.changeFunction ? props.changeFunction() : ''"
       @option:deselected="props.changeFunction ? props.changeFunction() : ''" @search:blur="hasFocus = false"
       @search:focus="hasFocus = true" :value="model" :class="{ 'focus': hasFocus || model != null }"

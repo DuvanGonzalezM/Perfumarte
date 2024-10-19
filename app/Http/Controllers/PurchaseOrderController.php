@@ -45,7 +45,7 @@ class PurchaseOrderController extends Controller
                     $reference['quantity'] *= 1000;
                 }
     
-                $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $reference['reference'])->first();
+                $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $reference['reference'])->first();
                 if ($inventory) {
                     $quantity = $inventory->quantity + $reference['quantity'];
                     $inventory->update([
@@ -84,7 +84,7 @@ class PurchaseOrderController extends Controller
     }
     public function editOrders($orderId)
     {
-        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', '=', $orderId)->get();
+        $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', $orderId)->get();
         if (!$purchaseOrder->isEmpty()) {
             return Inertia::render('PurchaseOrder/EditOrders', ['purchaseOrder' => $purchaseOrder[0]]);
         } else {
@@ -102,14 +102,14 @@ class PurchaseOrderController extends Controller
         ]);
 
 
-        $purchaseOrder = PurchaseOrder::where('purchase_order_id', '=', $purchaseOrderId)->update([
+        PurchaseOrder::where('purchase_order_id', $purchaseOrderId)->update([
             'supplier_order' => $request->supplier_order
         ]);
 
         foreach ($request->references as $reference) {
 
             if (isset($reference['product_entry_id'])) {
-                ProductEntry::where('product_entry_id', '=', $reference['product_entry_id'])->update([
+                ProductEntry::where('product_entry_id', $reference['product_entry_id'])->update([
                     'product_id' => $reference['reference'],
                     'quantity' => $reference['quantity']
                 ]);
