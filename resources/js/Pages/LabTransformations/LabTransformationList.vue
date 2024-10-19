@@ -55,7 +55,7 @@ const columnsTable = [
             </template>
             <div class="container">
                 <div class="container">
-                    <PrimaryButton :href="route('create.repackage')" class="position-absolute">
+                    <PrimaryButton :href="route('LabTransformation.create')" class="position-absolute">
                         Nueva transformacion
                     </PrimaryButton>
                 </div>

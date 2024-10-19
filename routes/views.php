@@ -84,6 +84,11 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::get('transformaciones de laboratorio', [LabTransformationController::class, 'getAllTransformation'])->name('LabTransformation.list');
+    Route::controller(LabTransformationController::class)->group(function () {
+        Route::get('transformaciones de laboratorio',  'getAllTransformation')->name('LabTransformation.list');
+        Route::get('nueva transformacion de laboratorio','createLabTransformation')->name('LabTransformation.create');
+    });
+
+
 
 });
