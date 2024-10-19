@@ -17,7 +17,7 @@ class DispatchController extends Controller
 
     public function detailDispatch($id)
     {
-        $detaildispatch = DispatchDetail::with(['dispatch', 'inventory.product', 'inventory.warehouse.location'])->findOrFail($id);
+        $detaildispatch = Dispatch::with(['dispatchdetail.inventory.product','dispatchdetail.warehouse.location'])->findOrFail($id);
         return Inertia::render('Dispatch/DispatchDetail', [
             'detaildispatch' => $detaildispatch,
         ]);
