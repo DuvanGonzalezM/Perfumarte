@@ -1,6 +1,6 @@
 <script setup>
 import Notification from './Notification.vue';
-import { is, can } from 'laravel-permission-to-vuejs';
+import { is } from 'laravel-permission-to-vuejs';
 </script>
 <template>
     <div class="accountControls row">
@@ -13,7 +13,7 @@ import { is, can } from 'laravel-permission-to-vuejs';
         <div class="dropdown-center profile col-6">
             <i class="fa-solid fa-user" data-bs-toggle="dropdown" aria-expanded="false"></i>
             <ul class="dropdown-menu dropdown-menu-end">
-                <strong>{{ $page.props.auth.user.username }}</strong>
+                <strong>{{ $page.props.auth.user.name }}</strong>
                 <li class="my-2">
                     <a :href="route('users.list')" v-if="is('Administrador')">
                         <i class="fa-solid fa-users me-2"></i>

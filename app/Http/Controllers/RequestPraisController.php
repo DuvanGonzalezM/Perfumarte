@@ -13,7 +13,7 @@ class RequestPraisController extends Controller
 {
     public function getAllRequest()
     {
-        $suppliesRequest = RequestPrais::with('user.location')->where('request_type', '=', '1')->get();
+        $suppliesRequest = RequestPrais::with('user.location')->where('request_type', '1')->get();
         return Inertia::render('Requests/SuppliesRequestList', props: ['suppliesRequest' => $suppliesRequest]);
     }
     public function detailRequest($requestId)
@@ -29,14 +29,14 @@ class RequestPraisController extends Controller
 
     public function getAllRequestTransformation()
     {
-        $transformationRequest = RequestPrais::where('request_type', '=', '2')->get();
+        $transformationRequest = RequestPrais::where('request_type', '2')->get();
         return Inertia::render('RequestTransformation/TransformationRequestList', props: ['transformationRequest' => $transformationRequest]);
     }
 
     public function createTransformation()
     {
 
-        $inventories = Inventory::with('product')->where('warehouse_id', '=', '1')->get();
+        $inventories = Inventory::with('product')->where('warehouse_id', '1')->get();
 
         return Inertia::render('RequestTransformation/CreateTransformation', ['inventories' => $inventories]);
     }

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\Dispatch;
 use App\Models\DispatchDetail;
 use App\Models\Inventory;
+use App\Models\RequestPrais;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,11 +25,15 @@ class DispatchController extends Controller
     }
     public function createDispatch()
     {
-        $warehouses = Warehouse::all();
+        $warehouses = Warehouse::with('location')->whereDoesntHave('location.userLocation', function ($query) {
+            return $query->where('user_id', '=', session('user_id'));
+        })->get();
+        $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
         $inventory = Inventory::with('product')->where('warehouse_id', 2)->get();
         return Inertia::render('Dispatch/DispatchNew', [
-            'warehouses' => $warehouses,
             'inventory' => $inventory,
+            'warehouses' => $warehouses,
+            'requests' => $requests
         ]);
 
     }

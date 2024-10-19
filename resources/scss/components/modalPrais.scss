@@ -1,0 +1,9 @@
+.modal-prais {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    transition: opacity 0.3s ease !important;
+
+    .modal-content {
+        min-width: 500px;
+    }
+}
