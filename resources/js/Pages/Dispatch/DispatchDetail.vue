@@ -35,7 +35,8 @@ const groupedDispatches = computed(() => {
         </template>
 
         <SectionCard :idSection="detaildispatch.id"
-            :subtitle="moment(detaildispatch.created_at).format('DD/MM/Y')">
+            :subtitle="moment(detaildispatch.created_at).format('DD/MM/Y')"
+            >
             <template #headerSection>
                 <strong>Detalle del despacho</strong>
             </template>
@@ -44,19 +45,24 @@ const groupedDispatches = computed(() => {
                 <div v-for="(items, warehouseName) in groupedDispatches" :key="warehouseName" class="my-4">
                     <div class="row">
                         <div class="col-12">
-                            <h5>Sede: {{ warehouseName }}</h5>
+                            <h5>Punto de Venta: {{ warehouseName }}</h5>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>Referencia</th>
                                     <th>Cantidad Despachada</th>
+                                    <th>Recibido</th>
+                                    <th>Observaciones</th>                                    
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(item, index) in items" :key="index">
                                     <td>{{ item.inventory.product.reference }}</td>
                                     <td>{{ item.dispatched_quantity }} {{ item.inventory.product.measurement_unit.replace('KG', 'ml') }}</td>
+                                    <th><i v-if="item.received === 1" class="fa-solid fa-circle-check"></i>
+                                        <i v-else class="fa-regular fa-circle"></i></th>    
+                                    <th>{{ item.observations}}</th>                                                                                         
                                 </tr>
                             </tbody>
                         </table>
