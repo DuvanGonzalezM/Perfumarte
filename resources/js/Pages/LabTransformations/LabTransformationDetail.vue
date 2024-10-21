@@ -8,7 +8,7 @@ import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
-    getLabTransformation: {
+    LabtransformationDetail: {
         type: Array,
     },
 });
@@ -16,41 +16,32 @@ const props = defineProps({
 const columnsTable = [
     {
         data: 'transformation_id',
-        title: 'CODIGO TRANSFORMACION'
+        title: 'CODIGO TRANSFORMACION',
     },
     {
         data: 'inventory.product.reference',
         title: 'PRODUCTO'
     },
     {
-        data: 'null',
-        title: 'CANTIDAD',
-        render: function (data, type, row) {
-            return (row.escence+row.dipropylene+row.solvent) + ' ' + ('ml');
-        }
+        data: 'escence',
+        title: 'CANTIDAD ESCENCIA',
     },
     {
-        data: "created_at",
-        title: 'FECHA DE TRANSFORMACION',
-        render: function (data) {
-            const formattedDate = moment(data).format('DD/MM/Y');
-            return formattedDate;
-        }
+        data: 'dipropylene',
+        title: 'CANTIDAD DIPROPILENO',
     },
     {
-        data: "transformation_id",
-        title: 'DETALLE',
-        render: function (data) {
-            return '<a href="' + route("Labtransformation.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
-        }
+        data: 'solvent',
+        title: 'CANTIDAD DISOLVENTE',
     },
+  
 ];
 
 </script>
 
 <template>
 
-    <Head title="Lista de transformaciones laboratorio" />
+    <Head :title = "'Lista de transformaciones laboratorio' + transformation.transformation_id" />
 
     <BaseLayout>
         <template #header>
@@ -58,18 +49,18 @@ const columnsTable = [
             <h1>Lista de transformaciones laboratorio</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :idSection="transformation.tranformation_id" :subtitle="moment(transformation.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Lista de transformaciones laboratorio</strong>
 
             </template>
             <div class="container">
                 <div class="container">
-                    <PrimaryButton :href="route('LabTransformation.create')" class="position-absolute">
-                        Nueva transformacion
+                    <PrimaryButton :href="route('LabTransformation.List')" class="position-absolute">
+                        Volver
                     </PrimaryButton>
                 </div>
-                <Table class="size-prais-5" :data="getLabTransformation" :columns="columnsTable" />
+                <Table class="size-prais-5" :data="LabtransformationDetail" :columns="columnsTable" />
             </div>
         </SectionCard>
     </BaseLayout>

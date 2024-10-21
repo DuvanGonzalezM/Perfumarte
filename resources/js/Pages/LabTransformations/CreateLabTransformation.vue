@@ -3,7 +3,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
-import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -16,18 +15,16 @@ const props = defineProps({
 
 const form = useForm({
 
-    reference: '',
-    escencia: '',
-    dipropileno: '',
-    disolvente: '',
-    cantidad total:'',
-
+    'reference': '',
+    'escencia': '',
+    'dipropileno': '',
+    'disolvente': '',
 });
 
 const optionProduts = ref(props.newProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id }][0]));
 
 const submit = () => {
-    form.post(route('store.repackage'));
+    form.post(route('store.LabTransformation'));
 }
 
 </script>
@@ -50,30 +47,40 @@ const submit = () => {
                 <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle mb-5">
                         <tbody id="productsList">
                             <tr>
                                 <td>REFERENCIA: </td>
                                 <td>
-                                    <SelectSearch v-model="form.reference" :options="optionProduts" />
+                                    <SelectSearch v-model="form.reference" :options="optionProduts" name="reference[]"
+                                        id="reference[]" />
                                 </td>
                             </tr>
                             <tr>
                                 <td>CANTIDAD ESCENCIA (ml): </td>
                                 <td>
-                                    <TextInput type="string" v-model="form.escencia" :required="true" />
+                                    <TextInput type="number" v-model="form.escencia" name="escencia[]" id="escencia[]"
+                                        :required="true" />
                                 </td>
                             </tr>
                             <tr>
                                 <td>CANTIDAD DIPROPILENO (ml): </td>
                                 <td>
-                                    <TextInput type="number" v-model="form.dipropileno" :required="true" />
+                                    <TextInput type="number" v-model="form.dipropileno" name="dipropileno[]"
+                                        id="dipropileno[]" :required="true" />
                                 </td>
                             </tr>
                             <tr>
                                 <td>CANTIDAD DISOLVENTE (ml): </td>
                                 <td>
-                                    <TextInput type="number" v-model="form.disolvente" :required="true" />
+                                    <TextInput type="number" v-model="form.disolvente" name="disolvente[]"
+                                        id="disolvente[]" :required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CANTIDAD TOTAL (ml): </td>
+                                <td>
+                                    {{ form.escencia + form.dipropileno + form.disolvente || '0' }} ml
                                 </td>
                             </tr>
                         </tbody>
@@ -82,7 +89,7 @@ const submit = () => {
                     </div>
                     <div class="row my-5">
                         <div class="col-6">
-                            <PrimaryButton :href="route('repackage.list')" class="px-5">
+                            <PrimaryButton :href="route('LabTransformation.list')" class="px-5">
                                 Volver
                             </PrimaryButton>
                         </div>

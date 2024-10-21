@@ -3,6 +3,8 @@
 namespace App\http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\RequestDetail;
+use App\Models\RequestPrais;
 use App\Models\Transformation;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -13,21 +15,19 @@ class LabTransformationController extends Controller
     public function getAllTransformation()
     {
 
-        $getLabTransformation = Transformation::with(['inventory.product',])->get();
+        $getLabTransformation = Transformation::with(['inventory.product'])->get();
 
         return Inertia::render('LabTransformations/LabTransformationList', props: ['getLabTransformation' => $getLabTransformation]);
     }
 
     public function createLabTransformation()
     {
-        $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id',['16','17'])->get();
-
+        $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id', ['16', '17'])->get();
         return Inertia::render('LabTransformations/CreateLabTransformation', ['newProduct' => $newProduct]);
     }
 
     public function storeLabTransformation(request $request)
     {
-
         $warehouse = '2';
 
         $request->validate([
@@ -37,37 +37,79 @@ class LabTransformationController extends Controller
             'disolvente' => 'required',
         ]);
 
+        $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
+
         $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $request['reference'])->first();
 
-        $inventoryOut = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', $request['reference'])->first();
+        $escencia = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', $request['reference'])->first();
+        
+        $dipropylene = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', '16')->first();
+
+        $solvent = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', '17')->first();
+
+
+        if ($escencia && $escencia->quantity >= $request['escencia']) {
+            $escencia->update([
+                'quantity' => $escencia->quantity - $request['escencia'],
+            ]);
+            
+        } else {
+     dd($request['escencia']);
+            // return back()->withErrors(['error' => 'No hay suficiente escencia en el almacén 1.']);
+        }
+    
+        if ($dipropylene && $dipropylene->quantity >= $request['dipropileno']) {
+            $dipropylene->update([
+                'quantity' => $dipropylene->quantity - $request['dipropileno'],
+            ]);
+        } else {
+            dd($request['dipropileno']);
+            // return back()->withErrors(['error' => 'No hay suficiente dipropileno en el almacén 1.']);
+        }
+    
+        if ($solvent && $solvent->quantity >= $request['disolvente']) {
+            $solvent->update([
+                'quantity' => $solvent->quantity - $request['disolvente'],
+            ]);
+        } else {
+            dd($request['disolvente']);
+            // return back()->withErrors(['error' => 'No hay suficiente disolvente en el almacén 1.']);
+        }
 
         if ($inventory) {
-            $quantity = $inventory->quantity + $request['quantity'];
+            $quantity = $inventory->quantity + $quantityFragance;
             $inventory->update([
-                'quantity' => $quantity
+                'quantity' => $quantity,
             ]);
         } else {
             $inventory = Inventory::create([
                 'warehouse_id' => $warehouse,
                 'product_id' => $request['reference'],
-                'quantity' => $request['quantity']
+                'quantity' => $quantityFragance,
             ]);
         }
 
-        $quantity = $inventoryOut->quantity - $request['quantity'];
-        $inventoryOut->update([
-            'quantity' => $quantity
-        ]);
-
         Transformation::create([
-            'transformation_id' => $request->transformation_id,
             'inventory_id' => $inventory->inventory_id,
-            'quantity' => $request['quantity'],
+            'escence' => $request['escencia'],
+            'dipropylene' => $request['dipropileno'],
+            'solvent' => $request['disolvente'],
+
         ]);
 
-        return redirect()->route('repackage.list', ['message' => '', 'status' => 200]);
+        return redirect()->route('LabTransformation.list', ['message' => '', 'status' => 200]);
 
     }
+
+    public function detailLabTransformation($transformationId)
+    {
+        $Labtranformation = Transformation::findOrFail($transformationId);
+
+        return Inertia::render('LabTransformations/LabTransformationDetail', [
+            'LabtransformationDetail' => $Labtranformation
+        ]);
+    }
 }
+
 
 

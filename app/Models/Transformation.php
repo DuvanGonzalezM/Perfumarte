@@ -4,25 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transformation extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'transformation_id ';
+    protected $primaryKey = 'transformation_id';
 
     protected $fillable = [
         'inventory_id',
-        'quantity',
+        'escence',
+        'dipropylene',
+        'solvent',
     ];
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
 
-    public function Inventory(): HasMany
+    public function Inventory(): BelongsTo
     {
-        return $this->hasMany(Inventory::class,'inventory_id');
+        return $this->belongsTo(Inventory::class,'inventory_id');
     }
 }

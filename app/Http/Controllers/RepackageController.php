@@ -60,7 +60,6 @@ class RepackageController extends Controller
         ]);
 
         ChangeWarehouse::create([
-            'change_warehouse_id' => $request->change_warehouse_id,
             'inventory_id' => $inventory->inventory_id,
             'quantity' => $request['quantity'],
         ]);
