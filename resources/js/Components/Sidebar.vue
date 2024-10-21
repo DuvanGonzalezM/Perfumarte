@@ -44,7 +44,7 @@ import { can } from 'laravel-permission-to-vuejs';
                 <ButtonSidebar :href="route('transformationRequest.list')"
                     :class="{ 'active': $page.component.startsWith('RequestTransformation') }">
                     <i class="fa-solid fa-flask me-4"></i>
-                    Transformaciones
+                    Solicitud transformaciones
                 </ButtonSidebar>
             </li>
             <li v-if="can('Ver Stock')">
@@ -58,6 +58,12 @@ import { can } from 'laravel-permission-to-vuejs';
                 <ButtonSidebar :href="route('repackage.list')" :class="{'active': $page.component.startsWith('Repackage')}">
                     <i class="fa-solid fa-vial me-4"></i>
                     Reenvase
+                </ButtonSidebar>
+            </li>
+            <li>
+                <ButtonSidebar :href="route('LabTransformation.list')" :class="{'active': $page.component.startsWith('LabTransformations')}">
+                    <i class="fa-solid fa-flask me-4"></i>
+                    Transformaciones
                 </ButtonSidebar>
             </li>
         </ul>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\DashboardController;
+use App\http\Controllers\LabTransformationController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
@@ -82,4 +83,14 @@ Route::middleware('auth')->group(function () {
             Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
         });
     });
+
+    Route::controller(LabTransformationController::class)->group(function () {
+        Route::get('transformaciones de laboratorio',  'getAllTransformation')->name('LabTransformation.list');
+        Route::get('nueva transformacion de laboratorio','createLabTransformation')->name('LabTransformation.create');
+        Route::post('nueva transformacion de laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
+        Route::get('transformaciones de laboratorio/Detalle de transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
+    });
+
+
+
 });

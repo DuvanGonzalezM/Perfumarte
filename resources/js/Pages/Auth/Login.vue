@@ -4,13 +4,17 @@ import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const form = useForm({
     username: '',
     password: '',
 });
 
+const disableButton = ref(false);
+
 const submit = () => {
+    disableButton.value = true;
     form.post(route('login'));
 };
 </script>
@@ -45,7 +49,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
             <div class="d-flex justify-content-center mt-5">
-                <PrimaryButton @click="submit" :disabled="form.processing">
+                <PrimaryButton @click="submit" :class="disableButton ? 'disabled' : ''">
                     Ingresar
                 </PrimaryButton>
             </div>

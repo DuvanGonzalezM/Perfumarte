@@ -54,16 +54,16 @@ const addDispatch = () => {
     let locationRequest = null;
     let warehouse = null;
     let references = [
-            {
-                reference: '',
-                dispatched_quantity: '',
-            }
-        ];
+        {
+            reference: '',
+            dispatched_quantity: '',
+        }
+    ];
     showModal.value = false;
-    if(requestSeleted.value){
+    if (requestSeleted.value) {
         locationRequest = props.requests.find(requestI => requestI.request_id == requestSeleted.value);
         warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.user.location_id).warehouse_id;
-        if(locationRequest.detail_request.length > 0){
+        if (locationRequest.detail_request.length > 0) {
             references = [];
             locationRequest.detail_request.forEach(detail => {
                 references.push({
@@ -72,7 +72,7 @@ const addDispatch = () => {
                 });
             });
         }
-    } else if(locationSeleted.value){
+    } else if (locationSeleted.value) {
         warehouse = locationSeleted.value;
     }
     requestSeleted.value = null;
@@ -85,7 +85,11 @@ const addDispatch = () => {
 const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
+
+const disableButton = ref(false);
+
 const submit = () => {
+    disableButton.value = true;
     form.post(route('dispatch.store'));
 };
 </script>
@@ -106,7 +110,8 @@ const submit = () => {
                         <div v-if="dispatch.warehouse">
                             <div class="row mb-2">
                                 <div class="col-12 p-4 cardboxprais cardpurcheorder position-relative">
-                                    <h6>{{ props.warehouses.find(warehouse => warehouse.warehouse_id == dispatch.warehouse).location.name }}</h6>
+                                    <h6>{{ props.warehouses.find(warehouse => warehouse.warehouse_id ==
+                                        dispatch.warehouse).location.name }}</h6>
                                     <div class="position-absolute remove-dispatch">
                                         <a href="#" @click="removeDispatch(dispatchIndex)">
                                             <i class="fa-solid fa-house-circle-xmark"></i>
@@ -124,18 +129,15 @@ const submit = () => {
                                 <tbody id="productsList">
                                     <tr v-for="(reference, referenceIndex) in dispatch.references">
                                         <td>
-                                            <SelectSearch :options="optionInventory"
-                                                v-model="reference.reference"
+                                            <SelectSearch :options="optionInventory" v-model="reference.reference"
                                                 name="reference[]" id="reference[]"
                                                 placeholder="Selecciona una referencia" />
                                         </td>
                                         <td>
                                             <TextInput type="number" name="dispatched_quantity[]"
-                                                id="dispatched_quantity[]"
-                                                v-model="reference.dispatched_quantity" />
+                                                id="dispatched_quantity[]" v-model="reference.dispatched_quantity" />
                                         </td>
-                                        <div class="removeItem"
-                                            @click="removeReference(dispatch, referenceIndex)">
+                                        <div class="removeItem" @click="removeReference(dispatch, referenceIndex)">
                                             <i class="fa-solid fa-trash"></i>
                                         </div>
                                     </tr>
@@ -180,7 +182,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

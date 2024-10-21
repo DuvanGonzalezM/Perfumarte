@@ -43,9 +43,9 @@ class Inventory extends Model
         return $this->belongsTo(Product::class,'product_id');
     }
 
-    public function trasnformation(): BelongsTo
+    public function transformation(): HasMany
     {
-        return $this->belongsTo(Transformation::class,'inventory_id');
+        return $this->hasMany(Transformation::class,'inventory_id');
     }
 
     public function detailDispatch(): HasMany

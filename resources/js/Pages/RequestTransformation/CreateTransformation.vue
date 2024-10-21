@@ -6,7 +6,6 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import SliderPrais from '@/Components/SliderPrais.vue';
 
 const props = defineProps({
     inventories: {
@@ -61,34 +60,6 @@ const submit = () => {
                 <strong>Nueva Transformacion</strong>
             </template>
             <div class="container px-0">
-                <SliderPrais :items="form.references.length">
-                    <template v-for="(reference, index) in form.references" v-slot:[index]>
-                        <div class="p-3 mx-5 my-3 cardboxprais cardpurcheorder">
-                            <table class="table table-hover text-center dt-body-nowrap align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>REFERENCIA</th>
-                                        <th>CANTIDAD (ml)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productsList">
-                                    <tr>
-                                        <td>
-                                            <SelectSearch v-model="reference['reference']" :options="optionProduts"/>
-                                        </td>
-                                        <td>
-                                            <TextInput type="number" name="quantity[]" id="quantity[]"
-                                                v-model="reference['quantity']" :required="true" />
-                                        </td>
-                                        <div class="removeItem" @click="removeReference(index)">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </div>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </template>
-                </SliderPrais>
                 <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
                     </div>

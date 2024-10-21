@@ -31,7 +31,10 @@ const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id 
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 const showModal = ref(false);
 
+const disableButton = ref(false);
+
 const submit = () => {
+    disableButton.value = true;
     form.post(route('orders.store'));
     showModal.value = false;
 };
@@ -122,7 +125,7 @@ const removeReference = (index) => {
                                         :changeFunction="selectedReference(reference)" />
                                 </td>
                                 <td>
-                                    <TextInput type="number" name="batch[]" id="batch[]" v-model="reference['batch']"
+                                    <TextInput type="text" name="batch[]" id="batch[]" v-model="reference['batch']"
                                         :required="true" />
                                 </td>
                                 <td>
@@ -150,7 +153,7 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="showModal = true" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
