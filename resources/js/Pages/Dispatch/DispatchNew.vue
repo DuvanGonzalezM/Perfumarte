@@ -198,7 +198,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton  @click="submit" class="px-5" >
                                 Crear Despacho
                             </PrimaryButton>
                         </div>
