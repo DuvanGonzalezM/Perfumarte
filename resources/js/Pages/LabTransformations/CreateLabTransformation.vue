@@ -67,6 +67,7 @@ const submit = async () => {
         await axios.post(route('store.LabTransformation', form))
             .then(function (response) {
                 if(references.value.length > 1){
+                    disableButton.value = false;
                     references.value.splice(swiper.value.activeIndex, 1);
                     reference.value = references.value[0];
                     form.reference = reference.value.inventory.product_id;
