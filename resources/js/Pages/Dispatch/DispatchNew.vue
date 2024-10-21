@@ -86,10 +86,7 @@ const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
 
-const disableButton = ref(false);
-
 const submit = () => {
-    disableButton.value = true;
     form.post(route('dispatch.store'));
 };
 </script>
@@ -119,24 +116,24 @@ const submit = () => {
                                     </div>
                                 </div>
                             </div>
-                            <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
+                            <table class="table table-hover text-center dt-body-nowrap size-prais-2">
                                 <thead>
                                     <tr>
                                         <th>REFERENCIA / INSUMO</th>
                                         <th>CANTIDAD ENVIADA</th>
-                                        <th>OBSERVACIONES</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="productsList">
                                     <tr v-for="(reference, referenceIndex) in dispatch.references">
                                         <td>
                                             <SelectSearch :options="optionInventory" v-model="reference.reference"
+                                                :messageError="Object.keys(form.errors).length ? form.errors['dispatches.' + dispatchIndex + '.references.' + referenceIndex + '.reference'] : null"
                                                 name="reference[]" id="reference[]"
                                                 placeholder="Selecciona una referencia" />
                                         </td>
                                         <td>
                                             <TextInput type="number" name="dispatched_quantity[]"
+                                                :messageError="Object.keys(form.errors).length ? form.errors['dispatches.' + dispatchIndex + '.references.' + referenceIndex + '.dispatched_quantity'] : null"
                                                 id="dispatched_quantity[]" v-model="reference.dispatched_quantity" />
                                         </td>
                                         <div class="removeItem" @click="removeReference(dispatch, referenceIndex)">
@@ -184,7 +181,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

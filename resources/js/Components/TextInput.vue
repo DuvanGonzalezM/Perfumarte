@@ -25,6 +25,9 @@ const props = defineProps({
     focus: {
         type: Boolean,
     },
+    messageError: {
+        type: String,
+    },
 });
 
 const hasFocus = ref(false);
@@ -33,7 +36,7 @@ const label = ref(null);
 </script>
 
 <template>
-    <div class="inputContainer position-relative">
+    <div class="inputContainer position-relative" :class="{'errorField': messageError && !(hasFocus || model || focus)}">
         <input 
             :id="id"
             :name="name"
@@ -47,5 +50,10 @@ const label = ref(null);
         <label class="position-absolute pe-none" ref="label" :for="id" v-if="labelValue">
             {{ labelValue }}
         </label>
+        <div class="mt-1" v-if="messageError && !(hasFocus || model || focus)">
+            <p>
+                {{ messageError }}
+            </p>
+        </div>
     </div>
 </template>

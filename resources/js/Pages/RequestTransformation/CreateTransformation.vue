@@ -7,7 +7,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const disableButton = ref(false);
 
 const props = defineProps({
     inventories: {
@@ -18,13 +17,13 @@ const props = defineProps({
 const form = useForm({
     references: [
         {
-            'reference':'',
+            'reference': '',
             'quantity': '',
         }
     ],
 });
 
-const optionProduts = ref(props.inventories.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.inventory_id}][0]));
+const optionProduts = ref(props.inventories.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.inventory_id }][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 
 const addRow = () => {
@@ -42,7 +41,6 @@ const removeReference = (index) => {
     showAddButtom.value = form.references.length < optionProduts.value.length;
 }
 const submit = () => {
-    disableButton.value = true;
     form.post(route('transformation.store'));
 }
 
@@ -66,7 +64,7 @@ const submit = () => {
                 <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-2">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
@@ -76,11 +74,13 @@ const submit = () => {
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references">
                                 <td>
-                                    <SelectSearch v-model="reference['reference']" :options="optionProduts"/>
+                                    <SelectSearch v-model="reference['reference']" :options="optionProduts"
+                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.reference'] : null" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="reference['quantity']" :required="true" />
+                                        v-model="reference['quantity']" :required="true"
+                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.quantity'] : null" />
                                 </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
@@ -100,7 +100,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>

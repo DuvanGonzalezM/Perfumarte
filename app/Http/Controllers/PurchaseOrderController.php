@@ -32,7 +32,8 @@ class PurchaseOrderController extends Controller
             $request->validate([
                 'supplier' => 'required',
                 'supplier_order' => 'required',
-                'references' => 'required|array',
+                'references.*.reference' => 'required',
+                'references.*.quantity' => 'required',
             ]);
             $purchaseOrder = PurchaseOrder::create([
                 'supplier_order' => $request->supplier_order

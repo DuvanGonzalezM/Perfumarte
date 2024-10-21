@@ -39,13 +39,11 @@ class DispatchController extends Controller
     }
     public function storeDispatch(Request $request)
     {
-        // Validación de los datos de entrada (puedes descomentar según tus necesidades)
-        // $validatedData = $request->validate([
-        //     'dispatches.*.warehouse' => 'required|exists:warehouses,id',
-        //     'dispatches.*.references.*.reference' => 'required|exists:inventories,product_id',
-        //     'dispatches.*.references.*.dispatched_quantity' => 'required|numeric|min:1',
-        //     'dispatches.*.references.*.observations' => 'nullable|string',
-        // ]);
+        $request->validate([
+            'dispatches.*.warehouse' => 'required',
+            'dispatches.*.references.*.reference' => 'required',
+            'dispatches.*.references.*.dispatched_quantity' => 'required',
+        ]);
         try {
             $dispatch = Dispatch::create([
                 'status' => 'En ruta',
@@ -64,8 +62,7 @@ class DispatchController extends Controller
                                 'warehouse_id' => $location['warehouse'],
                                 'dispatch_id' => $dispatch->dispatch_id,
                                 'inventory_id' => $inventoryWarehouse2->inventory_id,
-                                'dispatched_quantity' => $reference['dispatched_quantity'],
-                                'observations' => $reference['observations'],
+                                'dispatched_quantity' => $reference['dispatched_quantity']
                             ]);
                             $productId = $inventoryWarehouse2->product_id;
                             $inventoryDestinationLocation = Inventory::where('warehouse_id', $location['warehouse'])

@@ -33,9 +33,7 @@ const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id 
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 const showModal = ref(false);
 
-const disableButton = ref(false);
 const submit = () => {
-    disableButton.value = true;
     form.post(route('orders.store'));
     showModal.value = false;
 };
@@ -100,17 +98,18 @@ const removeReference = (index) => {
             <div class="container px-0">
                 <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
-                        <div class="col-md-6 py-3 align-middle">
+                        <div class="col-md-6" style="height: 40px;">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"
-                                :changeFunction="selectedSupplier" labelValue="Proveedor" />
+                                :changeFunction="selectedSupplier" labelValue="Proveedor"
+                                :messageError="Object.keys(form.errors).length ? form.errors.supplier : null" />
                         </div>
-                        <div class="col-md-6 py-3 align-middle">
+                        <div class="col-md-6" style="height: 40px;">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
-                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor"
-                                :required="true" />
+                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" :required="true"
+                                :messageError="Object.keys(form.errors).length ? form.errors.supplier_order : null" />
                         </div>
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 align-middle">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 mt-5">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
@@ -123,15 +122,18 @@ const removeReference = (index) => {
                             <tr v-for="(reference, index) in form.references">
                                 <td>
                                     <SelectSearch v-model="reference['reference']" :options="optionProduts"
-                                        :changeFunction="selectedReference(reference)" />
+                                        :changeFunction="selectedReference(reference)"
+                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.reference'] : null" />
                                 </td>
                                 <td>
                                     <TextInput type="text" name="batch[]" id="batch[]" v-model="reference['batch']"
-                                        :required="true" />
+                                        :required="true"
+                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.batch'] : null" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="reference['quantity']" :required="true" />
+                                        v-model="reference['quantity']" :required="true"
+                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.quantity'] : null" />
                                 </td>
                                 <td>
                                     {{ reference.unity }}
@@ -154,7 +156,7 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
@@ -167,7 +169,7 @@ const removeReference = (index) => {
                             ¿Seguro quiera registra esta nueva orden de compra?
                         </template>
                         <template #footer>
-                            <PrimaryButton @click="submit" class="px-5" >
+                            <PrimaryButton @click="submit" class="px-5">
                                 Si
                             </PrimaryButton>
                             <PrimaryButton @click="showModal = false" class="px-5">

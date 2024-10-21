@@ -96,13 +96,9 @@ class LabTransformationController extends Controller
             'escence' => $request['escencia'],
             'dipropylene' => $request['dipropileno'],
             'solvent' => $request['disolvente'],
-
         ]);
 
         RequestPrais::where('request_id', $request['request'])->update(['status' => $request['status']]);
-        if($request['status'] == "Finalizada"){
-            return redirect()->route('LabTransformation.list', ['message' => '', 'status' => 200]);
-        }
     }
 
     public function detailLabTransformation($transformationId)

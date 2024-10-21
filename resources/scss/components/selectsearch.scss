@@ -1,10 +1,6 @@
 .selectsearch {
   position: relative !important;
-  border-radius: 0.3rem !important;
-  border: 2px solid $textBlack !important;
-  box-shadow: 0px 2px 4px 0px $textBlack;
   width: 100% !important;
-  // height: 100% !important;
 
   .vs__dropdown-option:hover,
   .vs__dropdown-option--selected,
@@ -25,12 +21,23 @@
     width: 0;
   }
 
+  .v-select {
+    border-radius: 0.3rem !important;
+    border: 2px solid $textBlack !important;
+    box-shadow: 0px 2px 4px 0px $textBlack !important;
+    height: 40px !important;
+  }
+
+  .vs__dropdown-toggle {
+    height: 100% !important;
+  }
+
   .vs__selected {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    overflow: hidden;
+    display: block !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
   }
 
   label {

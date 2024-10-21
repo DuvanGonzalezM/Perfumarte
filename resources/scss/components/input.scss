@@ -18,7 +18,7 @@
 
     input {
         width: 100% !important;
-        height: 100% !important;
+        height: 40px !important;
         padding: 10px !important;
         border-radius: 0.3rem !important;
         border: 2px solid $textBlack !important;
@@ -28,5 +28,21 @@
         -o-transition: all 0.5s ease;
         -ms-transition: all 0.5s ease;
         transition: all 0.5s ease;
+    }
+}
+
+.errorField {
+    font-size: 0.7rem !important;
+    color: $textError !important;
+
+    > input {
+        border: 2px solid $textError !important;
+    }
+    
+    .v-select{
+        border: 2px solid $textError !important;
+        .vs__open-indicator{
+            fill: $textError !important;
+        }
     }
 }

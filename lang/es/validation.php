@@ -13,7 +13,6 @@ return [
     | mensajes aquí.
     |
     */
-
     'accepted' => 'El campo :attribute debe ser aceptado.',
     'accepted_if' => 'El campo :attribute debe ser aceptado cuando :other es :value.',
     'active_url' => 'El campo :attribute debe ser una URL válida.',
@@ -190,6 +189,17 @@ return [
 'attributes' => [
     'username' => 'Nombre de usuario',
     'password' => 'Contraseña',
+    'dispatches.*.references.*.dispatched_quantity' => 'Cantidad Enviada',
+    'dispatches.*.references.*.reference' => 'Referencia / Insumo',
+    'references.*.quantity' => 'Cantidad',
+    'references.*.reference' => 'Referencia',
+    'references.*.batch' => 'N° Lote',
+    'reference' => 'Referencia',
+    'escencia' => 'Escencia',
+    'dipropileno' => 'Dipropileno',
+    'disolvente' => 'Disolvente',
+    'supplier' => 'Proveedor',
+    'supplier_order' => 'Orden de compra - Proveedor',
 ],
 
 ];

@@ -12,18 +12,15 @@ const props = defineProps({
         type: Array,
     },
 });
-const disableButton = ref(false);
 
 const form = useForm({
-   
-            reference:'',
-            quantity: '',
+    reference: '',
+    quantity: '',
 });
 
-const optionProduts = ref(props.getProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id}][0]));
+const optionProduts = ref(props.getProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id }][0]));
 
 const submit = () => {
-    disableButton.value = true;
     form.post(route('store.repackage'));
 }
 
@@ -57,11 +54,13 @@ const submit = () => {
                         <tbody id="productsList">
                             <tr>
                                 <td>
-                                    <SelectSearch v-model="form.reference" :options="optionProduts"/>
+                                    <SelectSearch v-model="form.reference" :options="optionProduts"
+                                    :messageError="Object.keys(form.errors).length ? form.errors.reference : null" />
                                 </td>
                                 <td>
-                                    <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="form.quantity" :required="true" />
+                                    <TextInput type="number" name="quantity[]" id="quantity[]" v-model="form.quantity"
+                                        :required="true"
+                                        :messageError="Object.keys(form.errors).length ? form.errors.quantity : null" />
                                 </td>
                             </tr>
                         </tbody>
@@ -75,7 +74,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
                                 Registrar
                             </PrimaryButton>
                         </div>

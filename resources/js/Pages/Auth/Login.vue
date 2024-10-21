@@ -1,6 +1,5 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -11,10 +10,7 @@ const form = useForm({
     password: '',
 });
 
-const disableButton = ref(false);
-
 const submit = () => {
-    disableButton.value = true;
     form.post(route('login'));
 };
 </script>
@@ -32,9 +28,9 @@ const submit = () => {
                     name="username"
                     type="text"
                     v-model="form.username"
+                    :messageError="form.errors.username"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.username" />
             </div>
 
             <div class="mt-4">
@@ -44,12 +40,12 @@ const submit = () => {
                     name="password"
                     type="password"
                     v-model="form.password"
+                    :messageError="form.errors.password"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
             <div class="d-flex justify-content-center mt-5">
-                <PrimaryButton @click="submit" :class="disableButton ? 'disabled' : ''">
+                <PrimaryButton @click="submit" :class="form.processing ? 'disabled' : ''">
                     Ingresar
                 </PrimaryButton>
             </div>

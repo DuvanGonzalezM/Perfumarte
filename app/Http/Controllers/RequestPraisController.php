@@ -44,7 +44,8 @@ class RequestPraisController extends Controller
     public function storeTransformation(Request $request)
     {
         $request->validate([
-            'references' => 'required|array',
+            'references.*.reference' => 'required',
+            'references.*.quantity' => 'required',
         ]);
 
         $transformationRequest = RequestPrais::create([

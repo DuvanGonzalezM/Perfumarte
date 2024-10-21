@@ -5,7 +5,7 @@ import TextInput from '@/Components/TextInput.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import SliderPrais from '@/Components/SliderPrais.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { router, Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import moment from 'moment';
 import axios from 'axios';
@@ -66,21 +66,22 @@ const submit = async () => {
         }
         await axios.post(route('store.LabTransformation', form))
             .then(function (response) {
-                if(references.value.length > 1){
+                if(form.status != 'Finalizada'){
                     disableButton.value = false;
                     references.value.splice(swiper.value.activeIndex, 1);
-                    reference.value = references.value[0];
+                    reference.value = references.value[swiper.value.activeIndex];
                     form.reference = reference.value.inventory.product_id;
                     form.escencia = '';
                     form.dipropileno = '';
                     form.disolvente = '';
+                } else{
+                    router.get(route('LabTransformation.list'));
                 }
             });
     } catch (error) {
         disableButton.value = false;
         console.log(error);
     }
-    form.post(route('store.LabTransformation'));
 }
 </script>
 
@@ -118,28 +119,32 @@ const submit = async () => {
                                             <td>REFERENCIA: </td>
                                             <td>
                                                 <SelectSearch v-model="form.reference" :options="optionProduts"
-                                                    name="reference[]" id="reference[]" />
+                                                name="reference[]" id="reference[]"
+                                                :messageError="Object.keys(form.errors).length ? form.errors.reference : null" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>CANTIDAD ESCENCIA (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.escencia" name="escencia[]"
-                                                    id="escencia[]" :required="true" />
+                                                    id="escencia[]" :required="true"
+                                                    :messageError="Object.keys(form.errors).length ? form.errors.escencia : null" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>CANTIDAD DIPROPILENO (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.dipropileno" name="dipropileno[]"
-                                                    id="dipropileno[]" :required="true" />
+                                                    id="dipropileno[]" :required="true"
+                                                    :messageError="Object.keys(form.errors).length ? form.errors.dipropileno : null" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>CANTIDAD DISOLVENTE (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.disolvente" name="disolvente[]"
-                                                    id="disolvente[]" :required="true" />
+                                                    id="disolvente[]" :required="true"
+                                                    :messageError="Object.keys(form.errors).length ? form.errors.disolvente : null" />
                                             </td>
                                         </tr>
                                         <tr>
