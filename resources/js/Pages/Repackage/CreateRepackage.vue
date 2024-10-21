@@ -12,6 +12,7 @@ const props = defineProps({
         type: Array,
     },
 });
+const disableButton = ref(false);
 
 const form = useForm({
    
@@ -22,6 +23,7 @@ const form = useForm({
 const optionProduts = ref(props.getProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id}][0]));
 
 const submit = () => {
+    disableButton.value = true;
     form.post(route('store.repackage'));
 }
 
@@ -73,7 +75,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Registrar
                             </PrimaryButton>
                         </div>

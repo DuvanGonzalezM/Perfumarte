@@ -88,7 +88,11 @@ const addDispatch = () => {
 const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
+
+const disableButton = ref(false);
+
 const submit = () => {
+    disableButton.value = true;
     form.post(route('dispatch.store'), {
         onSuccess: () => {
         },
@@ -198,7 +202,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

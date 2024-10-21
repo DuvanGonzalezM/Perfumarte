@@ -63,7 +63,7 @@ import { can } from 'laravel-permission-to-vuejs';
             <li>
                 <ButtonSidebar :href="route('LabTransformation.list')" :class="{'active': $page.component.startsWith('LabTransformations')}">
                     <i class="fa-solid fa-flask me-4"></i>
-                    TransformacionesLab
+                    Transformaciones
                 </ButtonSidebar>
             </li>
         </ul>
