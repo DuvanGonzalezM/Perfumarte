@@ -34,14 +34,14 @@ const columnsTable = [
         data: 'solvent',
         title: 'CANTIDAD DISOLVENTE',
     },
-  
+
 ];
 
 </script>
 
 <template>
 
-    <Head :title = "'Lista de transformaciones laboratorio' + transformation.transformation_id" />
+    <Head :title="'Lista de transformaciones laboratorio' + LabtransformationDetail.transformation_id" />
 
     <BaseLayout>
         <template #header>
@@ -49,18 +49,56 @@ const columnsTable = [
             <h1>Lista de transformaciones laboratorio</h1>
         </template>
 
-        <SectionCard :idSection="transformation.tranformation_id" :subtitle="moment(transformation.created_at).format('DD/MM/Y')">
+        <SectionCard :idSection="LabtransformationDetail.transformation_id"
+            :subtitle="moment(LabtransformationDetail.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Lista de transformaciones laboratorio</strong>
 
             </template>
             <div class="container">
                 <div class="container">
-                    <PrimaryButton :href="route('LabTransformation.List')" class="position-absolute">
-                        Volver
-                    </PrimaryButton>
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle mb-5">
+                        <tbody id="productsList">
+                            <tr>
+                                <td>REFERENCIA: </td>
+                                <td>
+                                    {{ LabtransformationDetail.inventory.product.reference }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CANTIDAD ESCENCIA : </td>
+                                <td>
+                                    {{ LabtransformationDetail.escence }} ml
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CANTIDAD DIPROPILENO : </td>
+                                <td>
+                                    {{ LabtransformationDetail.dipropylene }} ml
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CANTIDAD DISOLVENTE : </td>
+                                <td>
+                                    {{ LabtransformationDetail.solvent }} ml
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CANTIDAD TOTAL : </td>
+                                <td>
+                                    {{ LabtransformationDetail.escence + LabtransformationDetail.dipropylene + LabtransformationDetail.solvent }} ml
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row my-5 text-center">
+                    <div class="col">
+                        <PrimaryButton :href="route('LabTransformation.list')" class="px-5">
+                            Volver
+                        </PrimaryButton>
+                    </div>
                 </div>
-                <Table class="size-prais-5" :data="LabtransformationDetail" :columns="columnsTable" />
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>
