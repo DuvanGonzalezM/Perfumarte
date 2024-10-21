@@ -6,8 +6,6 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 
-const disableButton = ref(false);
-
 const props = defineProps({
     requestPrais: {
         type: Object,

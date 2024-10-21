@@ -35,7 +35,6 @@ const addReference = (dispatch) => {
     dispatch.references.push({
         reference: '',
         dispatched_quantity: '',
-        observations: '',
     });
 };
 const removeReference = (dispatch, referenceIndex) => {
@@ -70,7 +69,6 @@ const addDispatch = () => {
                 references.push({
                     reference: detail.inventory.inventory_id,
                     dispatched_quantity: detail.quantity,
-                    observations: '',
                 });
             });
         }
@@ -110,7 +108,7 @@ const submit = () => {
                 <form class="table-prais">
                     <div v-for="(dispatch, dispatchIndex) in form.dispatches" :key="dispatchIndex">
                         <div v-if="dispatch.warehouse">
-                            <div class="row mb-4">
+                            <div class="row mb-2">
                                 <div class="col-12 p-4 cardboxprais cardpurcheorder position-relative">
                                     <h6>{{ props.warehouses.find(warehouse => warehouse.warehouse_id ==
                                         dispatch.warehouse).location.name }}</h6>
@@ -121,7 +119,7 @@ const submit = () => {
                                     </div>
                                 </div>
                             </div>
-                            <table class="table table-hover text-center dt-body-nowrap size-prais-3 align-middle">
+                            <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
                                 <thead>
                                     <tr>
                                         <th>REFERENCIA / INSUMO</th>
@@ -131,8 +129,7 @@ const submit = () => {
                                     </tr>
                                 </thead>
                                 <tbody id="productsList">
-                                    <tr v-for="(reference, referenceIndex) in dispatch.references"
-                                        :key="referenceIndex">
+                                    <tr v-for="(reference, referenceIndex) in dispatch.references">
                                         <td>
                                             <SelectSearch :options="optionInventory" v-model="reference.reference"
                                                 name="reference[]" id="reference[]"
