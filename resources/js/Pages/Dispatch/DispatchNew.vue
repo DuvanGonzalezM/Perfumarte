@@ -58,7 +58,6 @@ const addDispatch = () => {
         {
             reference: '',
             dispatched_quantity: '',
-            observations: '',
         }
     ];
     showModal.value = false;
@@ -88,14 +87,12 @@ const addDispatch = () => {
 const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
-const submit = () => {
-    form.post(route('dispatch.store'), {
-        onSuccess: () => {
-        },
-        onError: (errors) => {
 
-        }
-    });
+const disableButton = ref(false);
+
+const submit = () => {
+    disableButton.value = true;
+    form.post(route('dispatch.store'));
 };
 </script>
 <template>
@@ -145,15 +142,9 @@ const submit = () => {
                                             <TextInput type="number" name="dispatched_quantity[]"
                                                 id="dispatched_quantity[]" v-model="reference.dispatched_quantity" />
                                         </td>
-                                        <td>
-                                            <TextInput type="text" name="observations[]" id="observations[]"
-                                                v-model="reference.observations" />
-                                        </td>
-                                        <td>
-                                            <div class="removeItem" @click="removeReference(dispatch, referenceIndex)">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </div>
-                                        </td>
+                                        <div class="removeItem" @click="removeReference(dispatch, referenceIndex)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </div>
                                     </tr>
                                 </tbody>
                             </table>
@@ -196,7 +187,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

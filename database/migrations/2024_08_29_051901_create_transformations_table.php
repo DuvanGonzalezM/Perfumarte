@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('transformations', function (Blueprint $table) {
             $table->id('transformation_id');
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->integer('quantity');
+            $table->integer('escence');
+            $table->integer('dipropylene');
+            $table->integer('solvent');
             $table->timestamps();
         });
     }
