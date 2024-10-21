@@ -35,7 +35,6 @@ const addReference = (dispatch) => {
     dispatch.references.push({
         reference: '',
         dispatched_quantity: '',
-        observations: '',
     });
 };
 const removeReference = (dispatch, referenceIndex) => {
@@ -58,7 +57,6 @@ const addDispatch = () => {
             {
                 reference: '',
                 dispatched_quantity: '',
-                observations: '',
             }
         ];
     showModal.value = false;
@@ -71,7 +69,6 @@ const addDispatch = () => {
                 references.push({
                     reference: detail.inventory.inventory_id,
                     dispatched_quantity: detail.quantity,
-                    observations: '',
                 });
             });
         }
@@ -89,13 +86,7 @@ const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
 const submit = () => {
-    form.post(route('dispatch.store'), {
-        onSuccess: () => {
-        },
-        onError: (errors) => {
-
-        }
-    });
+    form.post(route('dispatch.store'));
 };
 </script>
 <template>
@@ -113,7 +104,7 @@ const submit = () => {
                 <form class="table-prais">
                     <div v-for="(dispatch, dispatchIndex) in form.dispatches" :key="dispatchIndex">
                         <div v-if="dispatch.warehouse">
-                            <div class="row mb-4">
+                            <div class="row mb-2">
                                 <div class="col-12 p-4 cardboxprais cardpurcheorder position-relative">
                                     <h6>{{ props.warehouses.find(warehouse => warehouse.warehouse_id == dispatch.warehouse).location.name }}</h6>
                                     <div class="position-absolute remove-dispatch">
@@ -123,18 +114,15 @@ const submit = () => {
                                     </div>
                                 </div>
                             </div>
-                            <table class="table table-hover text-center dt-body-nowrap size-prais-3 align-middle">
+                            <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
                                 <thead>
                                     <tr>
                                         <th>REFERENCIA / INSUMO</th>
                                         <th>CANTIDAD ENVIADA</th>
-                                        <th>OBSERVACIONES</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="productsList">
-                                    <tr v-for="(reference, referenceIndex) in dispatch.references"
-                                        :key="referenceIndex">
+                                    <tr v-for="(reference, referenceIndex) in dispatch.references">
                                         <td>
                                             <SelectSearch :options="optionInventory"
                                                 v-model="reference.reference"
@@ -146,16 +134,10 @@ const submit = () => {
                                                 id="dispatched_quantity[]"
                                                 v-model="reference.dispatched_quantity" />
                                         </td>
-                                        <td>
-                                            <TextInput type="text" name="observations[]" id="observations[]"
-                                                v-model="reference.observations" />
-                                        </td>
-                                        <td>
-                                            <div class="removeItem"
-                                                @click="removeReference(dispatch, referenceIndex)">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </div>
-                                        </td>
+                                        <div class="removeItem"
+                                            @click="removeReference(dispatch, referenceIndex)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </div>
                                     </tr>
                                 </tbody>
                             </table>

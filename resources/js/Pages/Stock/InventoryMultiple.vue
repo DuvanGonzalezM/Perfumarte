@@ -53,7 +53,6 @@ const columnsTable = [
 ];
 </script>
 <template>
-
     <Head :title="warehouse ? warehouse.name :  'Sedes'" />
 
     <BaseLayout>
@@ -79,5 +78,4 @@ const columnsTable = [
             </div>
         </SectionCard>
     </BaseLayout>
-
 </template>
