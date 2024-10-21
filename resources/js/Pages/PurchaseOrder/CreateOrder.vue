@@ -153,7 +153,7 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="showModal = true" class="px-5" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
