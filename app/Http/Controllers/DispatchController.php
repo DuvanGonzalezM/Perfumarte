@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Dispatch;
 use App\Models\DispatchDetail;
 use App\Models\Inventory;
@@ -18,9 +20,9 @@ class DispatchController extends Controller
 
     public function detailDispatch($id)
     {
-        $detaildispatch = DispatchDetail::with(['dispatch', 'inventory.product', 'inventory.warehouse.location'])->findOrFail($id);
+        $dispatch = Dispatch::with(['dispatchdetail.inventory.product', 'dispatchdetail.warehouse.location'])->findOrFail($id);
         return Inertia::render('Dispatch/DispatchDetail', [
-            'detaildispatch' => $detaildispatch,
+            'dispatch' => $dispatch,
         ]);
     }
     public function createDispatch()
@@ -35,7 +37,6 @@ class DispatchController extends Controller
             'warehouses' => $warehouses,
             'requests' => $requests
         ]);
-
     }
     public function storeDispatch(Request $request)
     {
@@ -46,7 +47,7 @@ class DispatchController extends Controller
         // ]);
         try {
             $dispatch = Dispatch::create([
-                'status' => 'Pendiente',
+                'status' => 'En ruta',
             ]);
             foreach ($request->dispatches as $location) {
                 foreach ($location['references'] as $reference) {
@@ -55,7 +56,6 @@ class DispatchController extends Controller
                         'dispatch_id' => $dispatch->dispatch_id,
                         'inventory_id' => $reference['reference'],
                         'dispatched_quantity' => $reference['dispatched_quantity'],
-                        'observations' => $reference['observations'],
                     ]);
                 }
             }

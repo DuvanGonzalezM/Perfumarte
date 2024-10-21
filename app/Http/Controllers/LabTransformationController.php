@@ -23,7 +23,8 @@ class LabTransformationController extends Controller
     public function createLabTransformation()
     {
         $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id', ['16', '17'])->get();
-        return Inertia::render('LabTransformations/CreateLabTransformation', ['newProduct' => $newProduct]);
+        $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 2)->whereIn('status', ['Pendiente', 'En proceso'])->get();
+        return Inertia::render('LabTransformations/CreateLabTransformation', ['newProduct' => $newProduct, 'requests' => $requests]);
     }
 
     public function storeLabTransformation(request $request)
@@ -35,44 +36,45 @@ class LabTransformationController extends Controller
             'escencia' => 'required',
             'dipropileno' => 'required',
             'disolvente' => 'required',
+            'request' => 'required',
+            'status' => 'required'
         ]);
 
         $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
 
-        $inventory = Inventory::where('warehouse_id', '=', $warehouse)->where('product_id', '=', $request['reference'])->first();
+        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
 
-        $escencia = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', $request['reference'])->first();
-        
-        $dipropylene = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', '16')->first();
+        $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
 
-        $solvent = Inventory::where('warehouse_id', '=', '1')->where('product_id', '=', '17')->first();
+        $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '16')->first();
+
+        $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '17')->first();
 
 
         if ($escencia && $escencia->quantity >= $request['escencia']) {
             $escencia->update([
                 'quantity' => $escencia->quantity - $request['escencia'],
             ]);
-            
         } else {
-     dd($request['escencia']);
+            dd($request['escencia'], $escencia->quantity);
             // return back()->withErrors(['error' => 'No hay suficiente escencia en el almacén 1.']);
         }
-    
+
         if ($dipropylene && $dipropylene->quantity >= $request['dipropileno']) {
             $dipropylene->update([
                 'quantity' => $dipropylene->quantity - $request['dipropileno'],
             ]);
         } else {
-            dd($request['dipropileno']);
+            dd($request['dipropileno'], $dipropylene->quantity);
             // return back()->withErrors(['error' => 'No hay suficiente dipropileno en el almacén 1.']);
         }
-    
+
         if ($solvent && $solvent->quantity >= $request['disolvente']) {
             $solvent->update([
                 'quantity' => $solvent->quantity - $request['disolvente'],
             ]);
         } else {
-            dd($request['disolvente']);
+            dd($request['disolvente'], $solvent->quantity);
             // return back()->withErrors(['error' => 'No hay suficiente disolvente en el almacén 1.']);
         }
 
@@ -97,8 +99,10 @@ class LabTransformationController extends Controller
 
         ]);
 
-        return redirect()->route('LabTransformation.list', ['message' => '', 'status' => 200]);
-
+        RequestPrais::where('request_id', $request['request'])->update(['status' => $request['status']]);
+        if($request['status'] == "Finalizada"){
+            return redirect()->route('LabTransformation.list', ['message' => '', 'status' => 200]);
+        }
     }
 
     public function detailLabTransformation($transformationId)
@@ -110,6 +114,3 @@ class LabTransformationController extends Controller
         ]);
     }
 }
-
-
-
