@@ -8,6 +8,8 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+
+
 const props = defineProps({
     suppliers: {
         type: Array,
@@ -32,7 +34,6 @@ const showAddButtom = ref(form.references.length < optionProduts.value.length);
 const showModal = ref(false);
 
 const disableButton = ref(false);
-
 const submit = () => {
     disableButton.value = true;
     form.post(route('orders.store'));
@@ -166,7 +167,7 @@ const removeReference = (index) => {
                             ¿Seguro quiera registra esta nueva orden de compra?
                         </template>
                         <template #footer>
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" >
                                 Si
                             </PrimaryButton>
                             <PrimaryButton @click="showModal = false" class="px-5">
