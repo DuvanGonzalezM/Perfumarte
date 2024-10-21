@@ -15,6 +15,7 @@ const props = defineProps({
 });
 const form = useForm({
     supplier: props.suppliers[0].supplier_id,
+    supplier_order: '',
     references: [
         {
             'reference': '',
