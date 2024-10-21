@@ -7,7 +7,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-
+const disableButton = ref(false);
 const props = defineProps({
     purchaseOrder: {
         type: Object,
@@ -25,6 +25,7 @@ const selectedProduct = (index) => {
     unity.value = products.value.filter((product) => product.product_id == form.references[index]['reference'])[0].measurement_unit;
 }
 const submit = () => {
+    disableButton.value = true;
     form.put(route('orders.update', props.purchaseOrder.purchase_order_id));
 };
 
@@ -90,7 +91,7 @@ const submit = () => {
                     Volver
                 </PrimaryButton>
 
-                <PrimaryButton @click="submit"style="margin-right: 20px;">
+                <PrimaryButton @click="submit"style="margin-right: 20px;" :class="disableButton ? 'disabled' : ''">
                     Actualizar
                 </PrimaryButton>
                 

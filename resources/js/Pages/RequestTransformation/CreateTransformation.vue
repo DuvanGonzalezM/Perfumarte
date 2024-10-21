@@ -8,6 +8,8 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SliderPrais from '@/Components/SliderPrais.vue';
 
+const disableButton = ref(false);
+
 const props = defineProps({
     inventories: {
         type: Array,
@@ -41,6 +43,7 @@ const removeReference = (index) => {
     showAddButtom.value = form.references.length < optionProduts.value.length;
 }
 const submit = () => {
+    disableButton.value = true;
     form.post(route('transformation.store'));
 }
 
@@ -126,7 +129,7 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
