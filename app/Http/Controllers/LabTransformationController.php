@@ -103,7 +103,7 @@ class LabTransformationController extends Controller
 
     public function detailLabTransformation($transformationId)
     {
-        $Labtranformation = Transformation::findOrFail($transformationId);
+        $Labtranformation = Transformation::with('inventory.product')->findOrFail($transformationId);
 
         return Inertia::render('LabTransformations/LabTransformationDetail', [
             'LabtransformationDetail' => $Labtranformation
