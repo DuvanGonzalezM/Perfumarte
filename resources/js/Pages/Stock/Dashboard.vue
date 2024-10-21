@@ -31,7 +31,7 @@ const icons = [
                 <CardButton :link="route('stock.inventory', warehouse.warehouse_id)" :title="warehouse.name" :icon="icons[index > 3 ? 3 : index]" />
             </div>
             <div class="col-6 p-5">
-                <CardButton :link="route('stock.multiple')" title="Bodega 3" :icon="icons[3]" />
+                <CardButton :link="route('stock.multiple')" title="Sedes" :icon="icons[3]" />
             </div>
         </div>
     </BaseLayout>

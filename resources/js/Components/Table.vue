@@ -20,6 +20,7 @@ const options = {
     },
     lengthChange: false,
     info: paginVisibility,
+    order: [[0, 'desc']],
     paging: paginVisibility
 };
 </script>

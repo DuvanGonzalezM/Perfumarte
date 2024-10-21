@@ -43,7 +43,7 @@ const columnsTable = [
 
 </script>
 <template>
-    <Head title="DEPACHOS" />
+    <Head title="Despachos" />
     <BaseLayout>
         <template #header>
 
