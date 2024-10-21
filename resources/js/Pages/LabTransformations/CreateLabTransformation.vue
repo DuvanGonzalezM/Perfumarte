@@ -31,7 +31,7 @@ const form = useForm({
 });
 
 const optionProduts = ref(props.newProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id }][0]));
-const optionRequests = ref(props.requests.map(request => ({ 'title': (request.user.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
+const optionRequests = ref(props.requests.map(request => ({ 'title': (request.request_id + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
 const references = ref(null);
 const reference = ref(null);
 const swiper = ref(null);
