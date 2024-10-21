@@ -59,11 +59,10 @@ const columnsTable = [
 
             </template>
             <div class="container">
-                <div class="container">
-                    <PrimaryButton :href="route('transformation.create')" class="position-absolute" v-if="can('Crear Solicitudes Transformacion')">
-                        Nuevo Registro
-                    </PrimaryButton>
-                </div>
+                <PrimaryButton :href="route('transformation.create')" class="position-absolute"
+                    v-if="can('Crear Solicitudes Transformacion')">
+                    Nuevo Registro
+                </PrimaryButton>
                 <Table class="size-prais-5" :data="transformationRequest" :columns="columnsTable" />
             </div>
         </SectionCard>
