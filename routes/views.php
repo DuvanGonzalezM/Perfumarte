@@ -83,12 +83,16 @@ Route::middleware('auth')->group(function () {
             Route::post('reenvase/Nuevo reenvase', 'storeRepackage')->name('store.repackage');
         });
     });
-
-    Route::controller(LabTransformationController::class)->group(function () {
-        Route::get('transformaciones de laboratorio',  'getAllTransformation')->name('LabTransformation.list');
-        Route::get('nueva transformacion de laboratorio','createLabTransformation')->name('LabTransformation.create');
-        Route::post('nueva transformacion de laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
-        Route::get('transformaciones de laboratorio/Detalle de transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
+    
+    Route::controller(RepackageController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Reenvases']], function () {
+            Route::get('transformaciones de laboratorio',  'getAllTransformation')->name('LabTransformation.list');
+            Route::get('transformaciones de laboratorio/Detalle de transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
+        });
+        Route::group(['middleware' => ['can:Ver Transformaciones']], function () {
+            Route::get('nueva transformacion de laboratorio','createLabTransformation')->name('LabTransformation.create');
+            Route::post('nueva transformacion de laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
+        });
     });
 
 

@@ -60,7 +60,7 @@ import { can } from 'laravel-permission-to-vuejs';
                     Reenvase
                 </ButtonSidebar>
             </li>
-            <li>
+            <li v-if="can('Ver Transformaciones')">
                 <ButtonSidebar :href="route('LabTransformation.list')" :class="{'active': $page.component.startsWith('LabTransformations')}">
                     <i class="fa-solid fa-flask me-4"></i>
                     Transformaciones
