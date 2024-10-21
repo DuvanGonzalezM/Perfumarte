@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
         });
     });
     
-    Route::controller(RepackageController::class)->group(function () {
+    Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
             Route::get('transformaciones de laboratorio',  'getAllTransformation')->name('LabTransformation.list');
             Route::get('transformaciones de laboratorio/Detalle de transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
