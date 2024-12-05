@@ -1,54 +1,108 @@
-# Perfumarte
+# 🌟 Perfumarte - Sistema de Gestión de Inventario
 
-Desarrollo del aplicativo para el inventario de la perfumería **Perfumarte**.
+<div align="center">
 
-## Instalación
+![Perfumarte Logo](public/images/logo.png)
 
-Para configurar y ejecutar este proyecto, sigue los siguientes pasos:
+*Elegancia y Sofisticación en la Gestión de Perfumería*
 
-### 1. Solicitar el archivo `.env`
+</div>
 
-Antes de comenzar, debes solicitar el archivo `.env`, que contiene las configuraciones de entorno necesarias para el proyecto. Una vez recibido, coloca este archivo en la raíz del proyecto.
+## 📋 Acerca del Proyecto
 
-### 2. Instalar dependencias
+Perfumarte es un sistema de gestión de inventario diseñado específicamente para una prestigiosa perfumería ubicada en Colombia. Este software combina la elegancia en su diseño con la eficiencia en la gestión de inventario, proporcionando una solución completa para el control y seguimiento de productos de perfumería de alta gama.
 
-Para instalar todas las dependencias de PHP y NodeJS, ejecuta el siguiente comando en la raíz del proyecto:
+### ✨ Características Principales
 
-```bash
-composer install
-npm install
-```
+- 📦 Control detallado de inventario de perfumes y productos relacionados
+- 🔄 Gestión de entradas y salidas de mercancía
+- 📊 Reportes y estadísticas avanzadas
+- 👥 Sistema de gestión de usuarios y roles
+- 🏷️ Control de precios y promociones
+- 📱 Interfaz responsive y moderna
 
-### 3. Compilación de activos
+## 🛠️ Tecnologías Utilizadas
 
-Dependiendo del entorno en el que te encuentres, deberás compilar los activos JavaScript y CSS.
+- **Backend:** Laravel 10 (PHP 8.1+)
+- **Frontend:** Vue.js 3 + Inertia.js
+- **Estilos:** Bootstrap 5.3 + SASS
+- **Base de Datos:** MySQL
+- **Autenticación:** Laravel Sanctum
+- **Bundling:** Vite
 
-- **Entorno local (desarrollo):**
+## 💻 Requisitos del Sistema
 
-Para entornos locales, ejecuta el siguiente comando para compilar y observar los archivos:
+- PHP >= 8.1
+- Composer
+- Node.js >= 16.x
+- MySQL >= 8.0
 
-```bash
-npm run dev
-```
+## ⚙️ Instalación
 
-- **Entorno de producción:**
+1. **Clonar el repositorio**
+   ```bash
+   git clone [url-del-repositorio]
+   cd Perfumarte
+   ```
 
-Para entornos de producción, donde necesitas compilar los activos optimizados, ejecuta el siguiente comando:
+2. **Configurar el entorno**
+   ```bash
+   cp .env.example .env
+   # Configurar las variables de entorno en el archivo .env
+   ```
 
-```bash
-npm run build
-```
+3. **Instalar dependencias**
+   ```bash
+   composer install
+   npm install
+   ```
 
-### 4. Otros comandos útiles
+4. **Generar clave de aplicación**
+   ```bash
+   php artisan key:generate
+   ```
 
-Si es necesario, puedes ejecutar otros comandos como la limpieza de caché o migraciones de base de datos:
+5. **Ejecutar migraciones**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-- **Limpieza de caché:**
+6. **Compilar assets**
+   ```bash
+   # Para desarrollo
+   npm run dev
 
-```bash
-php artisan cache:clear
-```
+   # Para producción
+   npm run build
+   ```
 
-## License
+## 🚀 Uso en Producción
 
-El framework Laravel es un software de código abierto licenciado bajo la [licencia MIT](https://opensource.org/licenses/MIT).
+1. **Optimizar la aplicación**
+   ```bash
+   php artisan optimize
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+
+2. **Asegurar permisos**
+   ```bash
+   chmod -R 775 storage bootstrap/cache
+   ```
+
+## 🔒 Seguridad
+
+Este sistema implementa múltiples capas de seguridad:
+- Autenticación robusta con Laravel Sanctum
+- Sistema de roles y permisos
+- Protección contra CSRF
+- Validación de datos en todas las entradas
+
+## 👥 Equipo
+
+Desarrollado con ❤️ para Perfumarte Colombia.
+
+## 📄 Licencia
+
+Este software es propietario y está protegido por derechos de autor. © 2024 Perfumarte Colombia.

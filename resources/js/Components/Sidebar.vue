@@ -1,7 +1,64 @@
 <script setup>
 import ButtonSidebar from './ButtonSidebar.vue';
-import PrimaryButton from './PrimaryButton.vue';
 import { can } from 'laravel-permission-to-vuejs';
+
+const buttons = [
+    {
+        name: 'Inicio',
+        href: route('dashboard'),
+        icon: 'fa-solid fa-house-chimney',
+        active: $page.component.startsWith('Dashboard'),
+    },
+    {
+        name: 'Ordenes de Compra',
+        href: route('orders.list'),
+        icon: 'fa-solid fa-rectangle-list',
+        active: $page.component.startsWith('PurchaseOrder'),
+        can: 'Ver Ordenes de Compra',
+    },
+    {
+        name: 'Despachos',
+        href: route('dispatch.list'),
+        icon: 'fa-solid fa-truck',
+        active: $page.component.startsWith('Dispatch'),
+        can: 'Ver Despachos',
+    },
+    {
+        name: 'Solicitud insumos',
+        href: route('suppliesrequest.list'),
+        icon: 'fa-brands fa-wpforms',
+        active: $page.component.startsWith('Requests'),
+        can: 'Ver Solicitudes Insumos',
+    },
+    {
+        name: 'Solicitud transformaciones',
+        href: route('transformationRequest.list'),
+        icon: 'fa-solid fa-flask',
+        active: $page.component.startsWith('RequestTransformation'),
+        can: 'Ver Solicitudes Transformacion',
+    },
+    {
+        name: 'Stock',
+        href: route('stock.dashboard'),
+        icon: 'fa-duotone fa-solid fa-boxes-stacked',
+        active: $page.component.startsWith('Stock'),
+        can: 'Ver Stock',
+    },
+    {
+        name: 'Reenvase',
+        href: route('repackage.list'),
+        icon: 'fa-solid fa-vial',
+        active: $page.component.startsWith('Repackage'),
+        can: 'Ver Reenvases',
+    },
+    {
+        name: 'Transformaciones',
+        href: route('LabTransformation.list'),
+        icon: 'fa-solid fa-flask',
+        active: $page.component.startsWith('LabTransformations'),
+        can: 'Ver Transformaciones',
+    },
+];
 
 </script>
 
@@ -13,57 +70,10 @@ import { can } from 'laravel-permission-to-vuejs';
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li>
-                <ButtonSidebar :href="route('dashboard')" :class="{ 'active': $page.component.startsWith('Dashboard') }">
-                    <i class="fa-solid fa-house-chimney me-4"></i>
-                    Inicio
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Ordenes de Compra')">
-                <ButtonSidebar :href="route('orders.list')"
-                    :class="{ 'active': $page.component.startsWith('PurchaseOrder') }">
-                    <i class="fa-solid fa-rectangle-list me-4"></i>
-                    Ordenes de compra
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Despachos')">
-                <ButtonSidebar :href="route('dispatch.list')"
-                    :class="{ 'active': $page.component.startsWith('Dispatch') }">
-                    <i class="fa-solid fa-truck me-4"></i>
-                    Despachos
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Solicitudes Insumos')">
-                <ButtonSidebar :href="route('suppliesrequest.list')"
-                    :class="{ 'active': $page.component.startsWith('Requests') }">
-                    <i class="fa-brands fa-wpforms me-4"></i>
-                    Solicitud insumos
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Solicitudes Transformacion')">
-                <ButtonSidebar :href="route('transformationRequest.list')"
-                    :class="{ 'active': $page.component.startsWith('RequestTransformation') }">
-                    <i class="fa-solid fa-flask me-4"></i>
-                    Solicitud transformaciones
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Stock')">
-                <ButtonSidebar :href="route('stock.dashboard')"
-                    :class="{ 'active': $page.component.startsWith('Stock') }">
-                    <i class="fa-duotone fa-solid fa-boxes-stacked me-4"></i>
-                    Stock
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Reenvases')">
-                <ButtonSidebar :href="route('repackage.list')" :class="{'active': $page.component.startsWith('Repackage')}">
-                    <i class="fa-solid fa-vial me-4"></i>
-                    Reenvase
-                </ButtonSidebar>
-            </li>
-            <li v-if="can('Ver Transformaciones')">
-                <ButtonSidebar :href="route('LabTransformation.list')" :class="{'active': $page.component.startsWith('LabTransformations')}">
-                    <i class="fa-solid fa-flask me-4"></i>
-                    Transformaciones
+            <li v-for="button in buttons" :key="button.name">
+                <ButtonSidebar v-if="can(button.can)" :href="button.href" :class="{ 'active': button.active }">
+                    <i :class="button.icon" class="me-4"></i>
+                    {{ button.name }}
                 </ButtonSidebar>
             </li>
         </ul>
