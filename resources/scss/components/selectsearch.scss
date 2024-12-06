@@ -26,6 +26,16 @@
     border: 2px solid $textBlack !important;
     box-shadow: 0px 2px 4px 0px $textBlack !important;
     height: 40px !important;
+
+    &.vs--multiple {
+      height: auto !important;
+      min-height: 40px !important;
+
+      .vs__selected-options {
+        width: auto !important;
+        flex-wrap: wrap !important;
+      }
+    }
   }
 
   .vs__dropdown-toggle {

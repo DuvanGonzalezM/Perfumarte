@@ -65,7 +65,7 @@ const submit = () => {
     showModal.value = false;
 };
 
-const optionsPermission = ref(props.permissions.map((permission) => [{ 'title': permission.name, 'value': permission.id }][0]));
+const optionsPermission = ref(props.permissions.map((permission) => ({ 'title': permission.name, 'value': permission.id })));
 </script>
 
 <template>
