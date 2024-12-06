@@ -3,61 +3,61 @@ import ButtonSidebar from './ButtonSidebar.vue';
 import { can } from 'laravel-permission-to-vuejs';
 
 const buttons = [
-    {
-        name: 'Inicio',
-        href: route('dashboard'),
-        icon: 'fa-solid fa-house-chimney',
-        active: $page.component.startsWith('Dashboard'),
-    },
-    {
-        name: 'Ordenes de Compra',
-        href: route('orders.list'),
-        icon: 'fa-solid fa-rectangle-list',
-        active: $page.component.startsWith('PurchaseOrder'),
-        can: 'Ver Ordenes de Compra',
-    },
-    {
-        name: 'Despachos',
-        href: route('dispatch.list'),
-        icon: 'fa-solid fa-truck',
-        active: $page.component.startsWith('Dispatch'),
-        can: 'Ver Despachos',
-    },
-    {
-        name: 'Solicitud insumos',
-        href: route('suppliesrequest.list'),
-        icon: 'fa-brands fa-wpforms',
-        active: $page.component.startsWith('Requests'),
-        can: 'Ver Solicitudes Insumos',
-    },
-    {
-        name: 'Solicitud transformaciones',
-        href: route('transformationRequest.list'),
-        icon: 'fa-solid fa-flask',
-        active: $page.component.startsWith('RequestTransformation'),
-        can: 'Ver Solicitudes Transformacion',
-    },
-    {
-        name: 'Stock',
-        href: route('stock.dashboard'),
-        icon: 'fa-duotone fa-solid fa-boxes-stacked',
-        active: $page.component.startsWith('Stock'),
-        can: 'Ver Stock',
-    },
-    {
-        name: 'Reenvase',
-        href: route('repackage.list'),
-        icon: 'fa-solid fa-vial',
-        active: $page.component.startsWith('Repackage'),
-        can: 'Ver Reenvases',
-    },
-    {
-        name: 'Transformaciones',
-        href: route('LabTransformation.list'),
-        icon: 'fa-solid fa-flask',
-        active: $page.component.startsWith('LabTransformations'),
-        can: 'Ver Transformaciones',
-    },
+    // {
+    //     name: 'Inicio',
+    //     href: route('dashboard'),
+    //     icon: 'fa-solid fa-house-chimney',
+    //     active: {{{$page.component.startsWith('Dashboard') ? 'true' : 'false'}}},
+    // },
+    // {
+    //     name: 'Ordenes de Compra',
+    //     href: route('orders.list'),
+    //     icon: 'fa-solid fa-rectangle-list',
+    //     active: $page.component.startsWith('PurchaseOrder'),
+    //     can: 'Ver Ordenes de Compra',
+    // },
+    // {
+    //     name: 'Despachos',
+    //     href: route('dispatch.list'),
+    //     icon: 'fa-solid fa-truck',
+    //     active: $page.component.startsWith('Dispatch'),
+    //     can: 'Ver Despachos',
+    // },
+    // {
+    //     name: 'Solicitud insumos',
+    //     href: route('suppliesrequest.list'),
+    //     icon: 'fa-brands fa-wpforms',
+    //     active: $page.component.startsWith('Requests'),
+    //     can: 'Ver Solicitudes Insumos',
+    // },
+    // {
+    //     name: 'Solicitud transformaciones',
+    //     href: route('transformationRequest.list'),
+    //     icon: 'fa-solid fa-flask',
+    //     active: $page.component.startsWith('RequestTransformation'),
+    //     can: 'Ver Solicitudes Transformacion',
+    // },
+    // {
+    //     name: 'Stock',
+    //     href: route('stock.dashboard'),
+    //     icon: 'fa-duotone fa-solid fa-boxes-stacked',
+    //     active: $page.component.startsWith('Stock'),
+    //     can: 'Ver Stock',
+    // },
+    // {
+    //     name: 'Reenvase',
+    //     href: route('repackage.list'),
+    //     icon: 'fa-solid fa-vial',
+    //     active: $page.component.startsWith('Repackage'),
+    //     can: 'Ver Reenvases',
+    // },
+    // {
+    //     name: 'Transformaciones',
+    //     href: route('LabTransformation.list'),
+    //     icon: 'fa-solid fa-flask',
+    //     active: $page.component.startsWith('LabTransformations'),
+    //     can: 'Ver Transformaciones',
+    // },
 ];
 
 </script>
