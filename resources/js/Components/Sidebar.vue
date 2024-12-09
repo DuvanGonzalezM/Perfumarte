@@ -49,6 +49,13 @@ const buttons = [
         can: 'Ver Stock',
     },
     {
+        name: 'Inventario',
+        href: route('inventory.current'),
+        icon: 'fa-duotone fa-solid fa-boxes-stacked',
+        active: page.component.startsWith('Stock'),
+        can: 'Ver Inventario Sede',
+    },
+    {
         name: 'Reenvase',
         href: route('repackage.list'),
         icon: 'fa-solid fa-vial',

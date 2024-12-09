@@ -19,7 +19,7 @@ const model = defineModel();
                     <div class="modal-body pt-4">
                         <slot name="body"></slot>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-center">
                         <slot name="footer">
                             <PrimaryButton @click="$emit('close')" class="px-5">
                                 Cerrar
