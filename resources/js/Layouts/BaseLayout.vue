@@ -17,10 +17,10 @@ watchEffect(() => {
 <template>
     <div class="container container-prais">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3" v-if="!props.sidebarHidden">
                 <Sidebar />
             </div>
-            <div class="col-md-9">
+            <div :class="props.sidebarHidden ? 'col-md-12' : 'col-md-9'">
                 <header class="container p-0">
                     <div class="row mb-3">
                         <div class="col-md-10">

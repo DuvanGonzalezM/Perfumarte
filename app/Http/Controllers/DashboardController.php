@@ -7,14 +7,18 @@ use App\Models\Inventory;
 use App\Models\Request;
 use App\Models\RequestPrais;
 use Inertia\Inertia;
-
-
+use Illuminate\Support\Facades\Auth;
 
 
 class DashboardController extends Controller
 {
     public function getDataInventory()
     {
+        // Si es asesor comercial, redirigir a inventario actual
+        if (Auth::user()->hasRole('Asesor comercial')) {
+            return redirect()->route('inventory.current');
+        }
+
         $stock1 = Inventory::where('warehouse_id', '1')->get();
         $stock2 = Inventory::where('warehouse_id', '2')->get();
         $stockAlmacen = Inventory::where('warehouse_id', '3')->get();

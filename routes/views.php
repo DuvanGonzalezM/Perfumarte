@@ -2,17 +2,17 @@
 
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\DashboardController;
-use App\http\Controllers\LabTransformationController;
+use App\Http\Controllers\LabTransformationController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\InventoryLocationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Rutas ordenes de compra
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'getDataInventory'])->name('dashboard');
     Route::controller(PurchaseOrderController::class)->group(function () {
@@ -104,5 +104,12 @@ Route::middleware('auth')->group(function () {
     });
 
 
+    Route::controller(InventoryLocationController::class)->group(function () {
+        Route::get('/inventario inicial', 'start')->name('inventory.start');
+        Route::post('/inventory/accept', 'accept')->name('inventory.accept');
+        Route::group(['middleware' => ['role:Asesor comercial', 'inventory.check']], function () {
+            Route::get('/inventario actual', 'current')->name('inventory.current');
+        });
+    });
 
 });

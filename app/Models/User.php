@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(RequestPrais::class,'user_id');
     }
+
+    public function inventoryValidations()
+    {
+        return $this->hasMany(InventoryValidation::class, 'user_id');
+    }
 }
