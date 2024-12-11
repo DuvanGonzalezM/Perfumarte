@@ -7,6 +7,8 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { can } from 'laravel-permission-to-vuejs';
+import { ref, watchEffect } from 'vue';
+import Notification from '@/Components/Notification.vue';
 
 const props = defineProps({
     dispatch: {
@@ -40,7 +42,16 @@ const columnsTable = [
     }
 
 ];
-
+const showNotification = ref(false);
+watchEffect(() => {
+    window.Echo.channel('test-channel')
+        .listen('TestEvent', (e) => {
+            showNotification.value = true;
+            // setTimeout(() => {
+            //     showNotification.value = false;
+            // }, 3000);
+        });
+});
 </script>
 <template>
     <Head title="Despachos" />
@@ -48,6 +59,7 @@ const columnsTable = [
         <template #header>
 
             <h1>Despachos</h1>
+            <Notification v-if="showNotification" />
         </template>
 
         <SectionCard>
