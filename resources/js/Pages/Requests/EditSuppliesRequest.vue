@@ -39,12 +39,14 @@ const submit = () => {
 };
 </script>
 <template>
+
     <Head title="Detalle de Solicitud de Insumos" />
     <BaseLayout>
         <template #header>
             <h1>Detalle de Solicitud de Insumos</h1>
         </template>
-        <SectionCard :idSection="requestPrais.request_id" :subtitle="requestPrais.status"
+        <SectionCard :idSection="requestPrais.request_id"
+            :subtitle="requestPrais.status + (requestPrais.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
             :subextra="moment(requestPrais.created_at).format('DD/MM/Y')">
             <template #headerSection>
                 <strong>Información de la Solicitud</strong>
@@ -55,11 +57,12 @@ const submit = () => {
                         <tr>
                             <th>Referencia</th>
                             <th>Cantidad</th>
-                            <th></th>
+                            <th v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente'"></th>
                         </tr>
                     </thead>
                     <tbody id="productsList">
-                        <tr v-for="(reference, referenceIndex) in form.references" :key="reference.reference">
+                        <tr v-for="(reference, referenceIndex) in form.references" :key="reference.reference"
+                            v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente'">
                             <td>
                                 <SelectSearch :options="optionInventory" v-model="reference.reference"
                                     :getOptionLabel="option => option.label"
@@ -73,15 +76,25 @@ const submit = () => {
                                     id="quantity[]" v-model="reference.quantity" />
                             </td>
                             <td>
-                                <div class="removeItem" @click="removeReference(referenceIndex)">
+                                <div @click=" removeReference(referenceIndex)" class="removeItem">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr v-for="(detail) in props.requestPrais.detail_request" :key="detail.reference"
+                            v-if="requestPrais.status.trim().toLowerCase() === 'pendiente'">
+                            <td>
+                                {{ detail.inventory.product.reference }}
+                            </td>
+                            <td>
+                                {{ detail.quantity }}
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="row text-center justify-content-center my-5">
-                    <div class="addItem" @click="addReference">
+                    <div v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente'" @click="addReference"
+                        class="addItem">
                         <i class="fa-solid fa-plus"></i>
                     </div>
                 </div>
@@ -107,7 +120,8 @@ const submit = () => {
                         <PrimaryButton :href="route('suppliesrequest.validation')" class="px-5">
                             Volver
                         </PrimaryButton>
-                        <PrimaryButton @click="showApproveModal = true" class="px-5">
+                        <PrimaryButton v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente'"
+                            @click="showApproveModal = true" class="px-5">
                             Aprobar
                         </PrimaryButton>
                     </div>
