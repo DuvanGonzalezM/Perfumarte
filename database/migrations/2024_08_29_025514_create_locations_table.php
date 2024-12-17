@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('location_id');
             $table->string('name');
             $table->string('address');
+            $table->foreignId('zone_id')->nullable()->constrained('zones', 'zone_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }
