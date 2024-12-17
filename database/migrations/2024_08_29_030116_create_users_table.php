@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id('user_id');
             $table->string('username');
             $table->string('name');
+            $table->string('boss_user')->nullable();
             $table->string('password');
-            $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('location_id')->nullable()->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ import AccountControls from '@/Components/AccountControls.vue';
 import { usePage } from '@inertiajs/vue3';
 import { watchEffect } from 'vue';
 import InfoLocation from '@/Components/InfoLocation.vue';
+import { is } from 'laravel-permission-to-vuejs';
 
 const { props } = usePage();
 
@@ -18,19 +19,21 @@ watchEffect(() => {
 <template>
     <div class="container container-prais">
         <div class="row">
-            <div class="col-md-3" v-if="!props.sidebarHidden">
+            <div class="col-3" v-if="!props.sidebarHidden">
                 <Sidebar />
             </div>
-            <div :class="props.sidebarHidden ? 'col-md-12' : 'col-md-9'">
+            <div :class="props.sidebarHidden ? 'col-12' : 'col-9'">
                 <header class="container p-0">
                     <div class="row mb-3">
-                        <div class="col-md-10">
+                        <div class="col-10">
                             <!-- <Breadcrumbs /> -->
                         </div>
-                        <div class="col-md-2 d-flex justify-content-end">
+                        <div class="col-2 d-flex justify-content-end">
                             <AccountControls />
                         </div>
-                        <!-- <InfoLocation /> -->
+                        <div class="row mt-3 justify-content-end" v-if="is('Asesor comercial')">
+                            <InfoLocation />
+                        </div>
                     </div>
                     <div class="row">
                         <slot name="header" />
