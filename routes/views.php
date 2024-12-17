@@ -8,6 +8,7 @@ use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -94,6 +95,14 @@ Route::middleware('auth')->group(function () {
             Route::post('nueva transformacion de laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
         });
     });
+
+    Route::controller(AssignmentController::class)->group(function () {
+        Route::group(['middleware' => ['auth']], function () {
+            Route::get('asignacion supervisores', 'getAllSupervisor')->name('assignment.supervisor');
+            Route::post('asignacion supervisores', 'storeAssignment')->name('assignment.store');
+        });
+    });
+
 
     Route::controller(InventoryLocationController::class)->group(function () {
         Route::get('/inventario inicial', 'start')->name('inventory.start');
