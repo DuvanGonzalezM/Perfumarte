@@ -99,7 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(AssignmentController::class)->group(function () {
         Route::group(['middleware' => ['auth']], function () {
             Route::get('asignacion supervisores', 'getAllSupervisor')->name('assignment.supervisor');
-            Route::post('asignacion supervisores', 'storeAssignment')->name('assignment.store');
+            Route::put('asignacion supervisores', 'updateAssignment')->name('assignment.update');
         });
     });
 
