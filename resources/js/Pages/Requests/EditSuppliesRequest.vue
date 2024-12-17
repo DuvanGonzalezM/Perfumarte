@@ -3,175 +3,116 @@ import SectionCard from '@/Components/SectionCard.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
+import ModalPrais from '@/Components/ModalPrais.vue';
+import moment from 'moment';
 
 const props = defineProps({
-    requestPrais: {
-        type: Object,
-        required: true
-    },
-    inventories: {
-        type: Array,
-        required: true
-    }
+    requestPrais: Object,
+    inventory: Array,
 });
 
-// Inicializar el formulario con los datos existentes
 const form = useForm({
-    references: Array.isArray(props.requestPrais?.detailRequest) 
-        ? props.requestPrais.detailRequest.map(detail => ({
-            reference: detail.inventory_id,
-            quantity: detail.quantity
-        }))
-        : [{ reference: '', quantity: 1 }]
+    references: props.requestPrais.detail_request.map(detail => ({
+        reference: detail.inventory.inventory_id,
+        quantity: detail.quantity
+    }))
 });
 
+const showApproveModal = ref(false);
+const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
 const addReference = () => {
     form.references.push({
         reference: '',
-        quantity: 1
+        quantity: '',
     });
 };
 
 const removeReference = (index) => {
-    if (form.references.length > 1) {
-        form.references.splice(index, 1);
-    }
+    form.references.splice(index, 1);
 };
 
 const submit = () => {
-    form.put(route('requests.update', props.requestPrais.request_id), {
-        onSuccess: () => {
-            window.location.href = route('suppliesrequest.validation');
-        }
-    });
+    form.put(route('suppliesrequest.update', props.requestPrais.request_id));
 };
 </script>
-
 <template>
-    <Head title="Editar Solicitud de Insumos" />
-
+    <Head title="Detalle de Solicitud de Insumos" />
     <BaseLayout>
         <template #header>
-            <h1>Editar Solicitud de Insumos</h1>
+            <h1>Detalle de Solicitud de Insumos</h1>
         </template>
-
-        <SectionCard>
+        <SectionCard :idSection="requestPrais.request_id" :subtitle="requestPrais.status"
+            :subextra="moment(requestPrais.created_at).format('DD/MM/Y')">
             <template #headerSection>
-                <strong>Editar Solicitud #{{ requestPrais.request_id }}</strong>
+                <strong>Información de la Solicitud</strong>
             </template>
+            <form @submit.prevent="submit" class="table-prais">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Referencia</th>
+                            <th>Cantidad</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsList">
+                        <tr v-for="(reference, referenceIndex) in form.references" :key="reference.reference">
+                            <td>
+                                <SelectSearch :options="optionInventory" v-model="reference.reference"
+                                    :getOptionLabel="option => option.label"
+                                    :messageError="Object.keys(form.errors).length ? form.errors['references.' + referenceIndex + '.reference'] : null"
+                                    name="reference[]" id="reference[]" placeholder="Selecciona una referencia" />
 
-            <form @submit.prevent="submit" class="mt-4">
-                <div class="container">
-                    <!-- Información de la solicitud -->
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <strong>Solicitante:</strong> {{ requestPrais.user.username }}
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Sede:</strong> {{ requestPrais.user.location.name }}
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Fecha:</strong> {{ new Date(requestPrais.created_at).toLocaleDateString() }}
-                        </div>
+                            </td>
+                            <td>
+                                <TextInput type="number" name="quantity[]"
+                                    :messageError="Object.keys(form.errors).length ? form.errors['references.' + referenceIndex + '.quantity'] : null"
+                                    id="quantity[]" v-model="reference.quantity" />
+                            </td>
+                            <td>
+                                <div class="removeItem" @click="removeReference(referenceIndex)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row text-center justify-content-center my-5">
+                    <div class="addItem" @click="addReference">
+                        <i class="fa-solid fa-plus"></i>
                     </div>
-
-                    <!-- Lista de productos -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h5>Productos Solicitados</h5>
-                        </div>
+                </div>
+                <div class="row my-5">
+                    <div class="col-12">
+                        <ModalPrais v-model="showApproveModal" @close="showApproveModal = false">
+                            <template #header>
+                                Confirmar Aprobación
+                            </template>
+                            <template #body>
+                                ¿Está seguro que desea aprobar esta solicitud?
+                            </template>
+                            <template #footer>
+                                <PrimaryButton @click="submit">
+                                    Confirmar
+                                </PrimaryButton>
+                            </template>
+                        </ModalPrais>
                     </div>
-
-                    <div v-for="(reference, index) in form.references" :key="index" class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <InputLabel :for="'product_' + index" value="Producto" required />
-                                <SelectSearch
-                                    :id="'product_' + index"
-                                    v-model="reference.reference"
-                                    :options="inventories.map(inv => ({
-                                        value: inv.id,
-                                        label: inv.product.name
-                                    }))"
-                                    placeholder="Seleccione un producto"
-                                    required
-                                />
-                                <InputError :message="form.errors['references.' + index + '.reference']" class="mt-2" />
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <InputLabel :for="'quantity_' + index" value="Cantidad" required />
-                                <TextInput
-                                    :id="'quantity_' + index"
-                                    type="number"
-                                    v-model="reference.quantity"
-                                    class="mt-1 block w-full"
-                                    min="1"
-                                    required
-                                />
-                                <InputError :message="form.errors['references.' + index + '.quantity']" class="mt-2" />
-                            </div>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <DangerButton
-                                type="button"
-                                @click="removeReference(index)"
-                                :disabled="form.references.length === 1"
-                            >
-                                <i class="fa-solid fa-trash"></i>
-                            </DangerButton>
-                        </div>
-                    </div>
-
-                    <!-- Botón para agregar más productos -->
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <SecondaryButton
-                                type="button"
-                                @click="addReference"
-                            >
-                                <i class="fa-solid fa-plus"></i> Agregar Producto
-                            </SecondaryButton>
-                        </div>
-                    </div>
-
-                    <!-- Botones de acción -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <PrimaryButton
-                                type="submit"
-                                :disabled="form.processing"
-                            >
-                                Guardar Cambios
-                            </PrimaryButton>
-                            <SecondaryButton
-                                :href="route('suppliesrequest.validation')"
-                                class="ms-2"
-                            >
-                                Cancelar
-                            </SecondaryButton>
-                        </div>
+                </div>
+                <div class="row my-5">
+                    <div class="col-12 d-flex justify-content-between">
+                        <PrimaryButton :href="route('suppliesrequest.validation')" class="px-5">
+                            Volver
+                        </PrimaryButton>
+                        <PrimaryButton @click="showApproveModal = true" class="px-5">
+                            Aprobar
+                        </PrimaryButton>
                     </div>
                 </div>
             </form>
         </SectionCard>
     </BaseLayout>
 </template>
-
-<style scoped>
-.required:after {
-    content: " *";
-    color: red;
-}
-.form-group {
-    margin-bottom: 1rem;
-}
-</style>

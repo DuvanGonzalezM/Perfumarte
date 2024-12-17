@@ -43,11 +43,10 @@ Route::middleware('auth')->group(function () {
             Route::get('solicitudes insumos', 'getAllRequest')->name('suppliesrequest.list');
             Route::get('solicitudes insumos/solicitud/{requestId}', 'detailRequest')->name('suppliesrequest.detail');
             Route::get('solicitudes insumos/validar', 'getValidationView')->name('suppliesrequest.validation');
-            Route::get('solicitudes insumos/{requestId}/detalle', 'showDetail')->name('requests.detail');
-            Route::get('solicitudes insumos/{requestId}/editar', 'edit')->name('requests.edit');
-            Route::put('solicitudes insumos/{requestId}', 'update')->name('requests.update');
+            Route::get('solicitudes insumos/{requestId}/editar', 'showDetail')->name('requests.detail');
+            Route::put('solicitudes insumos/{requestId}/actualizar', 'update')->name('suppliesrequest.update');
+            Route::post('solicitudes insumos/{requestId}/aprobar', 'approveRequest')->name('suppliesrequests.approve');
             Route::post('solicitudes insumos/{requestId}/validate', 'validateRequest')->name('requests.validate');
-            Route::post('solicitudes insumos/{requestId}/reject', 'rejectRequest')->name('requests.reject');
         });
     });
     Route::controller(RequestPraisController::class)->group(function () {
@@ -89,14 +88,14 @@ Route::middleware('auth')->group(function () {
             Route::post('reenvase/nuevo-reenvase', 'storeRepackage')->name('store.repackage');
         });
     });
-    
+
     Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
-            Route::get('transformaciones-de-laboratorio',  'getAllTransformation')->name('LabTransformation.list');
+            Route::get('transformaciones-de-laboratorio', 'getAllTransformation')->name('LabTransformation.list');
             Route::get('transformaciones-de-laboratorio/detalle-de-transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
         });
         Route::group(['middleware' => ['can:Ver Transformaciones']], function () {
-            Route::get('nueva-transformacion-de-laboratorio','createLabTransformation')->name('LabTransformation.create');
+            Route::get('nueva-transformacion-de-laboratorio', 'createLabTransformation')->name('LabTransformation.create');
             Route::post('nueva-transformacion-de-laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
         });
     });
