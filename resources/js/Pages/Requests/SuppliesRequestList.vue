@@ -1,5 +1,4 @@
 <script setup>
-
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';

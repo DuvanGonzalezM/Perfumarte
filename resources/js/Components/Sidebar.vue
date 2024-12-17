@@ -92,7 +92,7 @@ const buttons = [
 <template>
     <div class="d-flex flex-column flex-shrink-0 p-3 text-white sidebar-card">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <img src="\assets\images\Logo_1.png" />
+            <img src="\assets\images\Logo_1.avif" />
             <h5 class="mx-2">{{ $page.props.auth.user.name }}</h5>
         </a>
         <hr>
