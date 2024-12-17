@@ -1,15 +1,12 @@
-<script setup>
-// You can add props or other logic here if needed
-</script>
 <template>
-    
-    <div class="col-6 p-2 cardboxprais cardinfolocation">
-        <strong>{{$page.props.auth.user.location}} </strong>
-        {{ console.log($page.props) }}
-        <!-- <span>{{ props.requestPrais.user?.location?.name || 'No disponible' }}</span><br> -->
-        <strong>Usuario: </strong>
-        <!-- <span>{{ props.requestPrais.user?.username || 'No disponible' }}</span><br> -->
-        <strong>Fecha: </strong>
-        <!-- <span>{{ moment(props.requestPrais.created_at).format('DD/MM/Y') }}</span> -->
+    <div class="col-6 p-2 row cardboxprais cardinfolocation text-center">
+        <div class="col-6">
+            <strong>{{$page.props.auth.user.location.zone.zone_name}}</strong><br>
+            <strong>{{ $page.props.auth.user.location.name }}</strong><br>
+        </div>
+        <div class="col-6">
+            <strong>{{ $page.props.auth.user.location.address }}</strong><br>
+            <strong>{{ $page.props.auth.user.location_id }}</strong>
+        </div>
     </div>
 </template>

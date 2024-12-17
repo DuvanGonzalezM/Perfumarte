@@ -8,7 +8,7 @@ import Image from '@/Components/Image.vue';
     <div class="container body-login">
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
-                <Image src="assets\images\Logo_3.png" />
+                <Image src="assets\images\Logo_3.avif" />
                 <h3>Inicio de Sesión</h3>
             </div>
             <div class="card-body position-relative">
