@@ -5,6 +5,7 @@ use App\Models\Inventory;
 use App\Models\RequestDetail;
 use App\Models\RequestPrais;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 
@@ -13,13 +14,49 @@ class RequestPraisController extends Controller
 
     public function getAllRequest()
     {
+        $user = Auth::user();
         $suppliesRequest = RequestPrais::with('user.location')
             ->where('request_type', '1')
             ->get();
 
+        if ($user->hasRole('Jefe de Operaciones')) {
+            $suppliesRequest = RequestPrais::with('user.location')
+                ->where('request_type', '1')
+                ->where('status', 'Pendiente')
+                ->get();
+        }
+        
         return Inertia::render('Requests/SuppliesRequestList', [
             'suppliesRequest' => $suppliesRequest
         ]);
+    }
+
+    public function createRequst(){
+        $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
+        return Inertia::render('Requests/NewSuppliesRequest', [
+            'inventory' => $inventory,
+        ]);
+    }
+
+    public function storeRequest(Request $request){
+        $user = Auth::user();
+        $request->validate([
+            'references.*.reference' => 'required|exists:inventories,inventory_id',
+            'references.*.quantity' => 'required|integer|min:1'
+        ]);
+        $requestPrais = RequestPrais::create([
+            'request_type' => '1',
+            'user_id'=> $user->user_id,
+            'status' => 'Por solicitar'
+        ]);
+        foreach ($request->references as $reference) {
+            RequestDetail::create([
+                'request_id' => $requestPrais->request_id,
+                'inventory_id' => $reference['reference'],
+                'quantity' => $reference['quantity']
+            ]);
+        }
+        return redirect()->route('suppliesrequest.list', ['message' => '', 'status' => 200]);
     }
     public function detailRequest($requestId)
     {
@@ -60,27 +97,11 @@ class RequestPraisController extends Controller
             ]);
         }
         $requestPrais = RequestPrais::findOrFail($requestId);
-        $requestPrais->status = 'Aprobada';
+        $requestPrais->status = 'Pendiente';
         $requestPrais->save();
 
-        return redirect()->route('suppliesrequest.validation', ['message' => '', 'status' => 200]);
+        return redirect()->route('suppliesrequest.list', ['message' => '', 'status' => 200]);
 
-    }
-    public function getValidationView()
-    {
-        $suppliesRequest = RequestPrais::with('user.location')
-            ->where('request_type', '1')
-            ->get()
-            ->map(function ($request) {
-                if (empty($request->status)) {
-                    $request->status = 'pending_approval';
-                }
-                return $request;
-            });
-
-        return Inertia::render('Requests/ValidSuppliesRequest', [
-            'suppliesRequest' => $suppliesRequest
-        ]);
     }
 
     public function getAllRequestTransformation()

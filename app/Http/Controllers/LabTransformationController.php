@@ -55,27 +55,18 @@ class LabTransformationController extends Controller
             $escencia->update([
                 'quantity' => $escencia->quantity - $request['escencia'],
             ]);
-        } else {
-            dd($request['escencia'], $escencia->quantity);
-            // return back()->withErrors(['error' => 'No hay suficiente escencia en el almacén 1.']);
         }
 
         if ($dipropylene && $dipropylene->quantity >= $request['dipropileno']) {
             $dipropylene->update([
                 'quantity' => $dipropylene->quantity - $request['dipropileno'],
             ]);
-        } else {
-            dd($request['dipropileno'], $dipropylene->quantity);
-            // return back()->withErrors(['error' => 'No hay suficiente dipropileno en el almacén 1.']);
         }
 
         if ($solvent && $solvent->quantity >= $request['disolvente']) {
             $solvent->update([
                 'quantity' => $solvent->quantity - $request['disolvente'],
             ]);
-        } else {
-            dd($request['disolvente'], $solvent->quantity);
-            // return back()->withErrors(['error' => 'No hay suficiente disolvente en el almacén 1.']);
         }
 
         if ($inventory) {

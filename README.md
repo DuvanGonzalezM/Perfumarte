@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Perfumarte Logo](public/images/Logo_1.avif)
+![Perfumarte Logo](public/assets/images/Logo_1.avif)
 
 *Elegancia y Sofisticación en la Gestión de Perfumería*
 

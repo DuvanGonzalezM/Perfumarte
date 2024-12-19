@@ -11,15 +11,11 @@ import moment from 'moment';
 import { can } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
-    requestPrais: Object,
     inventory: Array,
 });
 
 const form = useForm({
-    references: props.requestPrais.detail_request.map(detail => ({
-        reference: detail.inventory.inventory_id,
-        quantity: detail.quantity
-    }))
+    references: []
 });
 
 const showApproveModal = ref(false);
@@ -36,19 +32,17 @@ const removeReference = (index) => {
 };
 
 const submit = () => {
-    form.put(route('suppliesrequest.update', props.requestPrais.request_id));
+    form.post(route('suppliesrequest.store'));
 };
 </script>
 <template>
 
-    <Head title="Detalle de Solicitud de Insumos" />
+    <Head title="Nueva Solicitud de Insumos" />
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <h1>Detalle de Solicitud de Insumos</h1>
+            <h1>Nueva Solicitud de Insumos</h1>
         </template>
-        <SectionCard :idSection="requestPrais.request_id"
-            :subtitle="requestPrais.status + (requestPrais.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
-            :subextra="moment(requestPrais.created_at).format('DD/MM/Y')">
+        <SectionCard>
             <template #headerSection>
                 <strong>Información de la Solicitud</strong>
             </template>
@@ -58,12 +52,11 @@ const submit = () => {
                         <tr>
                             <th>Referencia</th>
                             <th>Cantidad</th>
-                            <th v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')"></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="productsList">
-                        <tr v-for="(reference, referenceIndex) in form.references" :key="reference.reference"
-                            v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')">
+                        <tr v-for="(reference, referenceIndex) in form.references" :key="reference.reference">
                             <td>
                                 <SelectSearch :options="optionInventory" v-model="reference.reference"
                                     :getOptionLabel="option => option.label"
@@ -82,19 +75,10 @@ const submit = () => {
                                 </div>
                             </td>
                         </tr>
-                        <tr v-for="(detail) in props.requestPrais.detail_request" :key="detail.reference"
-                            v-if="requestPrais.status.trim().toLowerCase() === 'pendiente'">
-                            <td>
-                                {{ detail.inventory.product.reference }}
-                            </td>
-                            <td>
-                                {{ detail.quantity }}
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
                 <div class="row text-center justify-content-center my-5">
-                    <div v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')" @click="addReference"
+                    <div @click="addReference"
                         class="addItem">
                         <i class="fa-solid fa-plus"></i>
                     </div>
@@ -103,10 +87,10 @@ const submit = () => {
                     <div class="col-12">
                         <ModalPrais v-model="showApproveModal" @close="showApproveModal = false">
                             <template #header>
-                                Confirmar Aprobación
+                                Crear Solicitud
                             </template>
                             <template #body>
-                                ¿Está seguro que desea aprobar esta solicitud?
+                                ¿Está seguro que desea crear esta solicitud?
                             </template>
                             <template #footer>
                                 <PrimaryButton @click="submit">
@@ -121,9 +105,8 @@ const submit = () => {
                         <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">
                             Volver
                         </PrimaryButton>
-                        <PrimaryButton v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')"
-                            @click="showApproveModal = true" class="px-5">
-                            Aprobar
+                        <PrimaryButton @click="showApproveModal = true" class="px-5">
+                            Crear
                         </PrimaryButton>
                     </div>
                 </div>

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'getDataInventory'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'getDataInventory'])->name('dashboard');
     Route::controller(PurchaseOrderController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Ordenes de Compra']], function () {
             Route::get('ordenes-compra', 'getAllOrders')->name('orders.list');
@@ -42,13 +42,16 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(RequestPraisController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Solicitudes Insumos']], function () {
-            Route::get('solicitudes insumos', 'getAllRequest')->name('suppliesrequest.list');
-            Route::get('solicitudes insumos/solicitud/{requestId}', 'detailRequest')->name('suppliesrequest.detail');
-            Route::get('solicitudes insumos/validar', 'getValidationView')->name('suppliesrequest.validation');
-            Route::get('solicitudes insumos/{requestId}/editar', 'showDetail')->name('requests.detail');
-            Route::put('solicitudes insumos/{requestId}/actualizar', 'update')->name('suppliesrequest.update');
-            Route::post('solicitudes insumos/{requestId}/aprobar', 'approveRequest')->name('suppliesrequests.approve');
-            Route::post('solicitudes insumos/{requestId}/validate', 'validateRequest')->name('requests.validate');
+            Route::get('solicitudes-insumos', 'getAllRequest')->name('suppliesrequest.list');
+            Route::get('solicitudes-insumos/solicitud/{requestId}', 'detailRequest')->name('suppliesrequest.detail');
+        });
+        Route::group(['middleware' => ['can:Editar Solicitudes Insumos']], function () {
+            Route::get('solicitudes-insumos/{requestId}/editar', 'showDetail')->name('requests.detail');
+            Route::put('solicitudes-insumos/{requestId}/actualizar', 'update')->name('suppliesrequest.update');
+        });
+        Route::group(['middleware' => ['can:Crear Solicitudes Insumos']], function () {
+            Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.store');
+            Route::post('solicitudes-insumos/nueva-solicitud', 'storeRequest')->name('suppliesrequest.store');
         });
     });
     Route::controller(RequestPraisController::class)->group(function () {
@@ -104,28 +107,28 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(AssignmentController::class)->group(function () {
         Route::group(['middleware' => ['auth']], function () {
-            Route::get('/asignacion supervisores', 'getAllSupervisor')->name('assignment.supervisor');
-            Route::put('/asignacion supervisores', 'updateAssignment')->name('assignment.update');
-            Route::get('/asignar asesores', 'getAllLocation')->name('list.location');
-            Route::get('/asignar asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
-            Route::post('/asignar asesores', 'storeAdvisor')->name('store.Advisor');
+            Route::get('asignacion-supervisores', 'getAllSupervisor')->name('assignment.supervisor');
+            Route::put('asignacion-supervisores', 'updateAssignment')->name('assignment.update');
+            Route::get('asignar-asesores', 'getAllLocation')->name('list.location');
+            Route::get('asignar-asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
+            Route::post('asignar-asesores', 'storeAdvisor')->name('store.Advisor');
         });
     });
 
 
     Route::controller(InventoryLocationController::class)->group(function () {
-        Route::get('/inventario inicial', 'start')->name('inventory.start');
-        Route::post('/inventory/accept', 'accept')->name('inventory.accept');
+        Route::get('inventario inicial', 'start')->name('inventory.start');
+        Route::post('inventory/accept', 'accept')->name('inventory.accept');
         Route::group(['middleware' => ['role:Asesor comercial', 'inventory.check']], function () {
-        Route::get('/inventario actual', 'current')->name('inventory.current');
+            Route::get('inventario actual', 'current')->name('inventory.current');
         });
     });
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/dispatch/{dispatch}/receive', [SupplyReceptionController::class, 'show'])
-            ->name('dispatch.receive.show');
-        Route::post('/dispatch/{dispatch}/receive', [SupplyReceptionController::class, 'receive'])
-            ->name('dispatch.receive');
+    Route::controller(SupplyReceptionController::class)->group(function () {
+        Route::group(['middleware' => ['can:Recibir Insumos']], function () {
+            Route::get('despachos/recibir',  'show')->name('dispatch.show');
+            Route::post('despachos/recibir',  'receive')->name('dispatch.receive');
+        });
     });
 
 });

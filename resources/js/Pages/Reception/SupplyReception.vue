@@ -9,16 +9,16 @@ import moment from 'moment';
 import ModalPrais from '@/Components/ModalPrais.vue';
 
 const props = defineProps({
-    dispatch: {
-        type: Object,
+    dispatchDetails: {
+        type: Array,
         required: true,
     }
 });
 
 const form = useForm({
-    products: (props.dispatch?.dispatch_detail || []).map(detail => ({
+    products: props.dispatchDetails.map(detail => ({
         dispatchs_detail_id: detail.dispatchs_detail_id || '',
-        product_id: detail.inventory?.product_id || '',
+        dispatch_id: detail.dispatch_id || '',
         name: detail.inventory?.product?.reference || '',
         quantity: detail.dispatched_quantity || 0,
         received: detail.received || false,
@@ -31,7 +31,7 @@ const allProductsReceived = computed(() => {
 });
 console.log(form.products);
 const submit = () => {
-    form.post(route('dispatch.receive', props.dispatch.dispatch_id), {
+    form.post(route('dispatch.receive'), {
         onSuccess: () => {
             // Manejar éxito
         },
@@ -40,15 +40,14 @@ const submit = () => {
 </script>
 
 <template>
-
     <Head title="Recepción de Despacho" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Recepción de Despacho </h1>
         </template>
-        <SectionCard :idSection="props.dispatch.dispatch_id"
-            :subtitle="props.dispatch.status + (props.dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
-            :subextra="moment(props.dispatch.created_at).format('DD/MM/Y')">
+        <SectionCard :idSection="props.dispatchDetails[0].dispatch_id"
+            :subtitle="props.dispatchDetails[0].dispatch.status + (props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
+            :subextra="moment(props.dispatchDetails[0].dispatch.created_at).format('DD/MM/Y')" v-if="props.dispatchDetails.length > 0">
             <template #headerSection>
                 <strong>Detalles del Despacho</strong>
             </template>
@@ -68,7 +67,7 @@ const submit = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="dispatch.status.trim().toLowerCase() === 'en ruta'">
+                                            <template v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
                                                 <td>{{ product.name }}</td>
                                                 <td>{{ product.quantity }}</td>
                                                 <td>
@@ -115,10 +114,7 @@ const submit = () => {
                     </div>
                     <div class="row my-5">
                         <div class="col-12 d-flex justify-content-between">
-                            <PrimaryButton :href="route('dispatch.list')" class="px-5">
-                                Volver
-                            </PrimaryButton>
-                            <PrimaryButton v-if="dispatch.status.trim().toLowerCase() === 'en ruta'"
+                            <PrimaryButton v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
                                 @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
                                 type="submit" :disabled="!allProductsReceived">
                                 Confirmar Recepción
@@ -126,6 +122,14 @@ const submit = () => {
                         </div>
                     </div>
                 </form>
+            </div>
+        </SectionCard>
+        <SectionCard v-if="props.dispatchDetails.length == 0">
+            <template #headerSection>
+                <strong>Detalles del Despacho</strong>
+            </template>
+            <div class="container px-0">
+                <p>No se tiene ningún despacho <b>En Ruta</b></p>
             </div>
         </SectionCard>
     </BaseLayout>

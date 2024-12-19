@@ -14,6 +14,13 @@ const buttons = [
         can: 'Ver Ordenes de Compra',
     },
     {
+        name: 'Inventario',
+        href: route('inventory.current'),
+        icon: 'fa-duotone fa-solid fa-boxes-stacked',
+        active: page.component.startsWith('Stock'),
+        can: 'Ver Inventario Sede',
+    },
+    {
         name: 'Ordenes de Compra',
         href: route('orders.list'),
         icon: 'fa-solid fa-rectangle-list',
@@ -28,14 +35,14 @@ const buttons = [
         can: 'Ver Despachos',
     },
     {
-        name: 'Solicitud insumos',
+        name: 'Solicitud Insumos',
         href: route('suppliesrequest.list'),
         icon: 'fa-brands fa-wpforms',
         active: page.component.startsWith('Requests'),
         can: 'Ver Solicitudes Insumos',
     },
     {
-        name: 'Solicitud transformaciones',
+        name: 'Solicitud Transformaciones',
         href: route('transformationRequest.list'),
         icon: 'fa-solid fa-flask',
         active: page.component.startsWith('RequestTransformation'),
@@ -47,13 +54,6 @@ const buttons = [
         icon: 'fa-duotone fa-solid fa-boxes-stacked',
         active: page.component.startsWith('Stock'),
         can: 'Ver Stock',
-    },
-    {
-        name: 'Inventario',
-        href: route('inventory.current'),
-        icon: 'fa-duotone fa-solid fa-boxes-stacked',
-        active: page.component.startsWith('Stock'),
-        can: 'Ver Inventario Sede',
     },
     {
         name: 'Reenvase',
@@ -84,6 +84,13 @@ const buttons = [
         active: page.component.startsWith('Assignment/ListLocation'),
         can: 'Asignar Personal',
         
+    },
+    {
+        name: 'Recepcoion Insumos',
+        href: route('dispatch.show'),
+        icon: 'fa-solid fa-list-check',
+        active: page.component.startsWith('Reception'),
+        can: 'Recibir Insumos',
     },
 ];
 

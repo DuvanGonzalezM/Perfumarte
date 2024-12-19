@@ -8,40 +8,35 @@ use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SupplyReceptionController extends Controller
 {
-    public function show(Dispatch $dispatch)
+    public function show()
     {
-        // Verificar que el despacho esté "en ruta" y pertenezca al punto de venta del usuario
-        $dispatch = $dispatch->load([
-            'dispatchDetail.inventory.product',
-            'dispatchDetail.warehouse.location'
-        ]);
-
-        // Verificar si el despacho tiene detalles
-        if (!$dispatch->dispatchDetail) {
-            return redirect()->back()
-                ->with('error', 'El despacho no tiene productos asociados');
-        }
+        $user = Auth::user();
+        $dispatchDetails = DispatchDetail::with('dispatch', 'inventory.product')->where("warehouse_id", $user->location->warehouses[0]->warehouse_id)
+            ->whereHas('dispatch', function ($query) {
+            return $query->where('status', '=', 'En ruta');
+        })->get();
 
         return Inertia::render('Reception/SupplyReception', [
-            'dispatch' => $dispatch
+            'dispatchDetails' => $dispatchDetails
         ]);
     }
 
-    public function receive(Request $request, Dispatch $dispatch)
+    public function receive(Request $request)
     {
         $validated = $request->validate([
             'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,product_id',
-            'products.*.received' => 'required|boolean',
+            'products.*.received' => 'nullable|boolean',
             'products.*.observation' => 'nullable|string',
             'products.*.quantity' => 'required|numeric|min:0'
         ]);
-
         // DB::transaction(function () use ($dispatch, $validated, $request) {
             // Actualizar estado del despacho
+        if(count($request['products']) > 0){
+            $dispatch = Dispatch::findOrFail($request['products'][0]['dispatch_id']);
             $dispatch->update(['status' => 'Recibido']);
 
             // Actualizar cada detalle del despacho
@@ -72,9 +67,8 @@ class SupplyReceptionController extends Controller
                     // }
                 }
             }
+        }
         // });
-
-        return redirect()->route('dispatch.list')
-            ->with('success', 'Despacho recibido correctamente');
+        return redirect()->route('dispatch.show', ['message' => '', 'status' => 200]);
     }
 }
