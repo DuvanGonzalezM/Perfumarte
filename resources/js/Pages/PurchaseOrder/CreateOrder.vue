@@ -86,7 +86,7 @@ const removeReference = (index) => {
 
     <Head title="Nueva orden de compra" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Nueva orden de compra</h1>
         </template>

@@ -18,7 +18,7 @@ const submit = () => {
 <template>
 
 
-    <GuestLayout>
+    <GuestLayout :loading="form.processing ? true : false">
         <Head title="Inicio de Sesión" />
         <form @submit.prevent="submit">
             <div>

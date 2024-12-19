@@ -62,7 +62,7 @@ const submit = () => {
 <template>
 
     <Head title="Permisos" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Permisos</h1>
         </template>

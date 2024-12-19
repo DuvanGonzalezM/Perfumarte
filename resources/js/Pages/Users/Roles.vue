@@ -71,7 +71,7 @@ const optionsPermission = ref(props.permissions.map((permission) => ({ 'title': 
 <template>
 
     <Head title="Roles" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Roles</h1>
         </template>
