@@ -42,7 +42,7 @@ class SupplyReceptionController extends Controller
 
         // DB::transaction(function () use ($dispatch, $validated, $request) {
             // Actualizar estado del despacho
-            $dispatch->update(['status' => 'received']);
+            $dispatch->update(['status' => 'Recibido']);
 
             // Actualizar cada detalle del despacho
 

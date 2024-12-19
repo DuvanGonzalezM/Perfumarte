@@ -119,14 +119,12 @@ const submit = () => {
                                 Volver
                             </PrimaryButton>
                             <PrimaryButton v-if="dispatch.status.trim().toLowerCase() === 'en ruta'"
-                                @click="showConfirmModal = false" class="px-5" @close="showConfirmModal = false"
+                                @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
                                 type="submit" :disabled="!allProductsReceived">
                                 Confirmar Recepción
                             </PrimaryButton>
-
                         </div>
                     </div>
-
                 </form>
             </div>
         </SectionCard>
