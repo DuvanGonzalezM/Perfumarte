@@ -7,6 +7,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
@@ -115,6 +116,13 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => ['role:Asesor comercial', 'inventory.check']], function () {
             Route::get('/inventario actual', 'current')->name('inventory.current');
         });
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/dispatch/{dispatch}/receive', [SupplyReceptionController::class, 'show'])
+            ->name('dispatch.receive.show');
+        Route::post('/dispatch/{dispatch}/receive', [SupplyReceptionController::class, 'receive'])
+            ->name('dispatch.receive');
     });
 
 });

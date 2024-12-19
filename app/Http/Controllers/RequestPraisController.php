@@ -21,6 +21,16 @@ class RequestPraisController extends Controller
             'suppliesRequest' => $suppliesRequest
         ]);
     }
+    public function detailRequest($requestId)
+    {
+        $suppliesRequest = RequestPrais::with([
+            'user.location',
+            'detailRequest.inventory.product',
+        ])->findOrFail($requestId);
+        return Inertia::render('Requests/SuppliesRequestDetails', [
+            'requestPrais' => $suppliesRequest
+        ]);
+    }
     public function showDetail($requestId)
     {
         $requestPrais = RequestPrais::with([
