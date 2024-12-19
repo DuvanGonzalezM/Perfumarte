@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Location extends Model
@@ -38,4 +39,9 @@ class Location extends Model
     {
         return $this->belongsTo(Zone::class,foreignKey: 'zone_id');
     }
+
+    public function users_location(): BelongsToMany
+{
+    return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
+}
 }

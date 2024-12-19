@@ -98,8 +98,11 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(AssignmentController::class)->group(function () {
         Route::group(['middleware' => ['auth']], function () {
-            Route::get('asignacion supervisores', 'getAllSupervisor')->name('assignment.supervisor');
-            Route::put('asignacion supervisores', 'updateAssignment')->name('assignment.update');
+            Route::get('/asignacion supervisores', 'getAllSupervisor')->name('assignment.supervisor');
+            Route::put('/asignacion supervisores', 'updateAssignment')->name('assignment.update');
+            Route::get('/asignar asesores', 'getAllLocation')->name('list.location');
+            Route::get('/asignar asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
+            Route::post('/asignar asesores', 'storeAdvisor')->name('store.Advisor');
         });
     });
 
@@ -108,7 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventario inicial', 'start')->name('inventory.start');
         Route::post('/inventory/accept', 'accept')->name('inventory.accept');
         Route::group(['middleware' => ['role:Asesor comercial', 'inventory.check']], function () {
-            Route::get('/inventario actual', 'current')->name('inventory.current');
+        Route::get('/inventario actual', 'current')->name('inventory.current');
         });
     });
 
