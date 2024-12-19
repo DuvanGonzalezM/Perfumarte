@@ -69,6 +69,22 @@ const buttons = [
         active: page.component.startsWith('LabTransformations'),
         can: 'Ver Transformaciones',
     },
+    {
+        name: 'Asignar Supervisores',
+        href: route('assignment.supervisor'),
+        icon: 'fa-solid fa-user-pen',
+        active: page.component.startsWith('Assignment/AssignmentSupervisor'),
+        can: 'Asignar Personal',
+        
+    },
+    {
+        name: 'Asignar Asesores',
+        href: route('list.location'),
+        icon: 'fa-solid fa-user-group',
+        active: page.component.startsWith('Assignment/ListLocation'),
+        can: 'Asignar Personal',
+        
+    },
 ];
 
 </script>

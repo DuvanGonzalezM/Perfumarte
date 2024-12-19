@@ -12,37 +12,89 @@ class AssignmentController extends Controller
     public function getAllSupervisor()
     {
         $locations = Location::select('locations.location_id', 'locations.name')
-            ->leftJoin('users', 'locations.location_id', '=', 'users.location_id')
-            ->leftJoin('model_has_roles', 'users.user_id', '=', 'model_has_roles.model_id')
-            ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
-            ->whereNotIn('locations.name', ['CEDI'])
-            ->with(['userLocation' => function($query) {
-                $query->whereHas('roles', function($q) {
-                    $q->where('name', 'Supervisor');
-                })->select('user_id', 'name', 'location_id');
-            }])
-            ->get();
+            ->whereNotIn('locations.location_id', ['1'])
+            ->with([
+                'userLocation' => function ($query) {
+                    $query->whereHas('roles', function ($q) {
+                        $q->where('name', 'Supervisor');
+                    })->select('user_id', 'name', 'location_id');
+                }
+            ])->get();
 
-        $supervisors = User::whereHas('roles', function ($q) {
-            $q->where('name', 'Supervisor');
+        $supervisors = User::select('user_id', 'name')->whereHas('roles', function ($rolSupervisor) {
+            $rolSupervisor->where('name', 'Supervisor');
         })->get();
+
+
 
         return Inertia::render('Assignment/AssignmentSupervisor', ['locations' => $locations, 'supervisors' => $supervisors]);
 
     }
 
-    public function storeAssignment(Request $request)
+    public function updateAssignment(Request $request)
     {
+       
         $request->validate([
-            'location_id' => 'required|exists:locations,location_id',
-            'supervisor_id' => 'required|exists:users,user_id'
+            'location_id' => 'required',
+            'user_id' => 'required',
         ]);
 
-        $user = User::find($request->supervisor_id);
+        User::where('location_id', $request->location_id)->update([
+            'location_id' => null,
+        ]);
+        $user = User::findOrFail($request->user_id);
         $user->update([
-            'location_id' => $request->location_id
+            'location_id' => $request->location_id,
         ]);
 
-        return redirect()->route('assignment.supervisor');
+        return back();
     }
+
+
+    /* Funciones para la asignacion de asesores */
+
+
+    public function getAllLocation()
+    {
+        $getSede = Location::select('locations.location_id', 'locations.name')
+            ->whereNotIn('locations.location_id', ['1'])->get();
+
+        $advisors = User::select('user_id', 'name')->whereHas('roles', function ($roladvisor) {
+            $roladvisor->where('name', 'Asesor comercial');
+        })->get();
+
+        return Inertia::render('Assignment/ListLocation', ['getSede' => $getSede, 'advisors' => $advisors]);
+    }
+
+    public function getAllAdvisor($location_id)
+    {
+        $getSede = Location::findOrFail($location_id);
+
+        $advisors = User::select('user_id', 'name')->whereHas('roles', function ($roladvisor) {
+            $roladvisor->where('name', 'Asesor comercial');
+        })->get();
+
+        return Inertia::render('Assignment/DetailAssignAdvisor', ['getSede' => $getSede, 'advisors' => $advisors]);
+    }
+
+    public function StoreAdvisor(Request $request)
+    {
+
+        $location = Location::findOrFail($request['caja1']['location_id']);
+        User::findOrFail($request['caja1']['user_id'])->location_user()->detach();
+        $location->users_location()->attach($request['caja1']['user_id']);
+        
+        if ($request['caja2']['user_id'] !== '') {
+            User::findOrFail($request['caja2']['user_id'])->location_user()->detach();
+            $location->users_location()->attach($request['caja2']['user_id']);
+        }
+        if (count($request['advisorList']) > 0) {
+            foreach ($request['advisorList'] as $advisor) {
+                User::findOrFail($advisor['user_id'])->location_user()->detach();
+                $location->users_location()->attach($advisor['user_id']);
+            }
+        }
+        return redirect()->route('list.location')->with('success', 'Despacho creado exitosamente.');
+    }
+
 }
