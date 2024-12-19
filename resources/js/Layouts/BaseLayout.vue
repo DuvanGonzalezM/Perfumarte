@@ -6,9 +6,16 @@ import { usePage } from '@inertiajs/vue3';
 import { watchEffect } from 'vue';
 import InfoLocation from '@/Components/InfoLocation.vue';
 import { is } from 'laravel-permission-to-vuejs';
+import Loader from '@/Components/Loader.vue';
 
 const { props } = usePage();
 
+const attributes = defineProps({
+    loading: {
+        type: Boolean,
+        required: false
+    },
+});
 watchEffect(() => {
      window.Laravel = window.Laravel || {}
      if (props.jsPermissions) {  
@@ -17,6 +24,7 @@ watchEffect(() => {
 })
 </script>
 <template>
+    <Loader v-if="attributes.loading"/>
     <div class="container container-prais">
         <div class="row">
             <div class="col-3" v-if="!props.sidebarHidden">

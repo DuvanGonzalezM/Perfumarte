@@ -93,7 +93,7 @@ const submit = () => {
 <template>
 
     <Head title="Nuevo Despacho" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Nuevo Despacho</h1>
         </template>
@@ -116,6 +116,9 @@ const submit = () => {
                                     </div>
                                 </div>
                             </div>
+                            <p v-if="form.errors.error" style="color: red;">
+                                {{ form.errors.error }}
+                            </p>
                             <table class="table table-hover text-center dt-body-nowrap size-prais-2">
                                 <thead>
                                     <tr>

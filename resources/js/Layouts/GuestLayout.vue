@@ -1,10 +1,20 @@
 <script setup>
-import Notification from '@/Components/Notification.vue';
-import Alert from '@/Components/Alert.vue';
 import Image from '@/Components/Image.vue';
+import Loader from '@/Components/Loader.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const { props } = usePage();
+
+const attributes = defineProps({
+    loading: {
+        type: Boolean,
+        required: false
+    },
+});
 
 </script>
 <template>
+    <Loader v-if="attributes.loading"/>
     <div class="container body-login">
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">

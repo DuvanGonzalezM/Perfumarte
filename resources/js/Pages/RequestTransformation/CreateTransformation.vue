@@ -50,7 +50,7 @@ const submit = () => {
 
     <Head title="Nueva Transformacion" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <!-- <Alert /> -->
             <h1>Nueva Transformacion</h1>

@@ -1,20 +1,25 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Inventory;
-use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Models\RequestDetail;
 use App\Models\RequestPrais;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 
 class RequestPraisController extends Controller
 {
+
     public function getAllRequest()
     {
-        $suppliesRequest = RequestPrais::with('user.location')->where('request_type', '1')->get();
-        return Inertia::render('Requests/SuppliesRequestList', props: ['suppliesRequest' => $suppliesRequest]);
+        $suppliesRequest = RequestPrais::with('user.location')
+            ->where('request_type', '1')
+            ->get();
+
+        return Inertia::render('Requests/SuppliesRequestList', [
+            'suppliesRequest' => $suppliesRequest
+        ]);
     }
     public function detailRequest($requestId)
     {
@@ -26,19 +31,87 @@ class RequestPraisController extends Controller
             'requestPrais' => $suppliesRequest
         ]);
     }
+    public function showDetail($requestId)
+    {
+        $requestPrais = RequestPrais::with([
+            'detailRequest.inventory.product',
+            'user.location'
+        ])->findOrFail($requestId);
+        $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
+        return Inertia::render('Requests/EditSuppliesRequest', [
+            'requestPrais' => $requestPrais,
+            'inventory' => $inventory,
+        ]);
+    }
+
+    public function update(Request $request, $requestId)
+    {
+        $request->validate([
+            'references.*.reference' => 'required|exists:inventories,inventory_id',
+            'references.*.quantity' => 'required|integer|min:1'
+        ]);
+        RequestDetail::where('request_id', $requestId)->delete();
+
+        foreach ($request->references as $reference) {
+            RequestDetail::create([
+                'request_id' => $requestId,
+                'inventory_id' => $reference['reference'],
+                'quantity' => $reference['quantity']
+            ]);
+        }
+        $requestPrais = RequestPrais::findOrFail($requestId);
+        $requestPrais->status = 'Aprobada';
+        $requestPrais->save();
+
+        return redirect()->route('suppliesrequest.validation', ['message' => '', 'status' => 200]);
+
+    }
+    public function getValidationView()
+    {
+        $suppliesRequest = RequestPrais::with('user.location')
+            ->where('request_type', '1')
+            ->get()
+            ->map(function ($request) {
+                if (empty($request->status)) {
+                    $request->status = 'pending_approval';
+                }
+                return $request;
+            });
+
+        return Inertia::render('Requests/ValidSuppliesRequest', [
+            'suppliesRequest' => $suppliesRequest
+        ]);
+    }
 
     public function getAllRequestTransformation()
     {
         $transformationRequest = RequestPrais::where('request_type', '2')->get();
-        return Inertia::render('RequestTransformation/TransformationRequestList', props: ['transformationRequest' => $transformationRequest]);
+        return Inertia::render('RequestTransformation/TransformationRequestList', [
+            'transformationRequest' => $transformationRequest
+        ]);
     }
+
+
+    public function detailTransformation($requestId)
+    {
+        $tranformationRequest = RequestPrais::with([
+            'user.location',
+            'detailRequest.inventory.product',
+        ])->findOrFail($requestId);
+
+        return Inertia::render('RequestTransformation/TransformationDetail', [
+            'transformationRequest' => $tranformationRequest
+        ]);
+    }
+
 
     public function createTransformation()
     {
-
         $inventories = Inventory::with('product')->where('warehouse_id', '1')->get();
 
-        return Inertia::render('RequestTransformation/CreateTransformation', ['inventories' => $inventories]);
+        return Inertia::render('RequestTransformation/CreateTransformation', [
+            'inventories' => $inventories
+        ]);
     }
 
     public function storeTransformation(Request $request)
@@ -55,27 +128,15 @@ class RequestPraisController extends Controller
         ]);
 
         foreach ($request->references as $reference) {
-
             RequestDetail::create([
                 'request_id' => $transformationRequest->request_id,
                 'inventory_id' => $reference['reference'],
                 'quantity' => $reference['quantity']
             ]);
         }
-        return redirect()->route('transformationRequest.list', ['message' => '', 'status' => 200]);
-    }
-
-
-
-    public function detailTransformation($requestId)
-    {
-        $tranformationRequest = RequestPrais::with([
-            'user.location',
-            'detailRequest.inventory.product',
-        ])->findOrFail($requestId);
-
-        return Inertia::render('RequestTransformation/TransformationDetail', [
-            'transformationRequest' => $tranformationRequest
+        return redirect()->route('transformationRequest.list', [
+            'message' => '',
+            'status' => 200
         ]);
     }
 }
