@@ -63,7 +63,7 @@ const selectedRoles = async () => {
 <template>
 
     <Head title="Usuarios" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <h1>Usuarios</h1>
         </template>

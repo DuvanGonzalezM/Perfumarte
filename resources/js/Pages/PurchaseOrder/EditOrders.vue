@@ -35,7 +35,7 @@ const submit = () => {
 
     <Head title="Nueva registro" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         
         <template #header>
             <h1>Editar Orden de Compra</h1>

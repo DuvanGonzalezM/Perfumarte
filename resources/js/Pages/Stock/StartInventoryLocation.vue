@@ -58,7 +58,7 @@ const handleSubmit = () => {
 
 <template>
     <Head title="Inventario Inicial" />
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <SectionCard :subtitle="'Base: $500.000'">
             <template #headerSection>
                 <strong>Inventario Inicial</strong>

@@ -1,0 +1,48 @@
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $backgroundColor;
+    flex-direction: column;
+    opacity: 0.8;
+
+    .loader {
+        opacity: 1;
+        border: 12px double $buttonColor;
+        width: 100px;
+        height: 100px;
+        animation: spin 2s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            border-radius: 20%;
+            transform: rotate(0deg);
+        }
+
+        50% {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+        }
+
+        100% {
+            transform: rotate(360deg);
+            border-radius: 20%;
+        }
+    }
+
+    p {
+        color: #fafafa;
+        font-family: courier;
+        font-size: 20px;
+        margin-top: 30px;
+        margin-left: 5px;
+    }
+}

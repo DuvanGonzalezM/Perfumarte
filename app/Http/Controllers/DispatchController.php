@@ -18,9 +18,9 @@ class DispatchController extends Controller
 
     public function detailDispatch($id)
     {
-        $detaildispatch = Dispatch::with(['dispatchdetail.inventory.product', 'dispatchdetail.warehouse.location'])->findOrFail($id);
+        $dispatch = Dispatch::with(['dispatchdetail.inventory.product', 'dispatchdetail.warehouse.location'])->findOrFail($id);
         return Inertia::render('Dispatch/DispatchDetail', [
-            'detaildispatch' => $detaildispatch,
+            'dispatch' => $dispatch,
         ]);
     }
     public function createDispatch()
@@ -48,10 +48,10 @@ class DispatchController extends Controller
             $dispatch = Dispatch::create([
                 'status' => 'En ruta',
             ]);
-
             foreach ($request->dispatches as $location) {
                 foreach ($location['references'] as $reference) {
                     $inventoryWarehouse2 = Inventory::where('inventory_id', $reference['reference'])
+                        ->with('product')
                         ->where('warehouse_id', 2)
                         ->first();
                     if ($inventoryWarehouse2) {
@@ -80,10 +80,10 @@ class DispatchController extends Controller
                                 ]);
                             }
                         } else {
-                            return redirect()->back()->withErrors(['error' => 'Cantidad insuficiente en la bodega de despacho para la referencia: ' . $reference['reference']]);
+                            return redirect()->back()->withErrors(['error' => 'Cantidad insuficiente en la bodega de despacho para la referencia: ' . $inventoryWarehouse2->product->reference]);
                         }
                     } else {
-                        return redirect()->back()->withErrors(['error' => 'Inventario no encontrado en la bodega de despacho para la referencia: ' . $reference['reference']]);
+                        return redirect()->back()->withErrors(['error' => 'Inventario no encontrado en la bodega de despacho para la referencia: ' . $inventoryWarehouse2->product->reference]);
                     }
                 }
             }
