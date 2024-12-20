@@ -187,9 +187,6 @@ const handleTableClick = (event) => {
     const action = button.dataset.action;
     const id = button.dataset.id;
 
-    console.log('Action:', action); // Para debug
-    console.log('ID:', id); // Para debug
-
     if (action === 'view') {
         handleView(id);
     }

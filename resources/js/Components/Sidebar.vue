@@ -74,7 +74,7 @@ const buttons = [
         href: route('assignment.supervisor'),
         icon: 'fa-solid fa-user-pen',
         active: page.component.startsWith('Assignment/AssignmentSupervisor'),
-        can: 'Asignar Personal',
+        can: 'Asignar Supervisor',
         
     },
     {

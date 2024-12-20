@@ -31,10 +31,9 @@ const openModal = (rowData) => {
     form.location_id = rowData.location_id;
     form.user_id = null;
     showModal.value = true;
-    if (rowData.user_location.length > 0) {
-        form.user_id = rowData.user_location[0].user_id;
+    if (rowData.users_location.length > 0) {
+        form.user_id = rowData.users_location[0].user_id;
     }
-
 }
 
 const optionSupervisor = ref(props.supervisors.map((supervisor) => ({ 'title': supervisor.name, 'value': supervisor.user_id })));
@@ -49,7 +48,7 @@ const columnsTable = [
         title: 'NOMBRE SEDE'
     },
     {
-        data: 'user_location',
+        data: 'users_location',
         title: 'SUPERVISOR ASIGNADO',
         render: function (data) {
             return data && data.length > 0 ? data[0].name : 'Sin supervisor asignado';
@@ -62,10 +61,8 @@ const columnsTable = [
     },
 ];
 
-
-
 const submit = () => {
-    form.put(route('assignment.update'), form.user_id);
+    form.put(route('assignment.update'));
     showModal.value = false;
 }
 
@@ -76,7 +73,7 @@ const submit = () => {
 
     <Head title="Supervisores asignados" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <!-- <Alert /> -->
             <h1>Asignacion de supervisores</h1>

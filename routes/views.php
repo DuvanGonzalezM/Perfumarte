@@ -106,9 +106,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(AssignmentController::class)->group(function () {
-        Route::group(['middleware' => ['auth']], function () {
+        Route::group(['middleware' => ['can:Asignar Supervisor']], function () {
             Route::get('asignacion-supervisores', 'getAllSupervisor')->name('assignment.supervisor');
             Route::put('asignacion-supervisores', 'updateAssignment')->name('assignment.update');
+        });
+        Route::group(['middleware'=> ['can:Asignar Personal']], function () {
             Route::get('asignar-asesores', 'getAllLocation')->name('list.location');
             Route::get('asignar-asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
             Route::post('asignar-asesores', 'storeAdvisor')->name('store.Advisor');
@@ -130,5 +132,4 @@ Route::middleware('auth')->group(function () {
             Route::post('despachos/recibir',  'receive')->name('dispatch.receive');
         });
     });
-
 });

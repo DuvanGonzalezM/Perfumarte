@@ -29,7 +29,7 @@ const showConfirmModal = ref(false);
 const allProductsReceived = computed(() => {
     return form.products.every(product => product.received);
 });
-console.log(form.products);
+
 const submit = () => {
     form.post(route('dispatch.receive'), {
         onSuccess: () => {
