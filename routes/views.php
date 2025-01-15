@@ -11,6 +11,7 @@ use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
+use App\Http\Controllers\AuditController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -132,4 +133,12 @@ Route::middleware('auth')->group(function () {
             Route::post('despachos/recibir',  'receive')->name('dispatch.receive');
         });
     });
+
+    Route::controller(AuditController::class)->group(function () {
+       // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
+            Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
+            Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
+       // });
+    });
 });
+
