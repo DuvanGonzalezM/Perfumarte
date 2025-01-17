@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Sale;
 use App\Models\Location;
 
-class CashClosure extends Model
+class CashRegister extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'cash_closure_id';
+    protected $primaryKey = 'cash_register_id';
 
     protected $fillable = [
         'branch_id',
@@ -28,6 +28,7 @@ class CashClosure extends Model
         'count_1_bill',
         'total_coins',
         'observations',
+        'confirmationclosingcash'
     ];
 
     public function sales()
