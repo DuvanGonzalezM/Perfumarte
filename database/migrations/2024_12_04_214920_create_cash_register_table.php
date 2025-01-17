@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cash_closures', function (Blueprint $table) {
-            $table->id('cash_closure_id');
+        Schema::create('cash_registers', function (Blueprint $table) {
+            $table->id('cash_register_id');
             $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('total_collected');
-            $table->integer('total_products_sold');
             $table->integer('count_100_bill');
             $table->integer('count_50_bill');
             $table->integer('count_20_bill');
@@ -26,6 +25,7 @@ return new class extends Migration
             $table->integer('total_coins');
             $table->boolean('confirmation_cash_closure');
             $table->text('observations')->nullable();
+            $table->boolean('confirmationclosingcash')->nullable();
             $table->timestamps();
         });
     }
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cash_closures');
+        Schema::dropIfExists('cash_registers');
     }
 };

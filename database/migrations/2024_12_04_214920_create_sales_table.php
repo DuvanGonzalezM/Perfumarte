@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id('sale_id');
-            $table->foreignId('cash_closure_id')->constrained('cash_closures', 'cash_closure_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('cash_register_id')->constrained('cash_registers', 'cash_register_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('total');
             $table->string('payment_method');
             $table->string('transaction_code');
             $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('type');
             $table->timestamps();
         });
     }
