@@ -33,7 +33,6 @@
                     Rechazar
                 </DangerButton>
             </template>
-        </ModalPrais>
     </BaseLayout>
 </template>
 
