@@ -22,7 +22,6 @@ class User extends Authenticatable
         'username',
         'name',
         'password',
-        'rol_id',
         'location_id',
         'enabled',
         'boss_user',
