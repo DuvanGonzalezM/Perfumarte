@@ -24,7 +24,7 @@ const props = defineProps({
                 <i :class="iconClass"></i>
             </div>
         </div>
-        <div class="text-card mx-3 my-2">
+        <div class="text-card mx-2 my-2">
             {{ title }}
         </div>
         <div class="number mx-3">

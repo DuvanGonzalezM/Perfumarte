@@ -12,7 +12,7 @@ class DispatchController extends Controller
 {
     public function getAllDispatch()
     {
-        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')->get();
+        $dispatch = Dispatch::with( 'dispatchdetail.warehouse.location')->get();
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 

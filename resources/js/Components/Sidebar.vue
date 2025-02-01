@@ -11,7 +11,7 @@ const buttons = [
         href: route('dashboard'),
         icon: 'fa-solid fa-house-chimney',
         active: page.component.startsWith('Dashboard'),
-        can: 'Ver Ordenes de Compra',
+        can: 'Ver Dashboard',
     },
     {
         name: 'Inventario',
