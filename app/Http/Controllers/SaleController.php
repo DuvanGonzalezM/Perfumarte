@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CashRegister;
 use App\Models\Inventory;
 use App\Models\Sale;
+use App\Models\SaleDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,31 @@ class SaleController extends Controller
         }
 
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory]);
+    }
+    public function storeSales(Request $request)
+    {
+        $user = Auth::user();
+        $location_id = $user->location_user[0]->location_id;
+        $cashRegister = CashRegister::where('location_id', $location_id)->first();
+
+        $sale = Sale::create([
+            'cash_register_id' => $cashRegister->cash_register_id,
+            'total' => $request->total,
+            'user_id' => $request->assessor,
+            'payment_method' => 'Efectivo',
+            'transaction_code' => 'NA',
+        ]);
+
+        foreach ($request->references as $reference) {
+            SaleDetail::create([
+               'inventory_id' => $reference['reference'],
+               'sale_id' => $sale->sale_id,
+               'quantity' => $reference['quantity'],
+               'price' => $reference['quantity'] == 30 ? 17000 : ($reference['quantity'] == 50 ? 25000 : ($reference['quantity'] == 100 ? 38000 : 0)),
+            ]);
+        }
+
+        return redirect()->route('sales.list')->with('success', 'Despacho creado exitosamente.');
     }
 
     public function calculateChange($amountOwed, $amountPaid, CashRegister $cashRegister)

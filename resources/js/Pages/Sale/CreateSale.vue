@@ -23,6 +23,7 @@ const props = defineProps({
 
 const form = useForm({
     assessor: '',
+    total: 0,
     references: [
         {
             'reference': '',
@@ -40,18 +41,16 @@ const form = useForm({
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
 const optionProducts = ref(props.inventory.map((reference) => [{ 'title': reference.product.reference, 'value': reference.inventory_id }][0]));
 const showModal = ref(false);
-const total = ref(0);
 const devolver = ref(0);
 const openModal = () => {
     showModal.value = true;
-    total.value = form.references.reduce((acc, reference) => acc + (reference.quantity == 30 ? 17000 : ( reference.quantity == 50 ? 25000 : (reference.quantity == 100 ? 38000 : 0))), 0);
-    console.log(form, total.value);
+    form.total = form.references.reduce((acc, reference) => acc + (reference.quantity == 30 ? 17000 : ( reference.quantity == 50 ? 25000 : (reference.quantity == 100 ? 38000 : 0))), 0);
 }
 
-// const submit = () => {
-//     form.post(route('orders.store'));
-//     showModal.value = false;
-// };
+const submit = () => {
+    form.post(route('sales.store'), form);
+    showModal.value = false;
+};
 
 // const validateChange = async() => {
 //     try {
@@ -59,14 +58,14 @@ const openModal = () => {
 //             .then(function (response) {
 //                 console.log(response);
 //             });
-//     } catch (error) {
+//     } catch (error) {  
 //         console.log(error);
 //     }
 // }
 
 const validateChange = () => {
     try {
-        devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) - total.value;
+        devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) - form.total;
     } catch (error) {
         devolver.value = 0;
     }
@@ -90,7 +89,7 @@ const removeReference = (index) => {
 
     <Head title="Nueva Venta" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing ? true : false">
         <template #header>
             <!-- <Alert /> -->
             <h1>Nueva Venta</h1>
@@ -125,19 +124,19 @@ const removeReference = (index) => {
                                     <div class="form-check">
                                         <input class="form-check-input d-none" type="radio" v-model="reference['quantity']" :name="'quantity' + index " :id="'quantity' + index " value="30">
                                         <label class="form-check-label" :for="'quantity' + index ">
-                                            <i class="fa-solid fa-flask"></i> 30 ml $17
+                                            <i class="fa-solid fa-flask"></i> 30 ml
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input d-none" type="radio"  v-model="reference['quantity']" :name="'quantity1' + index " :id="'quantity1' + index " value="50">
                                         <label class="form-check-label" :for="'quantity1' + index ">
-                                            <i class="fa-solid fa-flask"></i> 50 ml $25
+                                            <i class="fa-solid fa-flask"></i> 50 ml
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input d-none" type="radio"  v-model="reference['quantity']" :name="'quantity2' + index " :id="'quantity2' + index " value="100">
                                         <label class="form-check-label" :for="'quantity2' + index">
-                                            <i class="fa-solid fa-flask"></i> 100 ml $38
+                                            <i class="fa-solid fa-flask"></i> 100 ml
                                         </label>
                                     </div>
                                 </td>
@@ -169,7 +168,7 @@ const removeReference = (index) => {
                             Confirmar Venta
                         </template>
                         <template #body>
-                            Este es valor a pagar: ${{ total}}
+                            Este es valor a pagar: ${{ form.total}}
                             <div class="row">
                                 <div class="col-md-6 mt-4">
                                     <TextInput type="number" name="count_50_bill" id="count_50_bill" v-model="form.count_50_bill"
@@ -221,12 +220,12 @@ const removeReference = (index) => {
                             Cantidad a devolver: ${{ devolver }}
                         </template>
                         <template #footer>
-                            <!-- <PrimaryButton @click="submit" class="px-5"> -->
-                                <!-- Si -->
-                            <!-- </PrimaryButton> -->
-                            <!-- <PrimaryButton @click="showModal = false" class="px-5"> -->
-                                <!-- No -->
-                            <!-- </PrimaryButton> -->
+                            <PrimaryButton @click="submit" class="px-5">
+                                Si
+                            </PrimaryButton>
+                            <PrimaryButton @click="showModal = false" class="px-5">
+                                No
+                            </PrimaryButton>
                         </template>
                     </ModalPrais>
                 </form>
