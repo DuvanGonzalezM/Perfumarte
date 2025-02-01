@@ -110,7 +110,7 @@ Route::middleware('auth')->group(function () {
             Route::get('asignacion-supervisores', 'getAllSupervisor')->name('assignment.supervisor');
             Route::put('asignacion-supervisores', 'updateAssignment')->name('assignment.update');
         });
-        Route::group(['middleware'=> ['can:Asignar Personal']], function () {
+        Route::group(['middleware' => ['can:Asignar Personal']], function () {
             Route::get('asignar-asesores', 'getAllLocation')->name('list.location');
             Route::get('asignar-asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
             Route::post('asignar-asesores', 'storeAdvisor')->name('store.Advisor');
@@ -125,20 +125,23 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(SupplyReceptionController::class)->group(function () {
         Route::group(['middleware' => ['can:Recibir Insumos']], function () {
-            Route::get('despachos/recibir',  'show')->name('dispatch.show');
-            Route::post('despachos/recibir',  'receive')->name('dispatch.receive');
+            Route::get('despachos/recibir', 'show')->name('dispatch.show');
+            Route::post('despachos/recibir', 'receive')->name('dispatch.receive');
         });
     });
 
     Route::controller(AuditController::class)->group(function () {
-       // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
-            Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
-            Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
-       // });
+        // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
+        Route::get('auditorias', 'showAudits')->name('audits');
+        Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
+        Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
+        Route::get('auditoria/detalle auditoria inventario/{id_audits}', 'showDetailAuditInventory')->name('audit.detailInventory');
+        Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('audit.detailCash');
+        // });
     });
     Route::controller(SaleController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Ventas']], function () {
-            Route::get('ventas',  'index')->name('sales.list');
+            Route::get('ventas', 'index')->name('sales.list');
         });
     });
 });

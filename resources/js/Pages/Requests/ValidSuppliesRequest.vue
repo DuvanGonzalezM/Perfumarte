@@ -14,33 +14,6 @@
 
             <Table :columns="columnsTable" :data="suppliesRequest" class="table-prais" />
         </SectionCard>
-
-        <!-- Modal de Aprobación -->
-        <ModalPrais v-model="showApproveModal" @close="showApproveModal = false">
-            <template #header>
-                Confirmar Aprobación
-            </template>
-
-            <template #body>
-                <p>¿Está seguro que desea aprobar esta solicitud?</p>
-            </template>
-
-            <template #footer>
-                <SecondaryButton @click="showApproveModal = false">
-                    Cancelar
-                </SecondaryButton>
-                <PrimaryButton @click="submitApprove" class="ms-2">
-                    Aprobar
-                </PrimaryButton>
-            </template>
-        </ModalPrais>
-
-        <!-- Modal de Rechazo -->
-        <ModalPrais v-model="showRejectModal" @close="showRejectModal = false">
-            <template #header>
-                Rechazar Solicitud
-            </template>
-
             <template #body>
                 <form @submit.prevent="submitReject">
                     <div class="form-group">
@@ -88,7 +61,7 @@ const props = defineProps({
 });
 
 // Estado para modales
-const showApproveModal = ref(false);
+
 const showRejectModal = ref(false);
 const selectedRequestId = ref(null);
 
@@ -186,6 +159,9 @@ const handleTableClick = (event) => {
 
     const action = button.dataset.action;
     const id = button.dataset.id;
+
+    console.log('Action:', action); // Para debug
+    console.log('ID:', id); // Para debug
 
     if (action === 'view') {
         handleView(id);

@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id('audit_cash_id');
             $table->foreignId('id_audits')->constrained('audits', 'id_audits')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('money_in_box');
-            $table->integer('meny_in_digital');
+            $table->integer('money_in_digital');
             $table->boolean('confirmation_cash');
             $table->boolean('confirmation_digital');
             $table->string('observation')->nullable();
