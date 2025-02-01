@@ -9,11 +9,11 @@ class Audit extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_audits'; // Asegúrate de que esto coincida con tu migración
+    protected $primaryKey = 'id_audits'; 
 
     protected $fillable = [
-        'user_id', // Relación con la tabla users
-        'type_audit', // Tipo de auditoría
+        'user_id',
+        'type', 
     ];
 
     public function user()
@@ -21,13 +21,13 @@ class Audit extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function auditInventories()
+    public function auditInventory()
     {
         return $this->hasMany(AuditInventory::class, 'id_audits');
     }
 
     public function auditCashes()
     {
-        return $this->hasOne(AuditCash::class, 'id_audits');
+        return $this->hasMany(AuditCash::class, 'id_audits');
     }
 }

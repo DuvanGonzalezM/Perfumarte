@@ -9,11 +9,10 @@ class AuditInventory extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_audit_inventory'; // Asegúrate de que esto coincida con tu migración
-
+    protected $primaryKey = 'id_audit_inventory'; 
     protected $fillable = [
-        'id_audits', // Relación con la tabla audits
-        'inventory_id', // Relación con la tabla products
+        'id_audits',
+        'inventory_id', 
         'confirmation_inventory',
         'quantity_system',
         'observation',

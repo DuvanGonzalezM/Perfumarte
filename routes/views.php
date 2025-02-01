@@ -11,6 +11,8 @@ use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
+use App\Http\Controllers\AuditController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -93,7 +95,6 @@ Route::middleware('auth')->group(function () {
             Route::post('reenvase/nuevo-reenvase', 'storeRepackage')->name('store.repackage');
         });
     });
-
     Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
             Route::get('transformaciones-de-laboratorio', 'getAllTransformation')->name('LabTransformation.list');
@@ -104,20 +105,17 @@ Route::middleware('auth')->group(function () {
             Route::post('nueva-transformacion-de-laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
         });
     });
-
     Route::controller(AssignmentController::class)->group(function () {
         Route::group(['middleware' => ['can:Asignar Supervisor']], function () {
             Route::get('asignacion-supervisores', 'getAllSupervisor')->name('assignment.supervisor');
             Route::put('asignacion-supervisores', 'updateAssignment')->name('assignment.update');
         });
-        Route::group(['middleware'=> ['can:Asignar Personal']], function () {
+        Route::group(['middleware' => ['can:Asignar Personal']], function () {
             Route::get('asignar-asesores', 'getAllLocation')->name('list.location');
             Route::get('asignar-asesores/{location_id}', 'getAllAdvisor')->name('assignment.Advisor');
             Route::post('asignar-asesores', 'storeAdvisor')->name('store.Advisor');
         });
     });
-
-
     Route::controller(InventoryLocationController::class)->group(function () {
         Route::get('inventario inicial', 'start')->name('inventory.start');
         Route::post('inventory/accept', 'accept')->name('inventory.accept');
@@ -125,11 +123,26 @@ Route::middleware('auth')->group(function () {
             Route::get('inventario actual', 'current')->name('inventory.current');
         });
     });
-
     Route::controller(SupplyReceptionController::class)->group(function () {
         Route::group(['middleware' => ['can:Recibir Insumos']], function () {
-            Route::get('despachos/recibir',  'show')->name('dispatch.show');
-            Route::post('despachos/recibir',  'receive')->name('dispatch.receive');
+            Route::get('despachos/recibir', 'show')->name('dispatch.show');
+            Route::post('despachos/recibir', 'receive')->name('dispatch.receive');
+        });
+    });
+
+    Route::controller(AuditController::class)->group(function () {
+        // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
+        Route::get('auditorias', 'showAudits')->name('audits');
+        Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
+        Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
+        Route::get('auditoria/detalle auditoria inventario/{id_audits}', 'showDetailAuditInventory')->name('audit.detailInventory');
+        Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('audit.detailCash');
+        // });
+    });
+    Route::controller(SaleController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Ventas']], function () {
+            Route::get('ventas', 'index')->name('sales.list');
         });
     });
 });
+

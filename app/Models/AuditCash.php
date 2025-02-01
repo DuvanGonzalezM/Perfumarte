@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class AuditCash extends Model
 {
     use HasFactory;
+    protected $table = 'audit_cash'; 
 
-    protected $primaryKey = 'audit_cash_id'; // Asegúrate de que esto coincida con tu migración
+    protected $primaryKey = 'audit_cash_id'; 
 
     protected $fillable = [
-        'id_audits', // Relación con la tabla audits
+        'id_audits', 
         'money_in_box',
         'money_in_digital',
         'confirmation_cash',
