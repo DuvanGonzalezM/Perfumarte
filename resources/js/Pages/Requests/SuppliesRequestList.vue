@@ -14,6 +14,14 @@ const props = defineProps({
 });
 const columnsTable = [
     {
+        data: "created_at",
+        title: 'FECHA DE SOLICITUD',
+        render: function (data) {
+            const formattedDate = moment(data).format('DD/MM/Y');
+            return formattedDate;
+        }
+    },
+    {
         data: 'request_id',
         title: 'CODIGO SOLICITUD'
     },
@@ -25,14 +33,7 @@ const columnsTable = [
         data: 'user.location.name',
         title: 'SEDE'
     },
-    {
-        data: "created_at",
-        title: 'FECHA DE SOLICITUD',
-        render: function (data) {
-            const formattedDate = moment(data).format('DD/MM/Y');
-            return formattedDate;
-        }
-    },
+
     {
         data: "status",
         title: 'ESTADO',
