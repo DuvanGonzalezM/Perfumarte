@@ -55,7 +55,7 @@ const columnsTable = [
                 <strong>Ventas</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('sales.store')" class="position-absolute"
+                <PrimaryButton :href="route('sales.create')" class="position-absolute"
                     v-if="can('Crear Ventas')">
                     Nueva venta
                 </PrimaryButton>

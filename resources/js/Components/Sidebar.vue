@@ -35,6 +35,13 @@ const buttons = [
         can: 'Ver Despachos',
     },
     {
+        name: 'Ventas',
+        href: route('sales.list'),
+        icon: 'fa-solid fa-cash-register',
+        active: page.component.startsWith('Sales'),
+        can: 'Ver Ventas',
+    },
+    {
         name: 'Solicitud Insumos',
         href: route('suppliesrequest.list'),
         icon: 'fa-brands fa-wpforms',
