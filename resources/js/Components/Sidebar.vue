@@ -82,7 +82,7 @@ const buttons = [
         icon: 'fa-solid fa-user-pen',
         active: page.component.startsWith('Assignment/AssignmentSupervisor'),
         can: 'Asignar Supervisor',
-        
+
     },
     {
         name: 'Asignar Asesores',
@@ -90,13 +90,20 @@ const buttons = [
         icon: 'fa-solid fa-user-group',
         active: page.component.startsWith('Assignment/ListLocation'),
         can: 'Asignar Personal',
-        
+
     },
     {
         name: 'Recepcoion Insumos',
         href: route('dispatch.show'),
         icon: 'fa-solid fa-list-check',
         active: page.component.startsWith('Reception'),
+        can: 'Recibir Insumos',
+    },
+    {
+        name: 'Auditorias ',
+        href: route('audits'),
+        icon: 'fa-solid fa-file-signature',
+        active: page.component.startsWith('Audit'),
         can: 'Recibir Insumos',
     },
 ];
