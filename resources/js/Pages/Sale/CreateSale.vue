@@ -10,6 +10,7 @@ import SelectSearch from '@/Components/SelectSearch.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { reference } from '@popperjs/core';
+import axios from 'axios';
 
 const props = defineProps({
     assessors: {
@@ -21,70 +22,68 @@ const props = defineProps({
 });
 
 const form = useForm({
-    supplier_order: '',
+    assessor: '',
     references: [
         {
             'reference': '',
             'quantity': '',
-            'batch': '',
-            'unity': '',
         }
     ],
+    count_50_bill: null,
+    count_20_bill: null,
+    count_10_bill: null,
+    count_5_bill: null,
+    count_2_bill: null,
+    count_1_bill: null,
+    total_coins: null,
 });
-const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }]));
-const optionProducts = ref(props.inventory.map((reference) => [{ 'title': reference.product.reference, 'value': reference.inventory_id }]));
-console.log(optionAssesors.value, optionProducts.value);
-const optionProduts = ref(props.inventory.find(reference => reference.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
-// const showAddButtom = ref(form.references.length < optionProduts.value.length);
-// const showModal = ref(false);
+const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
+const optionProducts = ref(props.inventory.map((reference) => [{ 'title': reference.product.reference, 'value': reference.inventory_id }][0]));
+const showModal = ref(false);
+const total = ref(0);
+const devolver = ref(0);
+const openModal = () => {
+    showModal.value = true;
+    total.value = form.references.reduce((acc, reference) => acc + (reference.quantity == 30 ? 17000 : ( reference.quantity == 50 ? 25000 : (reference.quantity == 100 ? 38000 : 0))), 0);
+    console.log(form, total.value);
+}
 
 // const submit = () => {
 //     form.post(route('orders.store'));
 //     showModal.value = false;
 // };
 
-// const selectedSupplier = () => {
-//     form.references = [
-//         {
-//             'reference': '',
-//             'quantity': '',
-//             'batch': '',
-//             'unity': '',
-//         }
-//     ];
-//     if (form.supplier != null) {
-//         optionProduts.value = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]);
-//     }
-//     showAddButtom.value = form.references.length < optionProduts.value.length;
-// }
-
-// const selectedReference = (reference) => {
-//     if (form.supplier != null) {
-//         let product = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference);
-//         if (product) {
-//             reference.unity = props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.find(product => product.product_id == reference.reference).measurement_unit;
-//         }
+// const validateChange = async() => {
+//     try {
+//         await axios.get(route('sales.validate', { precio: total.value, pago: ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) }))
+//             .then(function (response) {
+//                 console.log(response);
+//             });
+//     } catch (error) {
+//         console.log(error);
 //     }
 // }
 
-// const addReference = () => {
-//     showAddButtom.value = form.references.length < (optionProduts.value.length - 1);
-//     if (form.references.length < optionProduts.value.length) {
-//         form.references.push(
-//             {
-//                 'reference': '',
-//                 'quantity': '',
-//                 'batch': '',
-//                 'unity': '',
-//             }
-//         );
-//     }
-// }
+const validateChange = () => {
+    try {
+        devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) - total.value;
+    } catch (error) {
+        devolver.value = 0;
+    }
+}
 
-// const removeReference = (index) => {
-//     form.references.splice(index, 1);
-//     showAddButtom.value = form.references.length < optionProduts.value.length;
-// }
+const addReference = () => {
+    form.references.push(
+        {
+            'reference': '',
+            'quantity': '',
+        }
+    );
+}
+
+const removeReference = (index) => {
+    form.references.splice(index, 1);
+}
 </script>
 
 <template>
@@ -102,47 +101,45 @@ const optionProduts = ref(props.inventory.find(reference => reference.supplier_i
                 <strong>Nueva Venta</strong>
             </template>
             <div class="container">
-                <!-- <form @submit.prevent="submit" class="table-prais">
+                <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
-                        <div class="col-md-6" style="height: 40px;">
-                            <SelectSearch v-model="form.supplier" :options="optionSuppliers"
-                                :changeFunction="selectedSupplier" labelValue="Proveedor"
+                        <div class="col-md-12" style="height: 40px;">
+                            <SelectSearch v-model="form.assessor" :options="optionAssesors" labelValue="Asesores"
                                 :messageError="Object.keys(form.errors).length ? form.errors.supplier : null" />
                         </div>
-                        <div class="col-md-6" style="height: 40px;">
-                            <TextInput type="number" name="supplier_order" id="supplier_order"
-                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" :required="true"
-                                :messageError="Object.keys(form.errors).length ? form.errors.supplier_order : null" />
-                        </div>
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 mt-5">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-2 mt-5">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
-                                <th>N° LOTE</th>
                                 <th>CANTIDAD</th>
-                                <th>UNIDAD DE MEDIDA</th>
                             </tr>
                         </thead>
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references">
                                 <td>
-                                    <SelectSearch v-model="reference['reference']" :options="optionProduts"
-                                        :changeFunction="selectedReference(reference)"
+                                    <SelectSearch v-model="reference['reference']" :options="optionProducts"
                                         :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.reference'] : null" />
                                 </td>
                                 <td>
-                                    <TextInput type="text" name="batch[]" id="batch[]" v-model="reference['batch']"
-                                        :required="true"
-                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.batch'] : null" />
-                                </td>
-                                <td>
-                                    <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="reference['quantity']" :required="true"
-                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.quantity'] : null" />
-                                </td>
-                                <td>
-                                    {{ reference.unity }}
+                                    <div class="form-check">
+                                        <input class="form-check-input d-none" type="radio" v-model="reference['quantity']" :name="'quantity' + index " :id="'quantity' + index " value="30">
+                                        <label class="form-check-label" :for="'quantity' + index ">
+                                            <i class="fa-solid fa-flask"></i> 30 ml $17
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input d-none" type="radio"  v-model="reference['quantity']" :name="'quantity1' + index " :id="'quantity1' + index " value="50">
+                                        <label class="form-check-label" :for="'quantity1' + index ">
+                                            <i class="fa-solid fa-flask"></i> 50 ml $25
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input d-none" type="radio"  v-model="reference['quantity']" :name="'quantity2' + index " :id="'quantity2' + index " value="100">
+                                        <label class="form-check-label" :for="'quantity2' + index">
+                                            <i class="fa-solid fa-flask"></i> 100 ml $38
+                                        </label>
+                                    </div>
                                 </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
@@ -151,39 +148,88 @@ const optionProduts = ref(props.inventory.find(reference => reference.supplier_i
                         </tbody>
                     </table>
                     <div class="row text-center justify-content-center my-5">
-                        <div class="addItem" @click="addReference" v-if="showAddButtom">
+                        <div class="addItem" @click="addReference">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                     </div>
                     <div class="row my-5">
                         <div class="col-6">
-                            <PrimaryButton :href="route('orders.list')" class="px-5">
+                            <PrimaryButton :href="route('sales.list')" class="px-5">
                                 Volver
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
-                                Enviar
+                            <PrimaryButton @click="openModal" class="px-5" :class="form.processing ? 'disabled' : ''">
+                                Registrar Venta
                             </PrimaryButton>
                         </div>
                     </div>
                     <ModalPrais v-model="showModal" @close="showModal = false">
                         <template #header>
-                            Nueva orden de compra
+                            Confirmar Venta
                         </template>
                         <template #body>
-                            ¿Seguro quiera registra esta nueva orden de compra?
+                            Este es valor a pagar: ${{ total}}
+                            <div class="row">
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_50_bill" id="count_50_bill" v-model="form.count_50_bill"
+                                        :focus="form.count_50_bill != null ? true : false" labelValue="Cantidad de billetes de 50 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_20_bill" id="count_20_bill" v-model="form.count_20_bill"
+                                        :focus="form.count_20_bill != null ? true : false" labelValue="Cantidad de billetes de 20 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_10_bill" id="count_10_bill" v-model="form.count_10_bill"
+                                        :focus="form.count_10_bill != null ? true : false" labelValue="Cantidad de billetes de 10 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_5_bill" id="count_5_bill" v-model="form.count_5_bill"
+                                        :focus="form.count_5_bill != null ? true : false" labelValue="Cantidad de billetes de 5 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_2_bill" id="count_2_bill" v-model="form.count_2_bill"
+                                        :focus="form.count_2_bill != null ? true : false" labelValue="Cantidad de billetes de 2 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <TextInput type="number" name="count_1_bill" id="count_1_bill" v-model="form.count_1_bill"
+                                        :focus="form.count_1_bill != null ? true : false" labelValue="Cantidad de billetes de 1 mil"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                                <div class="col-md-12 mt-4">
+                                    <TextInput type="number" name="total_coins" id="total_coins" v-model="form.total_coins"
+                                        :focus="form.total_coins != null ? true : false" labelValue="Cantidad de monedas"
+                                        :minimo="0"
+                                        :required="true" />
+                                </div>
+                            </div>
+                            <PrimaryButton @click="validateChange" class="px-5 my-4">
+                                Validar Cambio
+                            </PrimaryButton>
+                            <br>
+                            Cantidad a devolver: ${{ devolver }}
                         </template>
                         <template #footer>
-                            <PrimaryButton @click="submit" class="px-5">
-                                Si
-                            </PrimaryButton>
-                            <PrimaryButton @click="showModal = false" class="px-5">
-                                No
-                            </PrimaryButton>
+                            <!-- <PrimaryButton @click="submit" class="px-5"> -->
+                                <!-- Si -->
+                            <!-- </PrimaryButton> -->
+                            <!-- <PrimaryButton @click="showModal = false" class="px-5"> -->
+                                <!-- No -->
+                            <!-- </PrimaryButton> -->
                         </template>
                     </ModalPrais>
-                </form> -->
+                </form>
             </div>
         </SectionCard>
     </BaseLayout>

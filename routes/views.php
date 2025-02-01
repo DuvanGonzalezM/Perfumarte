@@ -145,6 +145,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
             Route::get('ventas/nueva venta',  'createSales')->name('sales.create');
+            Route::get('ventas/nueva venta/{precio}/{pago}',  'test')->name('sales.validate');
         });
     });
 });
