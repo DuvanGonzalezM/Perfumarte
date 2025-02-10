@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('audit_cash', function (Blueprint $table) {
             $table->id('audit_cash_id');
+            $table->foreignId('cash_register_id')->constrained('cash_registers', 'cash_register_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('id_audits')->constrained('audits', 'id_audits')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('money_in_box');
             $table->integer('money_in_digital');

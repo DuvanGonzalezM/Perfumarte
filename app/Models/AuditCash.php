@@ -14,6 +14,7 @@ class AuditCash extends Model
 
     protected $fillable = [
         'id_audits', 
+        'cash_register_id',
         'money_in_box',
         'money_in_digital',
         'confirmation_cash',
@@ -25,4 +26,9 @@ class AuditCash extends Model
     {
         return $this->belongsTo(Audit::class, 'id_audits');
     }
-}
+
+    public function cashRegister()
+    {
+        return $this->belongsTo(CashRegister::class, 'cash_register_id');
+    }
+}   
