@@ -15,7 +15,7 @@ const attributes = defineProps({
 </script>
 <template>
     <Loader v-if="attributes.loading"/>
-    <div class="container body-login">
+    <div class="container body-login" v-cloak>
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
                 <Image src="assets\images\Logo_3.avif" />

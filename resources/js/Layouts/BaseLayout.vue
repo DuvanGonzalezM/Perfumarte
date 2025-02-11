@@ -25,7 +25,7 @@ watchEffect(() => {
 </script>
 <template>
     <Loader v-if="attributes.loading"/>
-    <div class="container container-prais">
+    <div class="container container-prais" v-cloak>
         <div class="row">
             <div class="col-3" v-if="!props.sidebarHidden">
                 <Sidebar />

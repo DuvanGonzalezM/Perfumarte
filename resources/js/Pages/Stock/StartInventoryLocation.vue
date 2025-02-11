@@ -36,12 +36,12 @@ const columnsTable = [
 
 const form = useForm({
     accepted: false,
+    count_100_bill: null,
     count_50_bill: null,
     count_20_bill: null,
     count_10_bill: null,
     count_5_bill: null,
     count_2_bill: null,
-    count_1_bill: null,
     total_coins: null,
     inventoryData: props.initialInventory,
 });
@@ -89,7 +89,14 @@ const handleSubmit = () => {
             </template>
             <template #body>
                 <div class="row">
-                    <h5>Cantidades en caja ${{ (form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1) }}</h5>
+                    <h5>Cantidades en caja ${{ (form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1) }}</h5>
+                    
+                    <div class="col-md-6 mt-4">
+                        <TextInput type="number" name="count_100_bill" id="count_100_bill" v-model="form.count_100_bill"
+                            :focus="form.count_100_bill != null ? true : false" labelValue="Cantidad de billetes de 100 mil"
+                            :minimo="0"
+                            :required="true" />
+                    </div>
                     <div class="col-md-6 mt-4">
                         <TextInput type="number" name="count_50_bill" id="count_50_bill" v-model="form.count_50_bill"
                             :focus="form.count_50_bill != null ? true : false" labelValue="Cantidad de billetes de 50 mil"
@@ -120,15 +127,9 @@ const handleSubmit = () => {
                             :minimo="0"
                             :required="true" />
                     </div>
-                    <div class="col-md-6 mt-4">
-                        <TextInput type="number" name="count_1_bill" id="count_1_bill" v-model="form.count_1_bill"
-                            :focus="form.count_1_bill != null ? true : false" labelValue="Cantidad de billetes de 1 mil"
-                            :minimo="0"
-                            :required="true" />
-                    </div>
                     <div class="col-md-12 mt-4">
                         <TextInput type="number" name="total_coins" id="total_coins" v-model="form.total_coins"
-                            :focus="form.total_coins != null ? true : false" labelValue="Cantidad de monedas"
+                            :focus="form.total_coins != null ? true : false" labelValue="Cantidad total de monedas"
                             :minimo="0"
                             :required="true" />
                     </div>
@@ -136,7 +137,7 @@ const handleSubmit = () => {
             </template>
             <template #footer>
                 <PrimaryButton @click="closeModal" class="mx-5 px-5">No</PrimaryButton>
-                <PrimaryButton @click="handleSubmit" :class="((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) != (props.location.cash_base) ? 'disabled' : ''" class="mx-5 px-5">Sí</PrimaryButton>
+                <PrimaryButton @click="handleSubmit" :class="((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) != (props.location.cash_base) ? 'disabled' : ''" class="mx-5 px-5">Sí</PrimaryButton>
             </template>
         </ModalPrais>
     </BaseLayout>

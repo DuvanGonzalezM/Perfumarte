@@ -23,7 +23,6 @@ class CashRegister extends Model
         'count_10_bill',
         'count_5_bill',
         'count_2_bill',
-        'count_1_bill',
         'total_coins',
         'observations',
         'confirmationclosingcash',

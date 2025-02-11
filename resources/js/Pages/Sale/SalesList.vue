@@ -13,10 +13,10 @@ const props = defineProps({
     },
 });
 const columnsTable = [
-    {
-        data: 'sale_id',
-        title: 'CODIGO VENTA'
-    },
+    // {
+    //     data: 'sale_id',
+    //     title: 'CODIGO VENTA'
+    // },
     {
         data: 'user.name',
         title: 'VENDEDOR'
