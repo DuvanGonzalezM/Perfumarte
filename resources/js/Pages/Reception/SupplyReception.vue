@@ -33,13 +33,13 @@ const allProductsReceived = computed(() => {
 const submit = () => {
     form.post(route('dispatch.receive'), {
         onSuccess: () => {
-            // Manejar éxito
         },
     });
 };
 </script>
 
 <template>
+
     <Head title="Recepción de Despacho" />
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
@@ -47,7 +47,8 @@ const submit = () => {
         </template>
         <SectionCard :idSection="props.dispatchDetails[0].dispatch_id"
             :subtitle="props.dispatchDetails[0].dispatch.status + (props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
-            :subextra="moment(props.dispatchDetails[0].dispatch.created_at).format('DD/MM/Y')" v-if="props.dispatchDetails.length > 0">
+            :subextra="moment(props.dispatchDetails[0].dispatch.created_at).format('DD/MM/Y')"
+            v-if="props.dispatchDetails.length > 0">
             <template #headerSection>
                 <strong>Detalles del Despacho</strong>
             </template>
@@ -67,7 +68,8 @@ const submit = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
+                                            <template
+                                                v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
                                                 <td>{{ product.name }}</td>
                                                 <td>{{ product.quantity }}</td>
                                                 <td>
@@ -114,7 +116,8 @@ const submit = () => {
                     </div>
                     <div class="row my-5">
                         <div class="col-12 d-flex justify-content-between">
-                            <PrimaryButton v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
+                            <PrimaryButton
+                                v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
                                 @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
                                 type="submit" :disabled="!allProductsReceived">
                                 Confirmar Recepción

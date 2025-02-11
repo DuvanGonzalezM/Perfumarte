@@ -19,10 +19,9 @@ class SupplyReceptionController extends Controller
             ->whereHas('dispatch', function ($query) {
             return $query->where('status', '=', 'En ruta');
         })->get();
-
         return Inertia::render('Reception/SupplyReception', [
             'dispatchDetails' => $dispatchDetails
-        ]);
+        ]);        
     }
 
     public function receive(Request $request)
