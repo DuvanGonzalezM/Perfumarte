@@ -33,8 +33,8 @@ const columnsTable = [
             return row.dispatchdetail && row.dispatchdetail.length > 0
                 ? row.dispatchdetail[0].warehouse.location.name
                 : 'N/A';
-        }
-    },
+        }
+    },
     {
         data: 'status',
         title: 'ESTADO'

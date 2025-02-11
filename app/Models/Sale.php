@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\CashClosure;
 use App\Models\User;
 use App\Models\SaleDetail;
 
@@ -17,7 +16,7 @@ class Sale extends Model
     protected $primaryKey = 'sale_id';
 
     protected $fillable = [
-        'cash_closure_id',
+        'cash_register_id',
         'total',
         'payment_method',
         'transaction_code',
@@ -25,9 +24,9 @@ class Sale extends Model
         'type',
     ];
 
-    public function cashClosure()
+    public function cashRegister()
     {
-        return $this->belongsTo(CashClosure::class, 'cash_closure_id');
+        return $this->belongsTo(CashRegister::class, 'cash_register_id');
     }
 
     public function user()

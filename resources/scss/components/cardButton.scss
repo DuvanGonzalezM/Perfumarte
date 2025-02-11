@@ -31,3 +31,7 @@
 .button-stock:hover{
     transform: scale(1.1) !important;
 }
+
+.form-check:has(input:checked){
+    color: $buttonColor !important;
+}

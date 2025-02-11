@@ -140,8 +140,13 @@ Route::middleware('auth')->group(function () {
         // });
     });
     Route::controller(SaleController::class)->group(function () {
-        Route::group(['middleware' => ['can:Ver Ventas']], function () {
-            Route::get('ventas', 'index')->name('sales.list');
+        Route::group(['middleware' => ['can:Ver Ventas']], routes: function () {
+            Route::get('ventas',  'sales')->name('sales.list');
+        });
+        Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
+            Route::get('ventas/nueva venta',  'createSales')->name('sales.create');
+            Route::post('ventas/nueva venta',  'storeSales')->name('sales.store');
+            Route::get('ventas/nueva venta/{precio}/{pago}',  'test')->name('sales.validate');
         });
     });
 });

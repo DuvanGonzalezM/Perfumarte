@@ -28,6 +28,9 @@ const props = defineProps({
     messageError: {
         type: String,
     },
+    minimo: {
+        type: Number,
+    },
 });
 
 const hasFocus = ref(false);
@@ -46,6 +49,7 @@ const label = ref(null);
             @blur="hasFocus = false"
             v-model="model"
             :required="required"
+            :min="minimo"
         />
         <label class="position-absolute pe-none" ref="label" :for="id" v-if="labelValue">
             {{ labelValue }}

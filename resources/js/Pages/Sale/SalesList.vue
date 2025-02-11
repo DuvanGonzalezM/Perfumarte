@@ -19,23 +19,30 @@ const columnsTable = [
     },
     {
         data: 'user.name',
-        title: 'SOLICITADO POR'
+        title: 'VENDEDOR'
     },
     {
-        data: "created_at",
-        title: 'FECHA DE SOLICITUD',
+        data: "total",
+        title: 'TOTAL VENTA',
         render: function (data) {
-            const formattedDate = moment(data).format('DD/MM/Y');
-            return formattedDate;
+            return '$' + data;
         }
     },
     {
-        data: "sale_id",
-        title: 'DETALLE',
+        data: "created_at",
+        title: 'HORA DE LA VENTA',
         render: function (data) {
-            return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
-        },
-    }
+            const formattedDate = moment(data).format('hh:mm');
+            return formattedDate;
+        }
+    },
+    // {
+    //     data: "sale_id",
+    //     title: 'DETALLE',
+    //     render: function (data) {
+    //         return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+    //     },
+    // }
 ];
 
 </script>
@@ -55,7 +62,7 @@ const columnsTable = [
                 <strong>Ventas</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('sales.store')" class="position-absolute"
+                <PrimaryButton :href="route('sales.create')" class="position-absolute"
                     v-if="can('Crear Ventas')">
                     Nueva venta
                 </PrimaryButton>

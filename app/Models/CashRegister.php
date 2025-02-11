@@ -15,10 +15,8 @@ class CashRegister extends Model
     protected $primaryKey = 'cash_register_id';
 
     protected $fillable = [
-        'branch_id',
         'location_id',
         'total_collected',
-        'total_products_sold',
         'count_100_bill',
         'count_50_bill',
         'count_20_bill',
@@ -28,16 +26,16 @@ class CashRegister extends Model
         'count_1_bill',
         'total_coins',
         'observations',
-        'confirmationclosingcash'
+        'confirmationclosingcash',
     ];
 
     public function sales()
     {
-        return $this->hasMany(Sale::class, 'cash_closure_id');
+        return $this->hasMany(Sale::class, 'cash_register_id');
     }
 
     public function location()
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class, 'location_id');
     }
 }

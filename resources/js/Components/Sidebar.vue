@@ -11,7 +11,7 @@ const buttons = [
         href: route('dashboard'),
         icon: 'fa-solid fa-house-chimney',
         active: page.component.startsWith('Dashboard'),
-        can: 'Ver Ordenes de Compra',
+        can: 'Ver Dashboard',
     },
     {
         name: 'Inventario',
@@ -33,6 +33,13 @@ const buttons = [
         icon: 'fa-solid fa-truck',
         active: page.component.startsWith('Dispatch'),
         can: 'Ver Despachos',
+    },
+    {
+        name: 'Ventas',
+        href: route('sales.list'),
+        icon: 'fa-solid fa-cash-register',
+        active: page.component.startsWith('Sales'),
+        can: 'Ver Ventas',
     },
     {
         name: 'Solicitud Insumos',
