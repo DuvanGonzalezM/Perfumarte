@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
-import Notification from '@/Components/Notification.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
@@ -10,6 +9,7 @@ import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { can } from 'laravel-permission-to-vuejs';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     audits: {
@@ -21,18 +21,53 @@ const props = defineProps({
 });
 
 const routes = {
-    detailCash: '/auditoria/detalle auditoria caja/', // Asegúrate de que la ruta sea correcta
+    detailCash: '/auditoria/detalle auditoria caja/', 
     detailInventory: '/auditoria/detalle auditoria inventario/',
 };
 const showModal = ref(false);
-const optionTypeAudit = ref(props.audits.map(audit => ({ 'title': audit.type_audit, 'value': audit.type_audit })));
+const optionTypeAudit = ref([
+    { value: "inventaryAudit", title: "Inventario" },
+    { value: "cashAudit", title: "Arquero" },
+]);
+
 const optionLocation = ref(props.locations.map(location => ({ 'title': location.name, 'value': location.location_id })));
+
+
+const typeAuditSeleted = ref(null);
+const locationSeleted = ref(null);
 
 const openModal = () => {
     showModal.value = true;
     typeAuditSeleted.value = null;
     locationSeleted.value = null;
 }
+
+const addAudit = () => {
+    if (!typeAuditSeleted.value || !locationSeleted.value) {
+        alert('Por favor, selecciona un tipo de auditoría y una sede.');
+        return;
+    }
+
+    if (typeAuditSeleted.value === 'cashAudit') {
+       
+        router.visit(route('audit.cash'), {
+            method: 'get',
+            data: { location_id: locationSeleted.value }
+        });
+    }
+    else if (typeAuditSeleted.value === 'inventaryAudit') {
+      
+        router.visit(route('audit.inventory'), {
+            method: 'get',
+            data: { location_id: locationSeleted.value }
+        });
+    } else {
+        console.error('Tipo de auditoría no válido');
+    }
+};
+
+
+
 const columnsTable = [
     {
         data: 'id_audits',
@@ -42,7 +77,7 @@ const columnsTable = [
         data: "created_at",
         title: 'FECHA AUDITORIA',
         render: function (data) {
-            return moment(data).format('DD/MM/YYYY HH:mm'); // Formatea la fecha usando Moment.js
+            return moment(data).format('DD/MM/YYYY HH:mm'); 
         },
     },
     {
@@ -65,25 +100,25 @@ const columnsTable = [
         },
     },
     {
-    data: "id_audits",
-    title: 'DETALLE',
-    render: function (data, type, row) {
-        let route;
+        data: "id_audits",
+        title: 'DETALLE',
+        render: function (data, type, row) {
+            let route;
 
-        switch (row.type_audit) {
-            case '1':
-                route = routes.detailCash + data; // Ruta para auditoría de caja
-                break;
-            case '2':
-                route = routes.detailInventory + data; // Ruta para auditoría de inventario
-                break;
-            default:
-                route = '#'; // Ruta por defecto si no coincide
-        }
+            switch (row.type_audit) {
+                case '1':
+                    route = routes.detailCash + data; 
+                    break;
+                case '2':
+                    route = routes.detailInventory + data; 
+                    break;
+                default:
+                    route = '#'; 
+            }
 
-        return '<a href="' + route + '"><i class="fa-solid fa-eye"></i></a>';
-    },
-}
+            return '<a href="' + route + '"><i class="fa-solid fa-eye"></i></a>';
+        },
+    }
 
 ];
 

@@ -16,13 +16,25 @@ class AuditController extends Controller
 {
     public function showAudits()
     {
-        $audits = Audit::with('user.location')->get();
-        $locations = Location::all();
-        $warehouses = Warehouse::all();
+        $user = auth()->user(); 
+        $locationIds = $user->location_user()->pluck('locations.location_id'); 
+    
 
-        return Inertia::render('Audit/AuditList', ['audits' => $audits, 'locations' => $locations, 'warehouses' => $warehouses]);
-    }
-    public function showDetailAuditCash($id)
+        $audits = Audit::with('user.location')
+            ->whereHas('user.location', function ($query) use ($locationIds) {
+                $query->whereIn('locations.location_id', $locationIds);
+            })
+            ->get();
+    
+        $locations = Location::whereIn('location_id', $locationIds)->get(); 
+        $warehouses = Warehouse::whereIn('location_id', $locationIds)->get(); 
+    
+        return Inertia::render('Audit/AuditList', [
+            'audits' => $audits,
+            'locations' => $locations,
+            'warehouses' => $warehouses
+        ]);
+    }    public function showDetailAuditCash($id)
     {
         $location = Location::all();
         $audits = Audit::with('user')->find($id);
@@ -41,7 +53,8 @@ class AuditController extends Controller
 
     public function showCashAudit()
     {
-       
+        $location = Location::all();
+        return Inertia::render('Audit/AuditCash', ['locations' => $location]);
     }
 
     public function storeCashAudit(Request $request)
