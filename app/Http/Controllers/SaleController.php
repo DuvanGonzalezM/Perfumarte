@@ -72,17 +72,23 @@ class SaleController extends Controller
         ]);
 
         foreach ($request->references as $reference) {
-            $price = 0;
-            array_map(function ($drops) use ($warehouse, &$price) {
-                $price += $drops * $warehouse->price_drops;
+            $drops = 0;
+            array_map(function ($i) use (&$drops) {
+                $drops += $i;
             }, $reference['perdurable']);
 
+            $price = $drops * $warehouse->price_drops;
             SaleDetail::create([
                'inventory_id' => $reference['reference'],
                'sale_id' => $sale->sale_id,
                'quantity' => $reference['quantity'],
-               'price' => ($reference['quantity'] * $reference['units']) + $price,
+               'units' => $reference['units'],
+               'drops' => $drops,
+               'price' => ($this->priceReference($reference['quantity'], $warehouse) * $reference['units']) + $price,
             ]);
+            $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
+            $inventory->quantity -= ($reference['quantity'] * $reference['units']);
+            $inventory->save();
         }
 
         $cashRegister->total_collected += $request->total;
@@ -96,9 +102,20 @@ class SaleController extends Controller
         $cashRegister->count_5_bill += $request->count_5_bill;
         $cashRegister->count_2_bill += $request->count_2_bill;
         $cashRegister->total_coins += $request->total_coins;
+        $cashRegister->count_100_bill -= $request->rest_count_100_bill;
+        $cashRegister->count_50_bill -= $request->rest_count_50_bill;
+        $cashRegister->count_20_bill -= $request->rest_count_20_bill;
+        $cashRegister->count_10_bill -= $request->rest_count_10_bill;
+        $cashRegister->count_5_bill -= $request->rest_count_5_bill;
+        $cashRegister->total_coins -= $request->rest_total_coins;
         $cashRegister->save();
 
-        return redirect()->route('sales.list')->with('success', 'Venta registrada exitosamente.');
+        return redirect()->route('sales.detail', $sale->sale_id);
+    }
+
+    public function salesDetail($sale_id){
+        $sale = Sale::with('saleDetails.inventory.product')->where('sale_id', $sale_id)->first();
+        return Inertia::render('Sale/SaleDetail', ['sale' => $sale]);
     }
 
     public function calculateChange($amountOwed, $amountPaid, CashRegister $cashRegister)

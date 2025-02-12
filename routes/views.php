@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
         Route::controller(SaleController::class)->group(function () {
             Route::group(['middleware' => ['can:Ver Ventas']], routes: function () {
                 Route::get('ventas',  'sales')->name('sales.list');
+                Route::get('ventas/detalle/{sale_id}',  'salesDetail')->name('sales.detail');
             });
             Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
                 Route::get('ventas/nueva venta',  'createSales')->name('sales.create');

@@ -1,15 +1,12 @@
 <script setup>
 import SectionCard from '@/Components/SectionCard.vue';
-import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref } from 'vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { reference } from '@popperjs/core';
 import axios from 'axios';
 import CountControl from '@/Components/CountControl.vue';
 
@@ -37,7 +34,14 @@ const form = useForm({
     count_10_bill: 0,
     count_5_bill: 0,
     count_2_bill: 0,
-    total_coins: 0,
+    total_coins: null,
+    rest_count_100_bill: 0,
+    rest_count_50_bill: 0,
+    rest_count_20_bill: 0,
+    rest_count_10_bill: 0,
+    rest_count_5_bill: 0,
+    rest_count_2_bill: 0,
+    rest_total_coins: null,
 });
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
 const optionProducts = ref(props.inventory.map((reference) => [{ 'title': reference.product.commercial_reference, 'value': reference.inventory_id }][0]));
@@ -50,7 +54,6 @@ const devolver = ref(0);
 const questionPerdurable = ref(false);
 const openModal = () => {
     showModal.value = true;
-    form.total = form.references.reduce((acc, reference) => acc + (reference.units * priceReference(reference.quantity) + reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops), 0);
     form.pay_method = '';
     form.transaction_code = null;
 }
@@ -69,13 +72,13 @@ const submit = () => {
     showModal.value = false;
 };
 
-const validateChange = async() => {
+const validateChange = async () => {
     try {
         await axios.get(route('sales.validate', { precio: form.total, pago: ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) }))
             .then(function (response) {
                 console.log(response);
             });
-    } catch (error) {  
+    } catch (error) {
         console.log(error);
     }
 }
@@ -101,7 +104,14 @@ const changePayMethod = () => {
     form.count_10_bill = 0;
     form.count_5_bill = 0;
     form.count_2_bill = 0;
-    form.total_coins = 0;
+    form.total_coins = null;
+    form.rest_count_100_bill = 0;
+    form.rest_count_50_bill = 0;
+    form.rest_count_20_bill = 0;
+    form.rest_count_10_bill = 0;
+    form.rest_count_5_bill = 0;
+    form.rest_count_2_bill = 0;
+    form.rest_total_coins = null;
     form.transaction_code = null;
 }
 
@@ -135,6 +145,7 @@ const addReference = () => {
         }
     );
     showModalReference.value = false;
+    form.total = form.references.reduce((acc, reference) => acc + (reference.units * priceReference(reference.quantity) + reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops), 0);
     referenceNew.value = { 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] };
 }
 
@@ -153,7 +164,7 @@ const removeReference = (index) => {
             <h1>Nueva Venta</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :subextra="'Valor total: $' + form.total">
             <template #headerSection>
                 <strong>Nueva Venta</strong>
             </template>
@@ -178,11 +189,14 @@ const removeReference = (index) => {
                         </thead>
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references">
-                                <td>{{ props.inventory.find(item => item.inventory_id === reference.reference)?.product.commercial_reference }}</td>
+                                <td>{{ props.inventory.find(item => item.inventory_id ===
+                                    reference.reference)?.product.commercial_reference }}</td>
                                 <td>{{ reference.quantity }}</td>
                                 <td>{{ reference.units }}</td>
                                 <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
-                                <td>$ {{ reference.units * priceReference(reference.quantity) + reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops}}</td>
+                                <td>$ {{ reference.units * priceReference(reference.quantity) +
+                                    reference.perdurable.reduce((a,
+                                        b) => a + Number(b), 0) * props.warehouse.price_drops }}</td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
@@ -201,7 +215,8 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="openModal" class="px-5" :class="form.processing || form.references.length == 0 ? 'disabled' : ''">
+                            <PrimaryButton @click="openModal" class="px-5"
+                                :class="form.processing || form.references.length == 0 ? 'disabled' : ''">
                                 Registrar Venta
                             </PrimaryButton>
                         </div>
@@ -215,8 +230,7 @@ const removeReference = (index) => {
                             <div class="row">
                                 <div class="col-md-12">
                                     <SelectSearch v-model="referenceNew['reference']" labelValue="Referencia"
-                                        :options="optionProducts"
-                                        :changeFunction="changeReference"
+                                        :options="optionProducts" :changeFunction="changeReference"
                                         :messageError="Object.keys(form.errors).length ? form.errors['references.' + '.reference'] : null" />
                                 </div>
                                 <div class="col-md-12 row mt-3 justify-content-center" v-if="referenceNew['reference']">
@@ -248,49 +262,56 @@ const removeReference = (index) => {
                                         <div class="col-md-6">
                                             <CountControl v-model="referenceNew['units']" :min="1" title="Unidad(es)" />
                                         </div>
-                                        <div class="col-md-6 row form-check prais-switch form-switch d-flex justify-content-center">
-                                            <label class="form-check-label ms-2" for="questionPerdurable">¿Agregar gotas de perduración?</label>
+                                        <div
+                                            class="col-md-6 row form-check prais-switch form-switch d-flex justify-content-center">
+                                            <label class="form-check-label ms-2" for="questionPerdurable">¿Agregar gotas
+                                                de perduración?</label>
                                             <input class="form-check-input fs-4" type="checkbox" id="questionPerdurable"
                                                 v-model="questionPerdurable" @change="changePerdurable">
                                         </div>
-                                        <div class="row d-flex justify-content-center mt-3" v-if="questionPerdurable" v-for="(unidad, index) in Array.from({length: referenceNew['units']}, (v, k) => k + 1)">
+                                        <div class="row d-flex justify-content-center mt-3" v-if="questionPerdurable"
+                                            v-for="(unidad, index) in Array.from({ length: referenceNew['units'] }, (v, k) => k + 1)">
                                             Unidad {{ unidad }}
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index+'perdurable'">
+                                                :for="index + 'perdurable'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>5
                                                 <input class="form-check-input d-none" type="radio"
-                                                    v-model="referenceNew['perdurable'][index]" :name="index+'perdurable'"
-                                                    :id="index+'perdurable'" value="5">
+                                                    v-model="referenceNew['perdurable'][index]"
+                                                    :name="index + 'perdurable'" :id="index + 'perdurable'" value="5">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index+'perdurable1'">
+                                                :for="index + 'perdurable1'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>10
                                                 <input class="form-check-input d-none" type="radio"
-                                                    v-model="referenceNew['perdurable'][index]" :name="index+'perdurable1'"
-                                                    :id="index+'perdurable1'" value="10">
+                                                    v-model="referenceNew['perdurable'][index]"
+                                                    :name="index + 'perdurable1'" :id="index + 'perdurable1'"
+                                                    value="10">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index+'perdurable2'">
+                                                :for="index + 'perdurable2'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>15
                                                 <input class="form-check-input d-none" type="radio"
-                                                    v-model="referenceNew['perdurable'][index]" :name="index+'perdurable2'"
-                                                    :id="index+'perdurable2'" value="15">
+                                                    v-model="referenceNew['perdurable'][index]"
+                                                    :name="index + 'perdurable2'" :id="index + 'perdurable2'"
+                                                    value="15">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index+'perdurable3'">
+                                                :for="index + 'perdurable3'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>20
                                                 <input class="form-check-input d-none" type="radio"
-                                                    v-model="referenceNew['perdurable'][index]" :name="index+'perdurable3'"
-                                                    :id="index+'perdurable3'" value="20">
+                                                    v-model="referenceNew['perdurable'][index]"
+                                                    :name="index + 'perdurable3'" :id="index + 'perdurable3'"
+                                                    value="20">
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-4 d-flex justify-content-center">
-                                        <PrimaryButton @click="addReference" :class="referenceNew['quantity'] ? '' : 'disabled'" class="px-5">
+                                        <PrimaryButton @click="addReference"
+                                            :class="referenceNew['quantity'] ? '' : 'disabled'" class="px-5">
                                             Agregar Referencia
                                         </PrimaryButton>
                                     </div>
@@ -309,20 +330,26 @@ const removeReference = (index) => {
                         <template #body>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <SelectSearch :changeFunction="changePayMethod" v-model="form.pay_method" labelValue="Metodo de pago" :options="optionPayMethod" />
+                                    <SelectSearch :changeFunction="changePayMethod" v-model="form.pay_method"
+                                        labelValue="Metodo de pago" :options="optionPayMethod" />
                                 </div>
                                 <div class="row" v-if="form.pay_method == 'Efectivo'">
+                                    <h4 class="mt-3 d-flex justify-content-center">$ {{ ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) }}</h4>
                                     <div class="col-md-4 my-3">
-                                        <CountControl v-model="form.count_100_bill" :min="0" title="N° Billetes 100 mil" />
+                                        <CountControl v-model="form.count_100_bill" :min="0"
+                                            title="N° Billetes 100 mil" />
                                     </div>
                                     <div class="col-md-4 my-3">
-                                        <CountControl v-model="form.count_50_bill" :min="0" title="N° Billetes 50 mil" />
+                                        <CountControl v-model="form.count_50_bill" :min="0"
+                                            title="N° Billetes 50 mil" />
                                     </div>
                                     <div class="col-md-4 my-3">
-                                        <CountControl v-model="form.count_20_bill" :min="0" title="N° Billetes 20 mil" />
+                                        <CountControl v-model="form.count_20_bill" :min="0"
+                                            title="N° Billetes 20 mil" />
                                     </div>
                                     <div class="col-md-4 my-3">
-                                        <CountControl v-model="form.count_10_bill" :min="0" title="N° Billetes 10 mil" />
+                                        <CountControl v-model="form.count_10_bill" :min="0"
+                                            title="N° Billetes 10 mil" />
                                     </div>
                                     <div class="col-md-4 my-3">
                                         <CountControl v-model="form.count_5_bill" :min="0" title="N° Billetes 5 mil" />
@@ -344,7 +371,8 @@ const removeReference = (index) => {
                                 <div class="row" v-if="form.pay_method == 'Transferencia'">
                                     <div class="col-md-12 my-4 d-flex justify-content-center">
                                         <TextInput type="text" name="transaction_code" id="transaction_code"
-                                            v-model="form.transaction_code" :focus="form.transaction_code != null ? true : false"
+                                            v-model="form.transaction_code"
+                                            :focus="form.transaction_code != null ? true : false"
                                             labelValue="Codigo de transaccion" :minimo="0" :required="true" />
                                     </div>
                                     <div class="col-md-12 my-4 d-flex justify-content-center ">
@@ -361,10 +389,43 @@ const removeReference = (index) => {
                     </ModalPrais>
 
                     <ModalPrais v-model="showModalChange" @close="showModalChange = false">
-                        <template #body>
+                        <template #header>
                             <h3>Cantidad a devolver: ${{ devolver }}</h3>
+                        </template>
+                        <template #body>
+                            <div class="row">
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_100_bill" :min="0"
+                                        title="N° Billetes 100 mil" />
+                                </div>
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_50_bill" :min="0"
+                                        title="N° Billetes 50 mil" />
+                                </div>
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_20_bill" :min="0"
+                                        title="N° Billetes 20 mil" />
+                                </div>
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_10_bill" :min="0"
+                                        title="N° Billetes 10 mil" />
+                                </div>
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_5_bill" :min="0" title="N° Billetes 5 mil" />
+                                </div>
+                                <div class="col-md-4 my-3">
+                                    <CountControl v-model="form.rest_count_2_bill" :min="0" title="N° Billetes 2 mil" />
+                                </div>
+                                <div class="col-md-12 my-3">
+                                    <TextInput type="number" name="total_coins" id="total_coins"
+                                        v-model="form.rest_total_coins" :focus="form.rest_total_coins != null ? true : false"
+                                        labelValue="Cantidad total de monedas" :minimo="0" :required="true" />
+                                </div>
+                            </div>
                             <div class="col-md-12 my-4 d-flex justify-content-center ">
-                                <PrimaryButton @click="submit" class="px-5">
+                                <PrimaryButton
+                                    :class="((form.rest_count_50_bill * 50000) + (form.rest_count_20_bill * 20000) + (form.rest_count_10_bill * 10000) + (form.rest_count_5_bill * 5000) + (form.rest_count_2_bill * 2000) + (form.rest_count_100_bill * 100000) + (form.rest_total_coins * 1)) != (devolver) ? 'disabled' : ''"
+                                    @click="submit" class="px-5">
                                     Pagar
                                 </PrimaryButton>
                             </div>

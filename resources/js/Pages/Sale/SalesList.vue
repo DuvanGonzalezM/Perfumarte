@@ -13,10 +13,6 @@ const props = defineProps({
     },
 });
 const columnsTable = [
-    // {
-    //     data: 'sale_id',
-    //     title: 'CODIGO VENTA'
-    // },
     {
         data: 'user.name',
         title: 'VENDEDOR'
@@ -36,13 +32,13 @@ const columnsTable = [
             return formattedDate;
         }
     },
-    // {
-    //     data: "sale_id",
-    //     title: 'DETALLE',
-    //     render: function (data) {
-    //         return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
-    //     },
-    // }
+    {
+        data: "sale_id",
+        title: 'DETALLE',
+        render: function (data) {
+            return '<a href="' + route("sales.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+        },
+    }
 ];
 
 </script>
@@ -57,7 +53,7 @@ const columnsTable = [
             <h1>Ventas</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
             <template #headerSection>
                 <strong>Ventas</strong>
             </template>
