@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('sale_id')->constrained('sales', 'sale_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity')->nullable();
             $table->integer('units')->nullable();
+            $table->integer('drops')->nullable();
             $table->integer('price');
             $table->timestamps();
         });

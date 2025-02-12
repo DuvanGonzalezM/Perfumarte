@@ -17,6 +17,7 @@ class CashRegister extends Model
     protected $fillable = [
         'location_id',
         'total_collected',
+        'total_digital',
         'count_100_bill',
         'count_50_bill',
         'count_20_bill',

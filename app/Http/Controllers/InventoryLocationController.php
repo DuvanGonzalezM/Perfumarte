@@ -51,6 +51,7 @@ class InventoryLocationController extends Controller
         CashRegister::create([
             'location_id' => $user->location_id,
             'total_collected' => 0,
+            'total_digital' => 0,
             'count_100_bill' => $request->count_100_bill ?? 0,
             'count_50_bill' => $request->count_50_bill ?? 0,
             'count_20_bill' => $request->count_20_bill ?? 0,

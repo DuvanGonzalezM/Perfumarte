@@ -123,13 +123,24 @@ Route::middleware('auth')->group(function () {
             Route::get('inventario actual', 'current')->name('inventory.current');
         });
     });
-    Route::controller(SupplyReceptionController::class)->group(function () {
-        Route::group(['middleware' => ['can:Recibir Insumos']], function () {
-            Route::get('despachos/recibir', 'show')->name('dispatch.show');
-            Route::post('despachos/recibir', 'receive')->name('dispatch.receive');
+    Route::group(['middleware' => ['inventory.check']], function () {
+        Route::controller(SupplyReceptionController::class)->group(function () {
+            Route::group(['middleware' => ['can:Recibir Insumos']], function () {
+                Route::get('despachos/recibir', 'show')->name('dispatch.show');
+                Route::post('despachos/recibir', 'receive')->name('dispatch.receive');
+            });
+        });
+        Route::controller(SaleController::class)->group(function () {
+            Route::group(['middleware' => ['can:Ver Ventas']], routes: function () {
+                Route::get('ventas',  'sales')->name('sales.list');
+            });
+            Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
+                Route::get('ventas/nueva venta',  'createSales')->name('sales.create');
+                Route::post('ventas/nueva venta',  'storeSales')->name('sales.store');
+                Route::get('ventas/nueva venta/{precio}/{pago}',  'test')->name('sales.validate');
+            });
         });
     });
-
     Route::controller(AuditController::class)->group(function () {
         // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
         Route::get('auditorias', 'showAudits')->name('audits');
@@ -138,16 +149,6 @@ Route::middleware('auth')->group(function () {
         Route::get('auditoria/detalle auditoria inventario/{id_audits}', 'showDetailAuditInventory')->name('audit.detailInventory');
         Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('audit.detailCash');
         // });
-    });
-    Route::controller(SaleController::class)->group(function () {
-        Route::group(['middleware' => ['can:Ver Ventas']], routes: function () {
-            Route::get('ventas',  'sales')->name('sales.list');
-        });
-        Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
-            Route::get('ventas/nueva venta',  'createSales')->name('sales.create');
-            Route::post('ventas/nueva venta',  'storeSales')->name('sales.store');
-            Route::get('ventas/nueva venta/{precio}/{pago}',  'test')->name('sales.validate');
-        });
     });
 });
 

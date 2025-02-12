@@ -17,7 +17,6 @@ class Inventory extends Model
         'warehouse_id',
         'product_id',
         'quantity',
-        'price',
     ];
     protected $casts = [
         'created_at' => 'datetime',

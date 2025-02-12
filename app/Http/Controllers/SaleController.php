@@ -34,36 +34,69 @@ class SaleController extends Controller
             })
             ->get();
         $warehouses = auth()->user()->location_user[0]->warehouses;
+        $warehouse = [];
         $inventory = null;
         if (count($warehouses) > 0) {
-            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
+            $warehouse = $warehouses[0];
+            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouse->warehouse_id)->get();
         }
 
-        return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory]);
+        return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
+    }
+
+    public function priceReference($quantity, $warehouse)
+    {
+        switch ($quantity) {
+            case 30:
+                return $warehouse->price30;
+            case 50:
+                return $warehouse->price50;
+            case 100:
+                return $warehouse->price100;
+            default:
+                return 0;
+        }
     }
 
     public function storeSales(Request $request)
     {
-        $user = Auth::user();
-        $location_id = $user->location_user[0]->location_id;
-        $cashRegister = CashRegister::where('location_id', $location_id)->first();
+        $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
+        $warehouse = auth()->user()->location_user[0]->warehouses[0];
 
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
             'total' => $request->total,
             'user_id' => $request->assessor,
-            'payment_method' => 'Efectivo',
-            'transaction_code' => 'NA',
+            'payment_method' => $request->pay_method,
+            'transaction_code' => $request->pay_method == 'Transferencia' ? $request->transaction_code : '',
         ]);
 
         foreach ($request->references as $reference) {
+            $price = 0;
+            array_map(function ($drops) use ($warehouse, &$price) {
+                $price += $drops * $warehouse->price_drops;
+            }, $reference['perdurable']);
+
             SaleDetail::create([
                'inventory_id' => $reference['reference'],
                'sale_id' => $sale->sale_id,
                'quantity' => $reference['quantity'],
-               'price' => $reference['quantity'] == 30 ? 17000 : ($reference['quantity'] == 50 ? 25000 : ($reference['quantity'] == 100 ? 38000 : 0)),
+               'price' => ($reference['quantity'] * $reference['units']) + $price,
             ]);
         }
+
+        $cashRegister->total_collected += $request->total;
+        if($request->pay_method == 'Transferencia'){
+            $cashRegister->total_digital += $request->total;
+        }
+        $cashRegister->count_100_bill += $request->count_100_bill;
+        $cashRegister->count_50_bill += $request->count_50_bill;
+        $cashRegister->count_20_bill += $request->count_20_bill;
+        $cashRegister->count_10_bill += $request->count_10_bill;
+        $cashRegister->count_5_bill += $request->count_5_bill;
+        $cashRegister->count_2_bill += $request->count_2_bill;
+        $cashRegister->total_coins += $request->total_coins;
+        $cashRegister->save();
 
         return redirect()->route('sales.list')->with('success', 'Venta registrada exitosamente.');
     }
