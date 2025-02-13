@@ -85,7 +85,6 @@ class AssignmentController extends Controller
                 }
             ])
             ->first();
-
         $advisors = User::whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Asesor comercial');
             })

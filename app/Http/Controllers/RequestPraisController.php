@@ -15,7 +15,13 @@ class RequestPraisController extends Controller
     public function getAllRequest()
     {
         $user = Auth::user();
-        $suppliesRequest = RequestPrais::with('user.location')
+        $locationId = $user->location_user[0]->location_id;
+        $suppliesRequest = RequestPrais::with(
+            [
+                'user.location_user' => function ($query) use ($locationId) {
+                    $query->where('location_user.location_id', $locationId);
+                }
+            ])
             ->where('request_type', '1')
             ->get();
 
@@ -61,7 +67,7 @@ class RequestPraisController extends Controller
     public function detailRequest($requestId)
     {
         $suppliesRequest = RequestPrais::with([
-            'user.location',
+            'user.location_user',
             'detailRequest.inventory.product',
         ])->findOrFail($requestId);
         return Inertia::render('Requests/SuppliesRequestDetails', [
@@ -72,7 +78,7 @@ class RequestPraisController extends Controller
     {
         $requestPrais = RequestPrais::with([
             'detailRequest.inventory.product',
-            'user.location'
+            'user.location_user'
         ])->findOrFail($requestId);
         $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
         return Inertia::render('Requests/EditSuppliesRequest', [

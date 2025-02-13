@@ -41,9 +41,4 @@ class Audit extends Model
     {
         return $this->hasMany(AuditCash::class, 'id_audits');
     }
-
-    public function location()
-    {
-        return $this->belongsTo(Location::class, 'location_id');
-    }
 }

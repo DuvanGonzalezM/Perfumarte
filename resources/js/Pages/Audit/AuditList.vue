@@ -20,11 +20,6 @@ const props = defineProps({
     }
 });
 
-const routes = {
-    detailCash: '/auditoria/detalle auditoria caja/',
-    detailInventory: '/auditoria/detalle auditoria inventario/',
-};
-
 const showModal = ref(false);
 const optionTypeAudit = ref([
     { value: "inventoryAudit", title: "Inventario" },
@@ -35,6 +30,7 @@ const optionLocation = ref(props.locationsAudit.map(location => ({ 'title': loca
 
 const typeAuditSeleted = ref(null);
 const locationSeleted = ref(null);
+const loading = ref(null);
 
 const openModal = () => {
     showModal.value = true;
@@ -43,11 +39,9 @@ const openModal = () => {
 }
 
 const addAudit = () => {
+    loading.value = true;
     if (typeAuditSeleted.value === 'cashAudit') {
-        router.visit(route('audit.cash'), {
-            method: 'get',
-            data: { location_id: locationSeleted.value }
-        });
+        router.visit(route('audit.cash', locationSeleted.value));
     }
     else if (typeAuditSeleted.value === 'inventoryAudit') {
         router.visit(route('audit.inventory'), {
@@ -94,20 +88,19 @@ const columnsTable = [
         data: "id_audits",
         title: 'DETALLE',
         render: function (data, type, row) {
-            let route;
-
-            switch (row.type_audit) {
+            let url;
+            switch (row.type_audit)  {
                 case '1':
-                    route = routes.detailCash + data;
+                    url = route('detailCash', data);
                     break;
                 case '2':
-                    route = routes.detailInventory + data;
+                    url = route('detailInventory', data);
                     break;
                 default:
-                    route = '#';
+                    url = '#';
             }
 
-            return '<a href="' + route + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + url + '"><i class="fa-solid fa-eye"></i></a>';
         },
     }
 ];
@@ -116,7 +109,7 @@ const columnsTable = [
 <template>
 
     <Head title="Auditorias" />
-    <BaseLayout>
+    <BaseLayout :loading="loading">
         <template #header>
             <h1>Auditorias</h1>
         </template>

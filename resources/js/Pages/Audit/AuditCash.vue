@@ -9,6 +9,9 @@ import { defineProps } from '@vue/runtime-core';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
+    cashRegister: {
+        type: Object,
+    },
     cashSales: {
         type: Array,
         default: () => []
@@ -28,13 +31,9 @@ const props = defineProps({
 
 });
 
-const totalCashSales = computed(() =>
-    props.cashSales.reduce((total, sale) => total + sale.total, 0)
-);
+const totalCashSales = ref(props.cashRegister.total_collected - props.cashRegister.total_digital);
 
-const totalDigitalSales = computed(() =>
-    props.digitalSales.reduce((total, sale) => total + sale.total, 0)
-);
+const totalDigitalSales = ref(props.cashRegister.total_digital);
 
 const form = useForm({
     location_id: props.location_id,

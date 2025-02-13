@@ -29,10 +29,10 @@ const columnsTable = [
         data: 'user.name',
         title: 'SOLICITADO POR'
     },
-    {
-        data: 'user.location.name',
-        title: 'SEDE'
-    },
+    // {
+    //     data: 'user.location.name',
+    //     title: 'SEDE'
+    // },
 
     {
         data: "status",

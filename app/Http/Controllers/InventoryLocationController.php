@@ -41,7 +41,7 @@ class InventoryLocationController extends Controller
     public function accept(Request $request)
     {
         InventoryValidation::create([
-            'user_id' => $user->user_id,
+            'user_id' => auth()->user()->user_id,
             'location_id' => auth()->user()->location_user[0]->location_id,
             'date' => Carbon::today(),
             'accepted_at' => Carbon::now(),

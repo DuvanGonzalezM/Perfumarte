@@ -28,7 +28,7 @@ const optionUsers = ref([
     ...props.advisors.map(advisor => ({ title: advisor.name, value: advisor.user_id })),
 ]);
 
-const usersEnabled = props.getSede.users_location.filter((user) => user.enabled === 1).map((user) => ({ 'user_id': user.user_id }));
+const usersEnabled = props.getSede.users_location.filter((user) => user.enabled === "1").map((user) => ({ 'user_id': user.user_id }));
 
 const form = useForm({
     location_id: props.getSede.location_id,

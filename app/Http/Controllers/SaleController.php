@@ -27,10 +27,10 @@ class SaleController extends Controller
     public function createSales()
     {
         $assessors = User::whereHas('roles', function ($roladvisor) {
-            $roladvisor->where('name', 'Asesor comercial');
+            $roladvisor->where('name', 'Asesor comercial')->orWhere('name', 'Usuario');
         })
-            ->whereDoesntHave('location_user', function ($query) {
-                $query->where('location_user.location_id', '!=', auth()->user()->location_user[0]->location_id);
+            ->whereHas('location_user', function ($query) {
+                $query->where('location_user.location_id', '=', auth()->user()->location_user[0]->location_id);
             })
             ->get();
         $warehouses = auth()->user()->location_user[0]->warehouses;

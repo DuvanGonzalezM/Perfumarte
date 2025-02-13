@@ -50,9 +50,4 @@ class Location extends Model
     {
         return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
     }
-
-    public function audit(): HasMany
-    {
-        return $this->hasMany(Audit::class, 'location_id');
-    }
 }

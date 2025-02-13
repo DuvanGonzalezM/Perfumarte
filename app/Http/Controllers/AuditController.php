@@ -23,6 +23,12 @@ class AuditController extends Controller
         $today = now()->toDateString();
         $location = Location::find($locationId);
 
+        $cashRegister = CashRegister::with(['sales.saleDetails', 'location'])->where('location_id', $locationId)->whereDate('created_at', $today)->first();
+
+        if (!$cashRegister) {
+            return redirect()->route('audits')->with('error', 'Auditoría no encontrada.');
+        }
+
         $cashSales = Sale::with([
             'cashRegister.location' => function ($query) use ($locationId) {
                 $query->where('location_id', $locationId);
@@ -44,6 +50,7 @@ class AuditController extends Controller
             ->get();
 
         return Inertia::render('Audit/AuditCash', [
+            'cashRegister' => $cashRegister,
             'cashSales' => $cashSales,
             'digitalSales' => $digitalSales,
             'location_id' => $locationId,
@@ -103,15 +110,7 @@ class AuditController extends Controller
     {
         $audit = Audit::with('location')->find($id);
 
-        if (!$audit) {
-            return redirect()->route('audits')->with('error', 'Auditoría no encontrada.');
-        }
-
         $auditCash = AuditCash::where('id_audits', $audit->id_audits)->first();
-
-        if (!$auditCash) {
-            return redirect()->route('audits')->with('error', 'Detalles de auditoría de caja no encontrados.');
-        }
 
         return Inertia::render('Audit/AuditDetailCash', [
             'audit' => $audit,

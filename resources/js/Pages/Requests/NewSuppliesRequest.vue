@@ -19,7 +19,7 @@ const form = useForm({
 });
 
 const showApproveModal = ref(false);
-const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
+const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.commercial_reference, 'value': inventory.inventory_id })));
 const addReference = () => {
     form.references.push({
         reference: '',
