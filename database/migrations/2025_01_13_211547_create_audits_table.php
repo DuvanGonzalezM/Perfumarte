@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('audits', function (Blueprint $table) {
             $table->id('id_audits');
             $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('type_audit');
             $table->timestamps();
         });

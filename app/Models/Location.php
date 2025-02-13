@@ -26,23 +26,33 @@ class Location extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function audit(): HasMany
+    {
+        return $this->hasMany(Audit::class, 'location_id');
+    }
+
     public function userLocation(): HasMany
     {
-        return $this->hasMany(User::class,'location_id');
+        return $this->hasMany(User::class, 'location_id');
     }
 
     public function warehouses(): HasMany
     {
-        return $this->hasMany(Warehouse::class,'location_id');
+        return $this->hasMany(Warehouse::class, 'location_id');
     }
 
     public function zone(): BelongsTo
     {
-        return $this->belongsTo(Zone::class,foreignKey: 'zone_id');
+        return $this->belongsTo(Zone::class, foreignKey: 'zone_id');
     }
 
     public function users_location(): BelongsToMany
-{
-    return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
-}
+    {
+        return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
+    }
+
+    public function audit(): HasMany
+    {
+        return $this->hasMany(Audit::class, 'location_id');
+    }
 }

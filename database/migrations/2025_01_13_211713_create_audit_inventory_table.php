@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id('id_audit_inventory');
             $table->foreignId('id_audits')->constrained('audits', 'id_audits')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->boolean('confirmation_inventory');
+            $table->boolean('confirmation_inventory')->nullable();
             $table->integer('quantity_system');
             $table->string('observation')->nullable();
             $table->timestamps();
