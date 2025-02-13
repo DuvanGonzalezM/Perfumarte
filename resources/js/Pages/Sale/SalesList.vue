@@ -14,18 +14,21 @@ const props = defineProps({
 });
 const columnsTable = [
     {
-        data: 'sale_id',
-        title: 'CODIGO VENTA'
+        data: 'user.name',
+        title: 'VENDEDOR'
     },
     {
-        data: 'user.name',
-        title: 'SOLICITADO POR'
+        data: "total",
+        title: 'TOTAL VENTA',
+        render: function (data) {
+            return '$' + data;
+        }
     },
     {
         data: "created_at",
-        title: 'FECHA DE SOLICITUD',
+        title: 'HORA DE LA VENTA',
         render: function (data) {
-            const formattedDate = moment(data).format('DD/MM/Y');
+            const formattedDate = moment(data).format('hh:mm');
             return formattedDate;
         }
     },
@@ -33,7 +36,7 @@ const columnsTable = [
         data: "sale_id",
         title: 'DETALLE',
         render: function (data) {
-            return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("sales.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
         },
     }
 ];
@@ -50,12 +53,12 @@ const columnsTable = [
             <h1>Ventas</h1>
         </template>
 
-        <SectionCard>
+        <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
             <template #headerSection>
                 <strong>Ventas</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('sales.store')" class="position-absolute"
+                <PrimaryButton :href="route('sales.create')" class="position-absolute"
                     v-if="can('Crear Ventas')">
                     Nueva venta
                 </PrimaryButton>

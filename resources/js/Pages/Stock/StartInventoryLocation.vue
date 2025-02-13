@@ -7,15 +7,19 @@ import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import { Head } from '@inertiajs/vue3';
+import TextInput from '@/Components/TextInput.vue';
+import SelectSearch from '@/Components/SelectSearch.vue';
+import CountControl from '@/Components/CountControl.vue';
 
 const props = defineProps({
     initialInventory: Object,
+    location: Object,
     sidebarHidden: Boolean
 });
 
 const columnsTable = [
     {
-        data: 'product.reference',
+        data: 'product.commercial_reference',
         title: 'REFERENCIAS'
     },
     {
@@ -33,6 +37,13 @@ const columnsTable = [
 
 const form = useForm({
     accepted: false,
+    count_100_bill: 0,
+    count_50_bill: 0,
+    count_20_bill: 0,
+    count_10_bill: 0,
+    count_5_bill: 0,
+    count_2_bill: 0,
+    total_coins: 0,
     inventoryData: props.initialInventory,
 });
 
@@ -47,6 +58,7 @@ const closeModal = () => {
 };
 
 const handleSubmit = () => {
+    form.accepted = true;
     form.post(route('inventory.accept'), {
         onSuccess: () => {
             window.location.href = route('inventory.current');
@@ -57,13 +69,14 @@ const handleSubmit = () => {
 </script>
 
 <template>
+
     <Head title="Inventario Inicial" />
     <BaseLayout :loading="form.processing ? true : false">
-        <SectionCard :subtitle="'Base: $500.000'">
+        <SectionCard :subtitle="'Base de la caja: $' + props.location.cash_base">
             <template #headerSection>
                 <strong>Inventario Inicial</strong>
             </template>
-            
+
             <div class="container">
                 <PrimaryButton @click="openModal" class="position-absolute" :disabled="form.processing">
                     Confirmar
@@ -74,14 +87,44 @@ const handleSubmit = () => {
 
         <ModalPrais v-model="showModal" @close="closeModal">
             <template #header>
-                <h3>Confirmación</h3>
+                <h4>¿Confirma la base y el inventario inicial para continuar con el módulo?</h4>
             </template>
             <template #body>
-                <p>¿Confirma la base y el inventario inicial para iniciar el módulo?</p>
+                <h5>Cantidades en caja ${{ (form.count_50_bill * 50000) + (form.count_20_bill * 20000) +
+                    (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) +
+                    (form.count_100_bill * 100000) + (form.total_coins * 1) }}</h5>
+                <div class="row">
+
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_100_bill" :min="0" title="N° Billetes 100 mil" />
+                    </div>
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_50_bill" :min="0" title="N° Billetes 50 mil" />
+                    </div>
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_20_bill" :min="0" title="N° Billetes 20 mil" />
+                    </div>
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_10_bill" :min="0" title="N° Billetes 10 mil" />
+                    </div>
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_5_bill" :min="0" title="N° Billetes 5 mil" />
+                    </div>
+                    <div class="col-md-4 my-3">
+                        <CountControl v-model="form.count_2_bill" :min="0" title="N° Billetes 2 mil" />
+                    </div>
+                    <div class="col-md-12 my-3">
+                        <TextInput type="number" name="total_coins" id="total_coins" v-model="form.total_coins"
+                            :focus="form.total_coins != null ? true : false" labelValue="Cantidad total de monedas"
+                            :minimo="0" :required="true" />
+                    </div>
+                </div>
             </template>
             <template #footer>
                 <PrimaryButton @click="closeModal" class="mx-5 px-5">No</PrimaryButton>
-                <PrimaryButton @click="handleSubmit" class="mx-5 px-5">Sí</PrimaryButton>
+                <PrimaryButton @click="handleSubmit"
+                    :class="((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) != (props.location.cash_base) ? 'disabled' : ''"
+                    class="mx-5 px-5">Sí</PrimaryButton>
             </template>
         </ModalPrais>
     </BaseLayout>

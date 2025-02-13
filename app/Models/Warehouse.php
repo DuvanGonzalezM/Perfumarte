@@ -16,6 +16,10 @@ class Warehouse extends Model
     protected $fillable = [
         'location_id',
         'name',
+        'price30',
+        'price50',
+        'price100',
+        'price_drops'
     ];
     protected $casts = [
         'created_at' => 'datetime',

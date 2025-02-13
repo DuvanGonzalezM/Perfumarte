@@ -31,3 +31,32 @@
 .button-stock:hover{
     transform: scale(1.1) !important;
 }
+
+.form-check{
+    padding: 0 !important;
+}
+
+.form-check:hover{
+    cursor: pointer !important;
+}
+
+.prais-radio:has(input:checked){
+    color: $buttonColor !important;
+}
+
+
+.prais-switch > input:checked{
+    background-color: $buttonColor !important;
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+}
+
+.prais-switch > input{
+    cursor: pointer !important;
+    margin-left: 0 !important;
+    border-color: $buttonColor !important;
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e") !important;
+}
+
+.prais-switch > input:focus{
+    box-shadow: 0 0 0 0.25rem rgba(236, 159, 79, 0.25) !important;
+}

@@ -18,6 +18,7 @@ class Location extends Model
         'name',
         'address',
         'zone_id',
+        'cash_base',
     ];
 
     protected $casts = [
