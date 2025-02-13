@@ -13,8 +13,14 @@ class Audit extends Model
 
     protected $fillable = [
         'user_id',
-        'type', 
+        'type',
+        'location_id', 
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
 
     public function user()
     {

@@ -131,13 +131,14 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(AuditController::class)->group(function () {
-        // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
+        Route::group(['middleware' => ['can:Auditar']], function () {
         Route::get('auditorias', 'showAudits')->name('audits');
         Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
-        Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
         Route::get('auditoria/detalle auditoria inventario/{id_audits}', 'showDetailAuditInventory')->name('audit.detailInventory');
         Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('audit.detailCash');
-        // });
+        Route::get('auditoria/caja/{locationId}', 'getCashAuditByLocation')->name('audit.cash');
+        Route::post('auditoria/caja/{locationId}', 'confirmCashAudit')->name('audit.cash.confirm');
+        });
     });
     Route::controller(SaleController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Ventas']], routes: function () {
