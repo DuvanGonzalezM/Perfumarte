@@ -55,8 +55,6 @@ Route::middleware('auth')->group(function () {
             Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.store');
             Route::post('solicitudes-insumos/nueva-solicitud', 'storeRequest')->name('suppliesrequest.store');
         });
-    });
-    Route::controller(RequestPraisController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Solicitudes Transformacion']], function () {
             Route::get('transformaciones', 'getAllRequestTransformation')->name('transformationRequest.list');
             Route::get('transformaciones/transformacion/{requestId}', 'detailTransformation')->name('transformation.detail');
@@ -145,10 +143,11 @@ Route::middleware('auth')->group(function () {
     Route::controller(AuditController::class)->group(function () {
         // Route::group(['middleware' => ['can:Ver Auditoría']], function () {
         Route::get('auditorias', 'showAudits')->name('audits');
-        Route::get('auditoria/inventario', 'showInventoryAudit')->name('audit.inventory');
+        Route::get('auditoria/inventario', 'getAllProducts')->name('audit.inventory');
+        Route::post('auditoria/inventario', 'storeAuditInventory')->name('audit.storeInventory');
         Route::get('auditoria/caja', 'showCashAudit')->name('audit.cash');
-        Route::get('auditoria/detalle auditoria inventario/{id_audits}', 'showDetailAuditInventory')->name('audit.detailInventory');
-        Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('audit.detailCash');
+        Route::get('/auditoria/detalle auditoria inventario/{id}', 'auditInventoryDetail')->name('detailInventory');
+        Route::get('auditoria/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('detailCash');
         // });
     });
 });
