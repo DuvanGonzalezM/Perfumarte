@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AuditInventory extends Model
 {
     use HasFactory;
-
+    protected $table = 'audit_inventory';
     protected $primaryKey = 'id_audit_inventory'; 
     protected $fillable = [
         'id_audits',

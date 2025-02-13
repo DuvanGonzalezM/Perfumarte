@@ -97,7 +97,7 @@ const buttons = [
         href: route('audits'),
         icon: 'fa-solid fa-file-signature',
         active: page.component.startsWith('Audit'),
-        can: 'Recibir Insumos',
+        can: 'Auditar',
     },
 ];
 
