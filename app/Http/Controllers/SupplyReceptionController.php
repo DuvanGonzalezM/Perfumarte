@@ -14,8 +14,7 @@ class SupplyReceptionController extends Controller
 {
     public function show()
     {
-        $user = Auth::user();
-        $dispatchDetails = DispatchDetail::with('dispatch', 'inventory.product')->where("warehouse_id", $user->location->warehouses[0]->warehouse_id)
+        $dispatchDetails = DispatchDetail::with('dispatch', 'inventory.product')->where("warehouse_id", auth()->user()->location_user[0]->warehouses[0]->warehouse_id)
             ->whereHas('dispatch', function ($query) {
             return $query->where('status', '=', 'En ruta');
         })->get();

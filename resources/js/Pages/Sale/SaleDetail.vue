@@ -20,12 +20,11 @@ const props = defineProps({
     <BaseLayout>
         <template #header>
             <!-- <Alert /> -->
-            <h1>Venta</h1>
         </template>
 
         <SectionCard :subextra="'Valor total: $' + sale.total" :subtitle="sale.payment_method">
             <template #headerSection>
-                <strong>Venta</strong>
+                <strong>Venta de {{ sale.user.name }}</strong>
             </template>
             <div class="container">
                 <table class="table table-hover text-center dt-body-nowrap size-prais-5 mt-5">
@@ -41,7 +40,7 @@ const props = defineProps({
                     <tbody id="productsList">
                         <tr v-for="(reference, index) in props.sale.sale_details">
                             <td>{{ reference.inventory.product.commercial_reference }}</td>
-                            <td>{{ reference.quantity }}</td>
+                            <td>{{ reference.quantity }} ml</td>
                             <td>{{ reference.units }}</td>
                             <td>{{ reference.drops }}</td>
                             <td>$ {{ reference.price }}</td>

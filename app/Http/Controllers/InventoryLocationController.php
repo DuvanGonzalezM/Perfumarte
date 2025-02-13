@@ -28,7 +28,7 @@ class InventoryLocationController extends Controller
         $warehouses = $location_user[0]->warehouses;
         $inventory = null;
         if(count($warehouses) > 0){
-            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
+            $inventory = Inventory::with('product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
         }
 
         return Inertia::render('Stock/StartInventoryLocation', [
@@ -40,16 +40,15 @@ class InventoryLocationController extends Controller
 
     public function accept(Request $request)
     {
-        $user = Auth::user();
         InventoryValidation::create([
             'user_id' => $user->user_id,
-            'location_id' => $user->location_id,
+            'location_id' => auth()->user()->location_user[0]->location_id,
             'date' => Carbon::today(),
             'accepted_at' => Carbon::now(),
         ]);
 
         CashRegister::create([
-            'location_id' => $user->location_id,
+            'location_id' => auth()->user()->location_user[0]->location_id,
             'total_collected' => 0,
             'total_digital' => 0,
             'count_100_bill' => $request->count_100_bill ?? 0,
@@ -66,10 +65,8 @@ class InventoryLocationController extends Controller
 
     public function current()
     {
-        $user = Auth::user();
-
-        $warehouses = $user->location->with('warehouses')->where('location_id', $user->location_id)->first();
-        $inventory = Inventory::with('product')->where('warehouse_id', $warehouses->warehouses[0]->warehouse_id)->get();
+        $warehouse = auth()->user()->location_user[0]->warehouses[0];
+        $inventory = Inventory::with('product')->where('warehouse_id', $warehouse->warehouse_id)->get();
 
         return Inertia::render('Stock/InventoryLocation', [
             'currentInventory' => $inventory

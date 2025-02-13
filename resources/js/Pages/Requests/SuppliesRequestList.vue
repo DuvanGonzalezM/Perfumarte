@@ -68,7 +68,6 @@ const columnsTable = [
     <BaseLayout>
         <template #header>
             <!-- <Alert /> -->
-            <h1>Solicitud Insumos</h1>
         </template>
 
         <SectionCard>

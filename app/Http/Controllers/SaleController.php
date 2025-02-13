@@ -38,7 +38,7 @@ class SaleController extends Controller
         $inventory = null;
         if (count($warehouses) > 0) {
             $warehouse = $warehouses[0];
-            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouse->warehouse_id)->get();
+            $inventory = Inventory::with('product')->where('warehouse_id', $warehouse->warehouse_id)->get();
         }
 
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
@@ -114,7 +114,7 @@ class SaleController extends Controller
     }
 
     public function salesDetail($sale_id){
-        $sale = Sale::with('saleDetails.inventory.product')->where('sale_id', $sale_id)->first();
+        $sale = Sale::with(['saleDetails.inventory.product', 'user'])->where('sale_id', $sale_id)->first();
         return Inertia::render('Sale/SaleDetail', ['sale' => $sale]);
     }
 

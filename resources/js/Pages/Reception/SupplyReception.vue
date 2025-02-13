@@ -43,7 +43,6 @@ const submit = () => {
     <Head title="Recepción de Despacho" />
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <h1>Recepción de Despacho </h1>
         </template>
         <SectionCard :idSection="props.dispatchDetails[0].dispatch_id"
             :subtitle="props.dispatchDetails[0].dispatch.status + (props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"

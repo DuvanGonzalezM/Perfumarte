@@ -191,7 +191,7 @@ const removeReference = (index) => {
                             <tr v-for="(reference, index) in form.references">
                                 <td>{{ props.inventory.find(item => item.inventory_id ===
                                     reference.reference)?.product.commercial_reference }}</td>
-                                <td>{{ reference.quantity }}</td>
+                                <td>{{ reference.quantity }} ml</td>
                                 <td>{{ reference.units }}</td>
                                 <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
                                 <td>$ {{ reference.units * priceReference(reference.quantity) +

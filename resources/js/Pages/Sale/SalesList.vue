@@ -50,7 +50,6 @@ const columnsTable = [
     <BaseLayout>
         <template #header>
             <!-- <Alert /> -->
-            <h1>Ventas</h1>
         </template>
 
         <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
