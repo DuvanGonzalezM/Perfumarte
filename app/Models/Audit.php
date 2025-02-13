@@ -13,8 +13,13 @@ class Audit extends Model
 
     protected $fillable = [
         'user_id',
-        'type',
-        'location_id', 
+        'type_audit', 
+        'location_id',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function location()
@@ -35,5 +40,10 @@ class Audit extends Model
     public function auditCashes()
     {
         return $this->hasMany(AuditCash::class, 'id_audits');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 }

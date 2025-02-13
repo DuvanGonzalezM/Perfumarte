@@ -40,8 +40,8 @@ class DashboardController extends Controller
         }
        
         $SolicitudInsumosSupervisor = RequestPrais::where('request_type', '1')->where('status', 'por solicitar')->get();
-        $auditoria = Audit::where('type_audit', '1')->where('user_id', Auth::user()->user_id)->get();
-        $arqueo = Audit::where('type_audit', '2')->where('user_id', Auth::user()->user_id)->get();
+        $auditoria = Audit::where('type_audit', '2')->where('user_id', Auth::user()->user_id)->get();
+        $arqueo = Audit::where('type_audit', '1')->where('user_id', Auth::user()->user_id)->get();
 
         return Inertia::render('Dashboard', [
             'inventory' => $stock1,

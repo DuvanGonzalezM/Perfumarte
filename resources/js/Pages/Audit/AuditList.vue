@@ -8,6 +8,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { can } from 'laravel-permission-to-vuejs';
 import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -23,14 +24,14 @@ const routes = {
     detailCash: '/auditoria/detalle auditoria caja/',
     detailInventory: '/auditoria/detalle auditoria inventario/',
 };
+
 const showModal = ref(false);
 const optionTypeAudit = ref([
-    { value: "inventaryAudit", title: "Inventario" },
+    { value: "inventoryAudit", title: "Inventario" },
     { value: "cashAudit", title: "Arqueo" },
 ]);
 
 const optionLocation = ref(props.locationsAudit.map(location => ({ 'title': location.name, 'value': location.location_id })));
-
 
 const typeAuditSeleted = ref(null);
 const locationSeleted = ref(null);
@@ -42,21 +43,14 @@ const openModal = () => {
 }
 
 const addAudit = () => {
-    if (!typeAuditSeleted.value || !locationSeleted.value) {
-        alert('Por favor, selecciona un tipo de auditoría y una sede.');
-        return;
-    }
-
     if (typeAuditSeleted.value === 'cashAudit') {
-
-        router.visit(route('audit.cash', locationSeleted.value), {
+        router.visit(route('audit.cash'), {
             method: 'get',
             data: { location_id: locationSeleted.value }
         });
     }
-    else if (typeAuditSeleted.value === 'inventaryAudit') {
-
-        router.visit(route('audit.inventory', locationSeleted.value), {
+    else if (typeAuditSeleted.value === 'inventoryAudit') {
+        router.visit(route('audit.inventory'), {
             method: 'get',
             data: { location_id: locationSeleted.value }
         });
@@ -64,7 +58,6 @@ const addAudit = () => {
         console.error('Tipo de auditoría no válido');
     }
 };
-
 
 const columnsTable = [
     {
@@ -79,7 +72,7 @@ const columnsTable = [
         },
     },
     {
-        data: "location.name",
+        data: "location.name", 
         title: 'SEDE',
     },
     {
@@ -117,16 +110,14 @@ const columnsTable = [
             return '<a href="' + route + '"><i class="fa-solid fa-eye"></i></a>';
         },
     }
-
 ];
-
 </script>
+
 <template>
 
     <Head title="Auditorias" />
     <BaseLayout>
         <template #header>
-
             <h1>Auditorias</h1>
         </template>
 

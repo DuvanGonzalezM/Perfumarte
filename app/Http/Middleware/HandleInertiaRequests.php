@@ -33,7 +33,7 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'jsPermissions' => json_decode(auth()->check() ? auth()->user()->jsPermissions() : '{}', true),
             'auth' => [
-                'user' => User::with('location.zone')->where('user_id', $request->user()->user_id ?? '')->first(),
+                'user' => User::with('location_user.zone')->where('user_id', $request->user()->user_id ?? '')->first(),
             ],
        ]);
     }

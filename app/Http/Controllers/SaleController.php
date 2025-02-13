@@ -15,53 +15,107 @@ class SaleController extends Controller
 {
     public function sales()
     {
-        $sales = Sale::with('user')->where('created_at', '>=', date('Y-m-d'))->get();
+        $sales = Sale::with('user')
+            ->whereHas('cashRegister', function ($query) {
+                $query->where('location_id', auth()->user()->location_user[0]->location_id)
+                    ->whereDate('created_at', date('Y-m-d'));
+            })
+            ->get();
         return Inertia::render('Sale/SalesList', ['sales' => $sales]);
     }
 
     public function createSales()
     {
-        $user = Auth::user();
-        $location_id = $user->location_user[0]->location_id;
         $assessors = User::whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Asesor comercial');
         })
-            ->whereDoesntHave('location_user', function ($query) use ($location_id) {
-                $query->where('location_user.location_id', '!=', $location_id);
+            ->whereDoesntHave('location_user', function ($query) {
+                $query->where('location_user.location_id', '!=', auth()->user()->location_user[0]->location_id);
             })
             ->get();
-        $warehouses = $user->location_user[0]->warehouses;
+        $warehouses = auth()->user()->location_user[0]->warehouses;
+        $warehouse = [];
         $inventory = null;
         if (count($warehouses) > 0) {
-            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
+            $warehouse = $warehouses[0];
+            $inventory = Inventory::with(relations: 'product')->where('warehouse_id', $warehouse->warehouse_id)->get();
         }
 
-        return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory]);
+        return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
     }
+
+    public function priceReference($quantity, $warehouse)
+    {
+        switch ($quantity) {
+            case 30:
+                return $warehouse->price30;
+            case 50:
+                return $warehouse->price50;
+            case 100:
+                return $warehouse->price100;
+            default:
+                return 0;
+        }
+    }
+
     public function storeSales(Request $request)
     {
-        $user = Auth::user();
-        $location_id = $user->location_user[0]->location_id;
-        $cashRegister = CashRegister::where('location_id', $location_id)->first();
+        $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
+        $warehouse = auth()->user()->location_user[0]->warehouses[0];
 
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
             'total' => $request->total,
             'user_id' => $request->assessor,
-            'payment_method' => 'Efectivo',
-            'transaction_code' => 'NA',
+            'payment_method' => $request->pay_method,
+            'transaction_code' => $request->pay_method == 'Transferencia' ? $request->transaction_code : '',
         ]);
 
         foreach ($request->references as $reference) {
+            $drops = 0;
+            array_map(function ($i) use (&$drops) {
+                $drops += $i;
+            }, $reference['perdurable']);
+
+            $price = $drops * $warehouse->price_drops;
             SaleDetail::create([
                'inventory_id' => $reference['reference'],
                'sale_id' => $sale->sale_id,
                'quantity' => $reference['quantity'],
-               'price' => $reference['quantity'] == 30 ? 17000 : ($reference['quantity'] == 50 ? 25000 : ($reference['quantity'] == 100 ? 38000 : 0)),
+               'units' => $reference['units'],
+               'drops' => $drops,
+               'price' => ($this->priceReference($reference['quantity'], $warehouse) * $reference['units']) + $price,
             ]);
+            $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
+            $inventory->quantity -= ($reference['quantity'] * $reference['units']);
+            $inventory->save();
         }
 
-        return redirect()->route('sales.list')->with('success', 'Despacho creado exitosamente.');
+        $cashRegister->total_collected += $request->total;
+        if($request->pay_method == 'Transferencia'){
+            $cashRegister->total_digital += $request->total;
+        }
+        $cashRegister->count_100_bill += $request->count_100_bill;
+        $cashRegister->count_50_bill += $request->count_50_bill;
+        $cashRegister->count_20_bill += $request->count_20_bill;
+        $cashRegister->count_10_bill += $request->count_10_bill;
+        $cashRegister->count_5_bill += $request->count_5_bill;
+        $cashRegister->count_2_bill += $request->count_2_bill;
+        $cashRegister->total_coins += $request->total_coins;
+        $cashRegister->count_100_bill -= $request->rest_count_100_bill;
+        $cashRegister->count_50_bill -= $request->rest_count_50_bill;
+        $cashRegister->count_20_bill -= $request->rest_count_20_bill;
+        $cashRegister->count_10_bill -= $request->rest_count_10_bill;
+        $cashRegister->count_5_bill -= $request->rest_count_5_bill;
+        $cashRegister->total_coins -= $request->rest_total_coins;
+        $cashRegister->save();
+
+        return redirect()->route('sales.detail', $sale->sale_id);
+    }
+
+    public function salesDetail($sale_id){
+        $sale = Sale::with('saleDetails.inventory.product')->where('sale_id', $sale_id)->first();
+        return Inertia::render('Sale/SaleDetail', ['sale' => $sale]);
     }
 
     public function calculateChange($amountOwed, $amountPaid, CashRegister $cashRegister)
@@ -76,71 +130,67 @@ class SaleController extends Controller
             return ['change_amount' => 0, 'bills_used' => []];
         }
 
-        // Mapeo de denominaciones en centavos (ajustar según tu caso)
         $denominations = [
-            100000 => $cashRegister->count_100_bill,  // Billete de 100,000 COP
-            50000 => $cashRegister->count_50_bill,    // Billete de 50,000 COP
-            20000 => $cashRegister->count_20_bill,    // Billete de 20,000 COP
-            10000 => $cashRegister->count_10_bill,    // Billete de 10,000 COP
-            5000 => $cashRegister->count_5_bill,      // Billete de 5,000 COP
-            2000 => $cashRegister->count_2_bill,      // Billete de 2,000 COP
-            1000 => $cashRegister->count_1_bill,      // Billete de 1,000 COP
+            100000 => [
+                'count' => $cashRegister->count_100_bill,
+                'name' => '100,000'
+            ],
+            50000 => [
+                'count' => $cashRegister->count_50_bill,
+                'name' => '50,000'
+            ],
+            20000 => [
+                'count' => $cashRegister->count_20_bill,
+                'name' => '20,000'
+            ],
+            10000 => [
+                'count' => $cashRegister->count_10_bill,
+                'name' => '10,000'
+            ],
+            5000 => [
+                'count' => $cashRegister->count_5_bill,
+                'name' => '5,000'
+            ],
+            2000 => [
+                'count' => $cashRegister->count_2_bill,
+                'name' => '2,000'
+            ],
+            1000 => [
+                'count' => $cashRegister->count_1_bill,
+                'name' => '1,000'
+            ]
         ];
 
         $remaining = $changeAmount;
         $change = [];
 
-        // Primera pasada: prioriza billetes con mayor disponibilidad
-        $sortedByCount = $denominations;
-        arsort($sortedByCount);
+        while ($remaining > 0) {
+            $maxDenomination = null;
+            $maxCount = 0;
 
-        foreach ($sortedByCount as $denom => $count) {
-            $reserve = 2; // Mantener al menos 2 billetes
-            $usable = max(0, $count - $reserve);
-            $maxPossible = min((int)($remaining / $denom), $usable);
+            foreach ($denominations as $denomination => $data) {
+                $count = (int)($remaining / $denomination);
 
-            if ($maxPossible > 0) {
-                $change[$denom] = $maxPossible;
-                $remaining -= $maxPossible * $denom;
-                $denominations[$denom] -= $maxPossible;
-
-                if ($remaining === 0) break;
-            }
-        }
-
-        // Segunda pasada: algoritmo voraz estándar si aún queda cambio
-        if ($remaining > 0) {
-            $sortedByValue = array_reverse($denominations, true);
-
-            foreach ($sortedByValue as $denom => $count) {
-                if ($count <= 0) continue;
-
-                $maxPossible = min((int)($remaining / $denom), $count);
-
-                if ($maxPossible > 0) {
-                    $change[$denom] = ($change[$denom] ?? 0) + $maxPossible;
-                    $remaining -= $maxPossible * $denom;
-                    $denominations[$denom] -= $maxPossible;
-
-                    if ($remaining === 0) break;
+                if ($count > 0 && $count <= $data['count'] && $count > $maxCount) {
+                    $maxDenomination = $denomination;
+                    $maxCount = $count;
                 }
             }
-        }
 
-        if ($remaining !== 0) {
-            throw new \Exception("No hay suficiente cambio disponible");
+            if ($maxDenomination === null) {
+                throw new \Exception("No hay suficiente cambio disponible");
+            }
+
+            $change[$maxDenomination] = $maxCount;
+            $remaining -= $maxDenomination * $maxCount;
+            $denominations[$maxDenomination]['count'] -= $maxCount;
         }
 
         // Actualizar la caja registradora
-        $cashRegister->update([
-            'count_100_bill' => $denominations[100000],
-            'count_50_bill' => $denominations[50000],
-            'count_20_bill' => $denominations[20000],
-            'count_10_bill' => $denominations[10000],
-            'count_5_bill' => $denominations[5000],
-            'count_2_bill' => $denominations[2000],
-            'count_1_bill' => $denominations[1000],
-        ]);
+        foreach ($denominations as $denomination => $data) {
+            $cashRegister->{'count_' . str_replace(',', '', $data['name']) . '_bill'} = $data['count'];
+        }
+        $cashRegister->save();
 
         return [
             'change_amount' => $changeAmount,
@@ -150,9 +200,7 @@ class SaleController extends Controller
 
     public function test($precio, $pago){
         try {
-            $user = Auth::user();
-            $location_id = $user->location_user[0]->location_id;
-            $cashRegister = CashRegister::where('location_id', $location_id)->first();
+            $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->first();
             $result = $this->calculateChange($precio, $pago, $cashRegister);
             return $result;
         } catch (\Exception $e) {

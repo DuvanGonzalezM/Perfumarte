@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id('warehouse_id');
             $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name');
+            $table->integer('price30')->nullable()->default(0);
+            $table->integer('price50')->nullable()->default(0);
+            $table->integer('price100')->nullable()->default(0);
+            $table->integer('price_drops')->nullable()->default(0);
             $table->timestamps();
         });
     }
