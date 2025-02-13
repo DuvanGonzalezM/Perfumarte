@@ -26,6 +26,11 @@ class Location extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function audit(): HasMany
+    {
+        return $this->hasMany(Audit::class, 'location_id');
+    }
+
     public function userLocation(): HasMany
     {
         return $this->hasMany(User::class, 'location_id');

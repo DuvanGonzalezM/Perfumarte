@@ -22,6 +22,11 @@ class Audit extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
