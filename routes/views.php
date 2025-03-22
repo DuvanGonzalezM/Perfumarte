@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
+        Route::post('users', 'storeUser')->name('users.store');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
         Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi');
         Route::get('api/permissions_roles/{roles_id}', 'getPermissionRol')->name('api.permi_roles');

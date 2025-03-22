@@ -7,13 +7,43 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function getUsers()
     {
         $users = User::all();
-        return Inertia::render('Users/UsersList', ['users' => $users]);
+        $roles = Role::all();
+        $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
+            $query->where('name', 'Subdirector');
+        })->get();
+        return Inertia::render('Users/UsersList', ['users' => $users, 'roles' => $roles, 'boss' => $boss]);
+    }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|max:255|unique:' . User::class,
+            // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+
+        $user = User::create([
+            'username' => (string) $request->username,
+            'name' => (string) $request->name,
+            'password' => Hash::make('PraisSecret'),
+            'boss_user' => (int) $request->boss_user,
+            'enabled' => (bool) $request->enabled,
+            'location_id' => (int) $request->location_id,
+        ]);
+
+        $user->syncRoles($request->role_id);
+        
+
+        event(new Registered($user));
+        return redirect()->route('users.list');
     }
 
     public function detailUser($user_id)
