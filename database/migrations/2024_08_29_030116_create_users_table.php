@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('boss_user')->nullable();
             $table->string('password');
-            $table->string('enabled');
+            $table->boolean('enabled');
             $table->foreignId('location_id')->nullable()->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
