@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -151,5 +152,9 @@ Route::middleware('auth')->group(function () {
             Route::post('auditoria/inventario', 'storeAuditInventory')->name('audit.storeInventory');
         });
     });
+    Route::controller(ReportController::class)->group(function () {
+        Route::get('reportes', 'getReports')->name('reports');
+        Route::post('reportes', 'storeReports')->name('store.report');
+        Route::get('reportes/download', 'downloadFile')->name('download.report');
+    });
 });
-

@@ -106,6 +106,13 @@ const buttons = [
         active: page.component.startsWith('Audit'),
         can: 'Auditar',
     },
+    {
+        name: 'Reportes ',
+        href: route('reports'),
+        icon: 'fa-solid fa-clipboard-list',
+        active: page.component.startsWith('Reports'),
+        can: 'Ver Reportes',
+    },
 ];
 
 </script>
