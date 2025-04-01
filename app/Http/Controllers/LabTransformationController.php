@@ -1,6 +1,6 @@
 <?php
 
-namespace App\http\Controllers;
+namespace App\Http\Controllers;
 
 use App\Models\Inventory;
 use App\Models\RequestDetail;
