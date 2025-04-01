@@ -2,7 +2,7 @@ services:
     webserver:
         image: nginx:stable-alpine
         ports:
-            - "1000:80"
+            - "${PROJECTPORT}:80"
         volumes:
             - ./docker/nginx/app.conf:/etc/nginx/conf.d/default.conf
             - .:/var/www

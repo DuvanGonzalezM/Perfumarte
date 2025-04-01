@@ -1,6 +1,7 @@
 up reload: recreate ?=
 up reload: ## [*] Up/Reload one or all service containers
 	docker-compose up -d --build --remove-orphans $(recreate)
+	make compile
 
 start: ## [*] Start one or all service containers
 	docker-compose start
