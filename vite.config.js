@@ -1,6 +1,10 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from "vite";
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+
+dotenvExpand.expand(dotenv.config());
 
 export default defineConfig({
     plugins: [
@@ -20,7 +24,7 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         hmr: {
-            host: 'localhost',
+            host: process.env.HOST,
         },
         watch: {
             usePolling: true,
