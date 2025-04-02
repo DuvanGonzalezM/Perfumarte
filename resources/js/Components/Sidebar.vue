@@ -106,6 +106,20 @@ const buttons = [
         active: page.component.startsWith('Audit'),
         can: 'Auditar',
     },
+    {
+        name: 'Stock',
+        href: route('stock.dashboard'),
+        icon: 'fa-duotone fa-solid fa-boxes-stacked',
+        active: page.component.startsWith('Stock'),
+        can: 'Ver Stock',
+    },
+    {
+        name: 'Productos',
+        href: route('products.list'),
+        icon: 'fa-solid fa-box-open',
+        active: page.component.startsWith('Product'),
+        can: 'Ver Productos',
+    },
 ];
 
 </script>
