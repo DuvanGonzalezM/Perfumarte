@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const model = defineModel();
 
@@ -36,25 +36,59 @@ const props = defineProps({
 const hasFocus = ref(false);
 const input = ref(null);
 const label = ref(null);
+const isMobile = ref(false);
+const isTablet = ref(false);
+
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+function checkScreenSize() {
+    isMobile.value = window.innerWidth < 576;
+    isTablet.value = window.innerWidth >= 576 && window.innerWidth < 992;
+}
 </script>
 
 <template>
-    <div class="inputContainer position-relative" :class="{'errorField': messageError && !(hasFocus || model || focus)}">
+    <div class="inputContainer position-relative" 
+         :class="{
+             'errorField': messageError && !(hasFocus || model || focus),
+             'input-mobile': isMobile,
+             'input-tablet': isTablet
+         }">
         <input 
             :id="id"
             :name="name"
-            :class="{ 'focus': hasFocus || model || focus }"
+            :class="{ 
+                'focus': hasFocus || model || focus,
+                'input-field-mobile': isMobile,
+                'input-field-tablet': isTablet
+            }"
             :type="type"
             @focus="hasFocus = true"
             @blur="hasFocus = false"
             v-model="model"
             :required="required"
             :min="minimo"
+            ref="input"
         />
-        <label class="position-absolute pe-none" ref="label" :for="id" v-if="labelValue">
+        <label class="position-absolute pe-none" 
+               ref="label" 
+               :for="id" 
+               v-if="labelValue"
+               :class="{
+                   'label-mobile': isMobile,
+                   'label-tablet': isTablet
+               }">
             {{ labelValue }}
         </label>
-        <div class="mt-1" v-if="messageError && !(hasFocus || model || focus)">
+        <div class="mt-1" 
+             v-if="messageError && !(hasFocus || model || focus)"
+             :class="{
+                 'error-message-mobile': isMobile,
+                 'error-message-tablet': isTablet
+             }">
             <p>
                 {{ messageError }}
             </p>

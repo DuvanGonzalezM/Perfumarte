@@ -1,0 +1,56 @@
+/* Estilos para el componente Breadcrumbs */
+.breadcrumbs {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 1rem !important;
+    padding: 0.5rem 0 !important;
+    color: $textBlack !important;
+    
+    i {
+        margin-right: 0.5rem !important;
+        color: $buttonColor !important;
+    }
+    
+    p {
+        margin: 0 0.5rem !important;
+    }
+    
+    a {
+        color: $textBlack !important;
+        text-decoration: none !important;
+        transition: color 0.3s ease !important;
+        
+        &:hover {
+            color: $buttonColor !important;
+        }
+        
+        &:last-child {
+            font-weight: bold !important;
+        }
+    }
+    
+    @include respond-to('tablet') {
+        font-size: 0.9rem !important;
+        
+        i {
+            margin-right: 0.4rem !important;
+        }
+        
+        p {
+            margin: 0 0.4rem !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 0.8rem !important;
+        flex-wrap: wrap !important;
+        
+        i {
+            margin-right: 0.3rem !important;
+        }
+        
+        p {
+            margin: 0 0.3rem !important;
+        }
+    }
+}

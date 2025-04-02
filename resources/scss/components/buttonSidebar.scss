@@ -13,6 +13,32 @@
         font-size: 25px !important;
         width: 30px !important;
     }
+    
+    @include respond-to('tablet') {
+        width: 180px !important;
+        font-size: 13px !important;
+        height: 38px !important;
+        
+        i {
+            font-size: 22px !important;
+            width: 28px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        width: 160px !important;
+        font-size: 12px !important;
+        height: 35px !important;
+        margin: 0.5rem 0 !important;
+        padding: 0.75rem !important;
+        justify-content: flex-start !important;
+        
+        i {
+            font-size: 20px !important;
+            width: 25px !important;
+            margin-right: 5px !important;
+        }
+    }
 }
 
 .button-sidebar.active {
@@ -24,4 +50,18 @@
 .button-sidebar:hover {
     background: $gradient !important;
     color: $textBlack !important;
+}
+
+/* Estilos para modo móvil en el sidebar */
+@media (max-width: 768px) {
+    .mobile-sidebar-active .button-sidebar {
+        width: 100% !important;
+        margin: 0.5rem 0 !important;
+        text-align: center !important;
+        justify-content: center !important;
+        
+        i {
+            margin-right: 10px !important;
+        }
+    }
 }

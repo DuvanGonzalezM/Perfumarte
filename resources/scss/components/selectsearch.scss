@@ -63,4 +63,47 @@
     font-size: 13px !important;
     color: $textBlack !important;
   }
+  
+  @include respond-to('tablet') {
+    .v-select {
+      height: 38px !important;
+      
+      &.vs--multiple {
+        min-height: 38px !important;
+      }
+    }
+    
+    label {
+      font-size: 14px !important;
+    }
+    
+    .focus+label {
+      top: -16px !important;
+      font-size: 12px !important;
+    }
+  }
+  
+  @include respond-to('mobile') {
+    .v-select {
+      height: 36px !important;
+      
+      &.vs--multiple {
+        min-height: 36px !important;
+      }
+    }
+    
+    label {
+      font-size: 13px !important;
+      top: 5px !important;
+    }
+    
+    .focus+label {
+      top: -14px !important;
+      font-size: 11px !important;
+    }
+    
+    .vs__dropdown-menu {
+      font-size: 13px !important;
+    }
+  }
 }

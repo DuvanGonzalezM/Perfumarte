@@ -78,6 +78,50 @@
             width: calc(100%/6) !important;
         }
     }
+    
+    @include respond-to('tablet') {
+        font-size: 14px !important;
+        
+        .remove-dispatch {
+            font-size: 18px !important;
+        }
+        
+        .removeItem {
+            margin-top: 7px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 12px !important;
+        
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .remove-dispatch {
+            font-size: 16px !important;
+        }
+        
+        .removeItem {
+            margin-top: 5px !important;
+        }
+        
+        .dt-search {
+            width: 100% !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .row {
+            flex-direction: column !important;
+            
+            > div {
+                width: 100% !important;
+                margin-bottom: 10px !important;
+                text-align: center !important;
+            }
+        }
+    }
 }
 
 .addItem {
@@ -87,4 +131,50 @@
     cursor: pointer !important;
     width: 5% !important;
     border-radius: 50% !important;
+    
+    @include respond-to('tablet') {
+        font-size: 18px !important;
+        width: 8% !important;
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 16px !important;
+        width: 10% !important;
+    }
+}
+
+/* Estilos adicionales para tablas responsivas */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    @include respond-to('mobile') {
+        .dataTables_wrapper {
+            overflow-x: auto;
+        }
+        
+        table.dataTable {
+            font-size: 0.85rem;
+        }
+        
+        .dataTables_paginate .page-link {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .dataTables_filter {
+            width: 100%;
+            margin-bottom: 0.75rem;
+            text-align: left;
+        }
+        
+        .dataTables_filter input {
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        table.dataTable {
+            font-size: 0.75rem;
+        }
+    }
 }

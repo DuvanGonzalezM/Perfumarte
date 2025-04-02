@@ -1,0 +1,26 @@
+/* Estilos para el componente InputError */
+.input-error {
+    margin-top: 0.25rem !important;
+    
+    p {
+        font-size: 0.875rem !important;
+        color: #dc3545 !important;
+        font-weight: 500 !important;
+    }
+    
+    @include respond-to('tablet') {
+        margin-top: 0.2rem !important;
+        
+        p {
+            font-size: 0.8rem !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        margin-top: 0.15rem !important;
+        
+        p {
+            font-size: 0.75rem !important;
+        }
+    }
+}

@@ -29,6 +29,37 @@
         -ms-transition: all 0.5s ease;
         transition: all 0.5s ease;
     }
+    
+    @include respond-to('tablet') {
+        label {
+            font-size: 14px !important;
+        }
+        
+        .focus+label {
+            top: -14px !important;
+            font-size: 12px !important;
+        }
+        
+        input {
+            height: 38px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        label {
+            font-size: 13px !important;
+        }
+        
+        .focus+label {
+            top: -12px !important;
+            font-size: 11px !important;
+        }
+        
+        input {
+            height: 36px !important;
+            padding: 8px !important;
+        }
+    }
 }
 
 .errorField {
@@ -44,5 +75,9 @@
         .vs__open-indicator{
             fill: $textError !important;
         }
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 0.6rem !important;
     }
 }

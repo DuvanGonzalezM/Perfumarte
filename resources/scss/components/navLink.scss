@@ -1,0 +1,32 @@
+/* Estilos para el componente NavLink */
+.nav-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    
+    &.active {
+        color: $textWhite !important;
+        border-bottom: 2px solid $buttonColor !important;
+        background-color: rgba($buttonColor, 0.1) !important;
+    }
+    
+    &:hover {
+        color: $buttonColor !important;
+    }
+    
+    @include respond-to('tablet') {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    @include respond-to('mobile') {
+        padding: 0.3rem 0.6rem !important;
+        font-size: 0.8rem !important;
+        
+        &.active {
+            border-bottom-width: 1px !important;
+        }
+    }
+}

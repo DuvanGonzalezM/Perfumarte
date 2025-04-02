@@ -22,12 +22,26 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
-onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
+const isMobile = ref(false);
+
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', closeOnEscape);
+    window.removeEventListener('resize', checkScreenSize);
+});
+
+function checkScreenSize() {
+    isMobile.value = window.innerWidth < 768;
+}
 
 const widthClass = computed(() => {
     return {
-        48: 'w-48',
+        48: isMobile.value ? 'w-auto' : 'w-48',
     }[props.width.toString()];
 });
 
@@ -45,25 +59,25 @@ const open = ref(false);
 </script>
 
 <template>
-    <div class="relative">
-        <div @click="open = !open">
+    <div class="relative dropdown-container">
+        <div @click="open = !open" class="dropdown-trigger">
             <slot name="trigger" />
         </div>
 
         <!-- Full Screen Dropdown Overlay -->
-        <div v-show="open" class="fixed inset-0 z-40" @click="open = false"></div>
+        <div v-show="open" class="fixed inset-0 z-40 dropdown-overlay" @click="open = false"></div>
 
         <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 scale-95"
+            enter-active-class="transition ease-out duration-200 dropdown-enter-active"
+            enter-from-class="opacity-0 scale-95 dropdown-enter-from"
             enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
+            leave-active-class="transition ease-in duration-75 dropdown-leave-active"
             leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+            leave-to-class="opacity-0 scale-95 dropdown-leave-to"
         >
             <div
                 v-show="open"
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
+                class="absolute z-50 mt-2 rounded-md shadow-lg dropdown-content"
                 :class="[widthClass, alignmentClasses]"
                 style="display: none"
                 @click="open = false"

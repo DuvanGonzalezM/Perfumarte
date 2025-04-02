@@ -1,0 +1,24 @@
+// Breakpoints para diseño responsivo
+$breakpoints: (
+  'mobile': 576px,
+  'tablet': 768px,
+  'desktop-sm': 992px,
+  'desktop': 1200px,
+  'large-desktop': 1400px
+);
+
+// Mixin para media queries
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "No se ha encontrado el breakpoint: #{$breakpoint}.";
+  }
+}
+
+// Ejemplo de uso:
+// @include respond-to('mobile') {
+//   // estilos para móvil
+// }

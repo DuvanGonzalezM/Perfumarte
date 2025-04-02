@@ -1,7 +1,28 @@
 <template>
     <button
-        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+        class="btn-danger"
+        :class="{
+            'btn-danger-mobile': isMobile,
+            'btn-danger-tablet': isTablet
+        }"
     >
         <slot />
     </button>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const isMobile = ref(false);
+const isTablet = ref(false);
+
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+function checkScreenSize() {
+    isMobile.value = window.innerWidth < 576;
+    isTablet.value = window.innerWidth >= 576 && window.innerWidth < 992;
+}
+</script>

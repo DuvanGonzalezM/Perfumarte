@@ -1,0 +1,138 @@
+// Estilos responsivos generales
+// Importamos los breakpoints
+@import './breakpoints.scss';
+
+// Clases de utilidad responsiva
+.responsive-container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  
+  @include respond-to('desktop') {
+    max-width: 1140px;
+  }
+  
+  @include respond-to('desktop-sm') {
+    max-width: 960px;
+  }
+  
+  @include respond-to('tablet') {
+    max-width: 720px;
+  }
+  
+  @include respond-to('mobile') {
+    max-width: 540px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+// Ajustes para layouts flexibles
+.responsive-flex {
+  display: flex;
+  flex-wrap: wrap;
+  
+  @include respond-to('mobile') {
+    flex-direction: column;
+  }
+}
+
+// Ajustes para columnas
+.responsive-column {
+  flex: 1;
+  padding: 0 15px;
+  
+  @include respond-to('tablet') {
+    padding: 0 10px;
+  }
+  
+  @include respond-to('mobile') {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 5px;
+    margin-bottom: 15px;
+  }
+}
+
+// Ajustes para espaciado responsivo
+.responsive-spacing {
+  margin-bottom: 30px;
+  
+  @include respond-to('tablet') {
+    margin-bottom: 25px;
+  }
+  
+  @include respond-to('mobile') {
+    margin-bottom: 20px;
+  }
+}
+
+// Ajustes para texto responsivo
+.responsive-text {
+  @include respond-to('tablet') {
+    font-size: 90% !important;
+  }
+  
+  @include respond-to('mobile') {
+    font-size: 80% !important;
+  }
+}
+
+// Clases para ocultar/mostrar elementos según el dispositivo
+.mobile-only {
+  display: none !important;
+  
+  @include respond-to('mobile') {
+    display: block !important;
+  }
+}
+
+.desktop-only {
+  display: block !important;
+  
+  @include respond-to('mobile') {
+    display: none !important;
+  }
+}
+
+// Ajustes para menús responsivos
+.responsive-menu {
+  @include respond-to('mobile') {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    background-color: rgba(0, 0, 0, 0.9) !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease-in-out !important;
+    
+    &.open {
+      transform: translateX(0) !important;
+    }
+  }
+}
+
+// Grid responsivo simplificado
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  
+  @include respond-to('desktop-sm') {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @include respond-to('tablet') {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  @include respond-to('mobile') {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
