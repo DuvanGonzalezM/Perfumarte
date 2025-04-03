@@ -14,6 +14,7 @@ use App\Http\Controllers\InventoryLocationController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -174,4 +175,28 @@ Route::middleware('auth')->group(function () {
         Route::post('reportes', 'storeReports')->name('store.report');
         Route::get('reportes/download', 'downloadFile')->name('download.report');
     });
+    Route::controller(SupplierController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Proveedores']], function () {
+            Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
+        });
+        Route::group(['middleware' => ['can:Crear Despachos']], function () {
+            Route::get('proveedores/nuevo proveedor', 'createSupplier')->name('supplier.create');
+            Route::post('proveedores/nuevo proveedor', 'storeSupplier')->name('supplier.store');
+        });
+        Route::group(['middleware' => ['can:Editar Ordenes de Compra']], function () {
+            Route::put('proveedores/editar proveedor/{supplier_id}', 'editSupplier')->name('supplier.update');
+        });
+        Route::group(['middleware' => ['can:Desactivar Proveedores']], function () {
+            Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
+        });
+    });
+
+
+
+
+
+
+
+
+
 });
