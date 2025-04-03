@@ -37,6 +37,7 @@ COPY . .
 
 # Install dependencies and build
 RUN composer install --no-interaction --optimize-autoloader --no-dev \
+    && npm install \
     && npm run build \
     && chown -R www-data:www-data .
 

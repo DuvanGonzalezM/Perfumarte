@@ -14,6 +14,7 @@ use App\Http\Controllers\InventoryLocationController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -158,4 +159,43 @@ Route::middleware('auth')->group(function () {
         Route::post('reportes', 'storeReports')->name('store.report');
         Route::get('reportes/download', 'downloadFile')->name('download.report');
     });
+    // Route::controller(ProductController::class)->group(function () {
+    //     Route::group(['middleware' => ['can:Ver Productos']], function () {
+    //         Route::get('productos', 'getAllProducts')->name('products.list');
+    //     });
+    //     Route::group(['middleware' => ['can:Crear Productos']], function () {
+    //         Route::get('productos/nuevo producto', 'createProduct')->name('product.create');
+    //         Route::post('productos/nuevo producto', 'storeProduct')->name('product.store');
+    //     });
+    //     Route::group(['middleware' => ['can:Editar Productos']], function () {
+    //         Route::put('productos/editar producto/{product_id}', 'editProduct')->name('products.update');
+    //     });
+    //     Route::group(['middleware' => ['can:Desactivar Productos']], function () {
+    //         Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
+    //     });
+    // });
+    Route::controller(SupplierController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Despachos']], function () {
+            Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
+        });
+        Route::group(['middleware' => ['can:Crear Despachos']], function () {
+            Route::get('proveedores/nuevo proveedor', 'createSupplier')->name('supplier.create');
+            Route::post('proveedores/nuevo proveedor', 'storeSupplier')->name('supplier.store');
+        });
+        Route::group(['middleware' => ['can:Editar Ordenes de Compra']], function () {
+            Route::put('proveedores/editar proveedor/{supplier_id}', 'editSupplier')->name('supplier.update');
+        });
+        Route::group(['middleware' => ['can:Desactivar Proveedores']], function () {
+            Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
+        });
+    });
+
+
+
+
+
+
+
+
+
 });

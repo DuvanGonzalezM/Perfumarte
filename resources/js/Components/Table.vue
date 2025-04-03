@@ -46,6 +46,9 @@ const options = computed(() => ({
             <template #render="item">
                 <slot name="templateRender" :item="item"/>
             </template>
+            <template #rendertwo="item">
+                <slot name="templateRendertwo" :item="item"/>
+            </template>
             <slot />
         </DataTable>
     </div>
