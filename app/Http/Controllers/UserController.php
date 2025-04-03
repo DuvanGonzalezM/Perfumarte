@@ -37,13 +37,45 @@ class UserController extends Controller
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
             'location_id' => (int) $request->location_id,
-        ]);
+                    ]);
 
         $user->syncRoles($request->role_id);
         
 
         event(new Registered($user));
         return redirect()->route('users.list');
+    }
+
+    public function editUser(Request $request, $user_id)
+    {
+        $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
+            'name' => 'required|string|max:255',
+            'boss_user' => 'required|integer',
+            'enabled' => 'required|boolean',
+
+        ]);
+
+        $user = User::findOrFail($user_id);
+        $user->update([
+            'username' => (string) $request->username,
+            'name' => (string) $request->name,
+            'boss_user' => (int) $request->boss_user,
+            'enabled' => (bool) $request->enabled,
+        ]);
+
+        return redirect()->route('users.list');
+    }
+
+    public function destroyUser($user_id)
+    {
+        try {
+            $user = User::findOrFail($user_id);
+            $user->delete();
+           
+        } catch (\Exception $e) {
+            
+        }
     }
 
     public function detailUser($user_id)

@@ -3,49 +3,58 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useReCaptcha } from 'vue-recaptcha-v3';
 
 const form = useForm({
     username: '',
     password: '',
+    captcha_token: '',
 });
 
 const submit = () => {
+    alert(form.captcha_token);
     form.post(route('login'));
 };
+
+const props = defineProps({
+    recaptcha_site_key: { type: String },
+});
+
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+
+const recaptcha = async () => {
+
+    await recaptchaLoaded()
+
+    form.captcha_token = await executeRecaptcha('login');
+    submit();
+
+};
+
 </script>
 
 <template>
 
 
     <GuestLayout :loading="form.processing ? true : false">
+
         <Head title="Inicio de Sesión" />
-        <form @submit.prevent="submit">
+        <form @submit.prevent="recaptcha">
             <div>
-                <TextInput
-                    labelValue="Nombre de usuario"
-                    id="username"
-                    name="username"
-                    type="text"
-                    v-model="form.username"
-                    :messageError="form.errors.username"
-                    required
-                />
+                <TextInput labelValue="Nombre de usuario" id="username" name="username" type="text"
+                    v-model="form.username" :messageError="form.errors.username" required />
             </div>
 
             <div class="mt-4">
-                <TextInput
-                    labelValue="Contraseña"
-                    id="password"
-                    name="password"
-                    type="password"
-                    v-model="form.password"
-                    :messageError="form.errors.password"
-                    required
-                />
+                <TextInput labelValue="Contraseña" id="password" name="password" type="password" v-model="form.password"
+                    :messageError="form.errors.password" required />
             </div>
+            <div class="text-red-600" v-if="form.errors.captcha_token">
+                {{ form.errors.captcha_token }}
+            </div>
+            
             <div class="d-flex justify-content-center mt-5">
-                <PrimaryButton @click="submit" :class="form.processing ? 'disabled' : ''">
+                <PrimaryButton @click="recaptcha" :class="form.processing ? 'disabled' : ''">
                     Ingresar
                 </PrimaryButton>
             </div>

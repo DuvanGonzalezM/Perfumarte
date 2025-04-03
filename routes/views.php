@@ -16,8 +16,12 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\PasswordController;
 
 Route::middleware('auth')->group(function () {
+    Route::get('change-password', [PasswordController::class, 'show'])->name('change-password');
+    Route::post('change-password', [PasswordController::class, 'update'])->name('change-password.update');
     Route::get('dashboard', [DashboardController::class, 'getDataInventory'])->name('dashboard');
     Route::controller(PurchaseOrderController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Ordenes de Compra']], function () {
@@ -85,7 +89,19 @@ Route::middleware('auth')->group(function () {
         Route::get('roles', 'getRoles')->name('roles.list');
         Route::post('roles', 'storeRole')->name('roles.store');
         Route::put('roles', 'updateRole')->name('roles.update');
+        Route::put('users/edit/{user_id}', 'editUser')->name('users.edit');
+        Route::delete('users/delete/{user_id}', 'destroyUser')->name('users.destroy');
     });
+
+    Route::controller(LocationsController::class)->group(function () {
+        Route::get('sedes', 'getLocations')->name('locations.list');
+        Route::post('sedes', 'storeLocation')->name('locations.store');
+        Route::get('sedes/{location_id}', 'detailLocation')->name('locations.detail');
+        Route::put('sedes/update/{location_id}', 'updateLocation')->name('locations.update');
+        Route::delete('sedes/delete/{location_id}', 'destroyLocation')->name('locations.destroy');
+    });
+
+
     Route::controller(RepackageController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
             Route::get('reenvase', 'getrepackage')->name('repackage.list');
