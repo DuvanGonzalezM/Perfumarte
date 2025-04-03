@@ -103,7 +103,7 @@ const disableSupplier = () => {
 
     <Head title="Proveedores" />
 
-    <BaseLayout :loading="form.processing || disableForm.processing ? true : false">
+    <BaseLayout :loading="form.processing || disableForm.processing  ? true : false">
         <template #header>
             <h1>Proveedores</h1>
         </template>

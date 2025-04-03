@@ -143,6 +143,14 @@ const buttons = [
         active: page.component.startsWith('Reports'),
         can: 'Ver Reportes',
     },
+    {
+        name: 'Proveedores ',
+        href: route('suppliers.list'),
+        icon: 'fa-regular fa-address-book',
+        active: page.component.startsWith('Supplier'),
+        can: 'Ver Proveedores',
+    },
+   
 ];
 
 </script>

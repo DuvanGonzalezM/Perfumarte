@@ -14,10 +14,8 @@ class SupplierController extends Controller
     public function getAllSuppliers()
     {
        $getsuppliers = Supplier::all()->where('status', 1);
-       return Inertia::render('Supplier/supplierList', [
-        'getSuppliers' => $getsuppliers,
-        
-    ]);
+       
+       return Inertia::render('Supplier/supplierList', ['getSuppliers' => $getsuppliers,]);
     
     }
 

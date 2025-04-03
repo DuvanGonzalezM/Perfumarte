@@ -175,7 +175,7 @@ Route::middleware('auth')->group(function () {
     //     });
     // });
     Route::controller(SupplierController::class)->group(function () {
-        Route::group(['middleware' => ['can:Ver Despachos']], function () {
+        Route::group(['middleware' => ['can:Ver Proveedores']], function () {
             Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
         });
         Route::group(['middleware' => ['can:Crear Despachos']], function () {
