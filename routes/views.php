@@ -15,6 +15,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -154,26 +155,26 @@ Route::middleware('auth')->group(function () {
             Route::post('auditoria/inventario', 'storeAuditInventory')->name('audit.storeInventory');
         });
     });
+    Route::controller(ProductController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Productos']], function () {
+            Route::get('productos', 'getAllProducts')->name('products.list');
+        });
+        Route::group(['middleware' => ['can:Crear Productos']], function () {
+            Route::get('productos/nuevo producto', 'createProduct')->name('product.create');
+            Route::post('productos/nuevo producto', 'storeProduct')->name('product.store');
+        });
+        Route::group(['middleware' => ['can:Editar Productos']], function () {
+            Route::put('productos/editar producto/{product_id}', 'editProduct')->name('products.update');
+        });
+        Route::group(['middleware' => ['can:Desactivar Productos']], function () {
+            Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
+        });
+    });
     Route::controller(ReportController::class)->group(function () {
         Route::get('reportes', 'getReports')->name('reports');
         Route::post('reportes', 'storeReports')->name('store.report');
         Route::get('reportes/download', 'downloadFile')->name('download.report');
     });
-    // Route::controller(ProductController::class)->group(function () {
-    //     Route::group(['middleware' => ['can:Ver Productos']], function () {
-    //         Route::get('productos', 'getAllProducts')->name('products.list');
-    //     });
-    //     Route::group(['middleware' => ['can:Crear Productos']], function () {
-    //         Route::get('productos/nuevo producto', 'createProduct')->name('product.create');
-    //         Route::post('productos/nuevo producto', 'storeProduct')->name('product.store');
-    //     });
-    //     Route::group(['middleware' => ['can:Editar Productos']], function () {
-    //         Route::put('productos/editar producto/{product_id}', 'editProduct')->name('products.update');
-    //     });
-    //     Route::group(['middleware' => ['can:Desactivar Productos']], function () {
-    //         Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
-    //     });
-    // });
     Route::controller(SupplierController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Proveedores']], function () {
             Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
