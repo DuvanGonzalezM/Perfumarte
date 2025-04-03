@@ -1,10 +1,51 @@
 .slider{
+    position: relative !important;
+    
     .swiper-button-next{
         color: $buttonColor !important;
         right: 0 !important;
     }
+    
     .swiper-button-prev{
         color: $buttonColor !important;
         left: 0 !important;
+    }
+    
+    .swiper-slide {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
+    @include respond-to('tablet') {
+        .swiper-button-next, .swiper-button-prev {
+            transform: scale(0.8) !important;
+        }
+        
+        .swiper-button-next {
+            right: -5px !important;
+        }
+        
+        .swiper-button-prev {
+            left: -5px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        .swiper-button-next, .swiper-button-prev {
+            transform: scale(0.6) !important;
+        }
+        
+        .swiper-button-next {
+            right: -10px !important;
+        }
+        
+        .swiper-button-prev {
+            left: -10px !important;
+        }
+        
+        .swiper-slide {
+            padding: 0 10px !important;
+        }
     }
 }

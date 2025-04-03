@@ -1,0 +1,56 @@
+/* Estilos para el componente Dropdown */
+.dropdown-container {
+    position: relative;
+    
+    .dropdown-content {
+        background-color: $backgroundComponent !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        
+        @include respond-to('tablet') {
+            width: auto !important;
+            min-width: 200px !important;
+        }
+        
+        @include respond-to('mobile') {
+            width: auto !important;
+            min-width: 180px !important;
+            right: 0 !important;
+            left: auto !important;
+            
+            &.w-48 {
+                width: auto !important;
+                min-width: 150px !important;
+            }
+        }
+    }
+    
+    .dropdown-trigger {
+        cursor: pointer !important;
+        
+        @include respond-to('mobile') {
+            padding: 0.5rem !important;
+        }
+    }
+    
+    /* Transiciones responsivas */
+    .dropdown-enter-active, .dropdown-leave-active {
+        transition: all 0.2s ease;
+        
+        @include respond-to('mobile') {
+            transition: all 0.15s ease;
+        }
+    }
+    
+    .dropdown-enter-from, .dropdown-leave-to {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}
+
+/* Ajustes para overlay en móvil */
+.dropdown-overlay {
+    @include respond-to('mobile') {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+    }
+}

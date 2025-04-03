@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
+        Route::post('users', 'storeUser')->name('users.store');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
         Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi');
         Route::get('api/permissions_roles/{roles_id}', 'getPermissionRol')->name('api.permi_roles');
@@ -167,5 +169,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
         });
     });
+    Route::controller(ReportController::class)->group(function () {
+        Route::get('reportes', 'getReports')->name('reports');
+        Route::post('reportes', 'storeReports')->name('store.report');
+        Route::get('reportes/download', 'downloadFile')->name('download.report');
+    });
 });
-

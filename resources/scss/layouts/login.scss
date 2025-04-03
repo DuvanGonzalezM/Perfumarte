@@ -29,9 +29,62 @@
             -webkit-text-stroke-width: 0.3px !important;
         }
     }
+
+    @include respond-to('desktop-sm') {
+        width: 35vw !important;
+        left: 33vw !important;
+    }
+
+    @include respond-to('tablet') {
+        width: 50vw !important;
+        left: 25vw !important;
+        
+        .over-card {
+            width: 70% !important;
+        }
+    }
+
+    @include respond-to('mobile') {
+        width: 85vw !important;
+        left: 7.5vw !important;
+        top: 25vh !important;
+        
+        .card-body {
+            width: 75% !important;
+        }
+        
+        .over-card {
+            width: 80% !important;
+            top: -12vh !important;
+            
+            img {
+                width: 60% !important;
+            }
+        }
+    }
 }
 
 body:has(.body-login){
     background-image: url('/assets/images/background.webp') !important;
     background-size: cover !important;
+}
+
+/* Estilos adicionales para el layout de invitados */
+.body-login {
+    min-height: 100vh !important;
+    
+    @include respond-to('mobile') {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        .card-login {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            margin: 0 auto !important;
+            width: 90% !important;
+            max-width: 400px !important;
+        }
+    }
 }

@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 use Inertia\Response;
+
+
 
 class RegisteredUserController extends Controller
 {
@@ -21,7 +24,12 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        $roles = Role::all();
+        $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
+            $query->where('name', 'Subdirector');
+        })->get();
+        return Inertia::render('Auth/Register', ['roles' => $roles, 'boss' => $boss]);
+
     }
 
     /**
@@ -32,16 +40,22 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'username' => 'required|string|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'username' => 'required|string|max:255|unique:' . User::class,
+            // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
 
         $user = User::create([
             'username' => (string) $request->username,
-            'name' => (string) $request->username,
-            'password' => Hash::make($request->password),
-            'location_id' => 1,
+            'name' => (string) $request->name,
+            'password' => Hash::make('PraisSecret'),
+            'boss_user' => (int) $request->boss_user,
+            'enabled' => (bool) $request->enabled,
+            'location_id' => (int) $request->location_id,
         ]);
+
+        $user->syncRoles($request->role_id);
+        
 
         event(new Registered($user));
 

@@ -39,11 +39,69 @@
         width: 85% !important;
         margin-top: 90px !important;
     }
+    
+    @include respond-to('tablet') {
+        margin-top: 60px !important;
+        min-height: 600px !important;
+        
+        .over-section {
+            width: 90% !important;
+            min-height: 100px !important;
+            top: -3rem !important;
+            
+            * {
+                font-size: 22px !important;
+            }
+            
+            .subtitle, .subextra {
+                font-size: 14px !important;
+            }
+        }
+        
+        .section-content-prais {
+            width: 95% !important;
+            margin-top: 70px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        margin-top: 50px !important;
+        min-height: 500px !important;
+        
+        .over-section {
+            width: 95% !important;
+            min-height: 80px !important;
+            top: -2.5rem !important;
+            padding: 10px !important;
+            
+            * {
+                font-size: 18px !important;
+            }
+            
+            .idSection {
+                position: relative !important;
+                text-align: center !important;
+                margin-bottom: 5px !important;
+            }
+            
+            .subtitle, .subextra {
+                font-size: 12px !important;
+                position: relative !important;
+                text-align: center !important;
+            }
+        }
+        
+        .section-content-prais {
+            width: 95% !important;
+            margin-top: 50px !important;
+        }
+    }
 }
 
 .cardboxprais {
     border-radius: 0.3rem !important;
     box-shadow: 0px 2px 4px 0px $textBlack;
+    transition: all 0.5s ease;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -52,4 +110,48 @@
 
 .cardpurcheorder {
     font-size: 12px !important;
+    
+    @include respond-to('mobile') {
+        font-size: 10px !important;
+    }
+}
+
+/* Estilos adicionales para diseño responsivo */
+@media (max-width: 768px) {
+    .over-section {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    .idSection, .subtitle, .subextra {
+        position: relative !important;
+        margin: 5px 0 !important;
+    }
+    
+    .idSection {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .subextra {
+        margin-left: 0 !important;
+        align-self: flex-start !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-prais {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    .over-section {
+        width: 92% !important;
+        padding: 10px !important;
+    }
+    
+    .section-content-prais {
+        width: 95% !important;
+        padding: 10px !important;
+    }
 }

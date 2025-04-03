@@ -10,4 +10,60 @@
         width: 80px; 
         height: 80px;
     }
+
+    @include respond-to('tablet') {
+        width: 200px;
+        padding: 20px;
+        
+        img {
+            width: 60px;
+            height: 60px;
+        }
+    }
+
+    @include respond-to('mobile') {
+        width: 100%;
+        max-width: 250px;
+        margin: 0 auto;
+        padding: 15px;
+        
+        img {
+            width: 50px;
+            height: 50px;
+        }
+    }
+}
+
+/* Estilos para el botón de menú móvil */
+.mobile-menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1050;
+
+    button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Estilos responsivos para el sidebar en móvil */
+@media (max-width: 768px) {
+    .sidebar-card {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        height: 100vh;
+        z-index: 1040;
+        overflow-y: auto;
+        transition: left 0.3s ease-in-out;
+    }
+
+    .sidebar-mobile-open {
+        left: 0;
+    }
 }

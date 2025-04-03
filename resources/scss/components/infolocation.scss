@@ -4,8 +4,24 @@
     color: $textBlack !important;
     border-radius: 0.3rem !important;
     box-shadow: 0px 2px 4px 0px $buttonColor;
+    transition: all 0.5s ease;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     -ms-transition: all 0.5s ease;
+    
+    @include respond-to('tablet') {
+        max-width: 350px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    @include respond-to('mobile') {
+        max-width: 300px !important;
+        font-size: 0.8rem !important;
+        margin: 0 auto !important;
+        
+        .col-6, .col-12 {
+            padding: 0.5rem !important;
+        }
+    }
 }

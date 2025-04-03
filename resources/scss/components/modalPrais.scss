@@ -5,5 +5,53 @@
 
     .modal-content {
         min-width: 500px;
+        
+        @include respond-to('tablet') {
+            min-width: 400px;
+        }
+        
+        @include respond-to('mobile') {
+            min-width: 300px;
+            width: 90% !important;
+            margin: 0 auto !important;
+        }
     }
+    
+    .modal-header {
+        @include respond-to('mobile') {
+            flex-direction: column !important;
+            
+            .modal-title {
+                margin-bottom: 10px !important;
+                font-size: 1.1rem !important;
+            }
+        }
+    }
+    
+    .modal-body {
+        @include respond-to('mobile') {
+            padding: 15px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+    
+    .modal-footer {
+        @include respond-to('mobile') {
+            padding: 10px !important;
+            
+            button {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.9rem !important;
+            }
+        }
+    }
+}
+
+/* Animación para el modal */
+.modal-enter-active, .modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+    opacity: 0;
 }
