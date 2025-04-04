@@ -35,12 +35,13 @@ Perfumarte es un sistema de gestión de inventario diseñado específicamente pa
 - [Docker Compose](https://docs.docker.com/compose/compose-file/compose-file-v1/)
 - [GNU Make](https://www.gnu.org/software/make/)
 
-## ⚙️ Instalación con Docker y Make
+## ⚙️ Instalación
 
 1. **Clonar el repositorio**
    ```bash
    git clone [url-del-repositorio]
    cd Perfumarte
+   cp .env.example .env
    ```
 
 2. **Configurar entorno**

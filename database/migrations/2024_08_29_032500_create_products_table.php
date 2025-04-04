@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('commercial_reference');
             $table->string('category');
             $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         
        });
