@@ -31,6 +31,11 @@ function checkScreenSize() {
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios
                     </a>
+                    <hr>
+                    <a :href="route('locations.list')" v-if="is('Administrador')">
+                        <i class="fa-solid fa-warehouse me-2"></i>
+                        Sedes
+                    </a>
                 </li>
                 <li class="mt-2 text-end">
                     <a :href="route('logout')" method="post" as="button">
