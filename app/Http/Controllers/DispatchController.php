@@ -62,7 +62,8 @@ class DispatchController extends Controller
                                 'warehouse_id' => $location['warehouse'],
                                 'dispatch_id' => $dispatch->dispatch_id,
                                 'inventory_id' => $inventoryWarehouse2->inventory_id,
-                                'dispatched_quantity' => $reference['dispatched_quantity']
+                                'dispatched_quantity' => $reference['dispatched_quantity'],
+                                'received' => 0,
                             ]);
                             $productId = $inventoryWarehouse2->product_id;
                             $inventoryDestinationLocation = Inventory::where('warehouse_id', $location['warehouse'])
