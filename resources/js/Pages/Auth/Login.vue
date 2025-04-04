@@ -17,7 +17,6 @@ const form = useForm({
 });
 
 const submit = () => {
-    alert(form.captcha_token);
     form.post(route('login'));
 };
 
@@ -28,11 +27,12 @@ const props = defineProps({
 const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
 
 const recaptcha = async () => {
-
-    await recaptchaLoaded()
-
-    form.captcha_token = await executeRecaptcha('login');
-    submit();
+    try {
+        await recaptchaLoaded()
+        form.captcha_token = await executeRecaptcha('login');
+        submit();
+    } catch (error){
+    }
 
 };
 
@@ -77,7 +77,7 @@ const recaptcha = async () => {
                 isMobile ? 'mt-4' : isTablet ? 'mt-4' : 'mt-5'
             ]">
                 <PrimaryButton 
-                    @click="submit" 
+                    @click="recaptcha" 
                     :class="[
                         form.processing ? 'disabled' : '',
                         { 'btn-mobile': isMobile, 'btn-tablet': isTablet }

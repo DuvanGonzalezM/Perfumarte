@@ -23,7 +23,7 @@ createInertiaApp({
             .use(LaravelPermissionToVueJS)
             .use(plugin)
             .use(ZiggyVue)
-            .use(VueReCaptcha, { siteKey: reCaptchaKey,loaderOptions: {useRecaptchaNet: false}})
+            .use(VueReCaptcha, { siteKey: reCaptchaKey, loaderOptions: {useRecaptchaNet: false}})
             .mount(el);
     },
     progress: {
