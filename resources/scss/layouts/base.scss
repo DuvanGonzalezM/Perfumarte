@@ -2,4 +2,29 @@
     header{
         color: $textWhite !important;
     }
+
+    /* Estilos responsivos para el layout base */
+    @include respond-to('tablet') {
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+
+    @include respond-to('mobile') {
+        .sidebar-hidden {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+        }
+        
+        header {
+            margin-top: 50px !important;
+        }
+
+        .account-controls-container {
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+        }
+    }
 }

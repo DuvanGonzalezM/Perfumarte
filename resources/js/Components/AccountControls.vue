@@ -1,16 +1,28 @@
 <script setup>
 import Notification from './Notification.vue';
 import { is } from 'laravel-permission-to-vuejs';
+import { ref, onMounted } from 'vue';
+
+const isMobile = ref(false);
+
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+function checkScreenSize() {
+    isMobile.value = window.innerWidth < 768;
+}
 </script>
 <template>
     <div class="accountControls row">
-        <div class="dropstart col-6">
+        <div class="dropstart" :class="isMobile ? 'col-auto' : 'col-6'">
             <i class="fa-solid fa-comment" data-bs-toggle="dropdown" aria-expanded="false"></i>
             <div class="dropdown-menu">
                 <Notification />
             </div>
         </div>
-        <div class="dropdown-center profile col-6">
+        <div class="dropdown-center profile" :class="isMobile ? 'col-auto ms-2' : 'col-6'">
             <i class="fa-solid fa-user" data-bs-toggle="dropdown" aria-expanded="false"></i>
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.name }}</strong>

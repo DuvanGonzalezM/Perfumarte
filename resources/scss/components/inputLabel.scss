@@ -1,0 +1,24 @@
+/* Estilos para el componente InputLabel */
+.input-label {
+    display: block !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    color: $textWhite !important;
+    margin-bottom: 0.5rem !important;
+    
+    &.required::after {
+        content: '*' !important;
+        color: #dc3545 !important;
+        margin-left: 0.25rem !important;
+    }
+    
+    @include respond-to('tablet') {
+        font-size: 0.825rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+}

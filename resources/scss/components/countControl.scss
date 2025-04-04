@@ -1,0 +1,77 @@
+/* Estilos para el componente CountControl */
+.count-control {
+    margin: 1rem 0 !important;
+    
+    .count-value {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .count-title {
+        margin-bottom: 1rem !important;
+        font-size: 1rem !important;
+    }
+    
+    .count-button {
+        cursor: pointer !important;
+        background: $buttonColor !important;
+        border-radius: 50% !important;
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        transition: background-color 0.2s ease !important;
+        
+        &:hover {
+            background: $gradient !important;
+        }
+        
+        i {
+            font-size: 1rem !important;
+        }
+    }
+    
+    @include respond-to('tablet') {
+        .count-value {
+            font-size: 1.15rem !important;
+        }
+        
+        .count-title {
+            font-size: 0.9rem !important;
+        }
+        
+        .count-button {
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            
+            i {
+                font-size: 0.9rem !important;
+            }
+        }
+    }
+    
+    @include respond-to('mobile') {
+        .count-value {
+            font-size: 1rem !important;
+        }
+        
+        .count-title {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+        
+        .count-button {
+            width: 2rem !important;
+            height: 2rem !important;
+            
+            i {
+                font-size: 0.8rem !important;
+            }
+        }
+        
+        .count-buttons-row {
+            width: 100% !important;
+            max-width: 200px !important;
+            margin: 0 auto !important;
+        }
+    }
+}

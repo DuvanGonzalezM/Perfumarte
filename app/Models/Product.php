@@ -19,6 +19,7 @@ class Product extends Model
         'supplier_id',
         'commercial_reference',
         'category',
+        'status',
     ];
     protected $casts = [
         'created_at' => 'datetime',

@@ -16,26 +16,24 @@ Perfumarte es un sistema de gestión de inventario diseñado específicamente pa
 
 - 📦 Control detallado de inventario de perfumes y productos relacionados
 - 🔄 Gestión de entradas y salidas de mercancía
-- 📊 Reportes y estadísticas avanzadas
+- 📊 Reportes
 - 👥 Sistema de gestión de usuarios y roles
-- 🏷️ Control de precios y promociones
 - 📱 Interfaz responsive y moderna
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Backend:** Laravel 10 (PHP 8.1+)
+- **Backend:** Laravel 10 (PHP 8.3+)
 - **Frontend:** Vue.js 3 + Inertia.js
 - **Estilos:** Bootstrap 5.3 + SASS
 - **Base de Datos:** MySQL
 - **Autenticación:** Laravel Sanctum
 - **Bundling:** Vite
 
-## 💻 Requisitos del Sistema
+## 💻 Requisitos Previos
 
-- PHP >= 8.1
-- Composer
-- Node.js >= 16.x
-- MySQL >= 8.0
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/compose-file/compose-file-v1/)
+- [GNU Make](https://www.gnu.org/software/make/)
 
 ## ⚙️ Instalación
 
@@ -43,37 +41,35 @@ Perfumarte es un sistema de gestión de inventario diseñado específicamente pa
    ```bash
    git clone [url-del-repositorio]
    cd Perfumarte
-   ```
-
-2. **Configurar el entorno**
-   ```bash
    cp .env.example .env
-   # Configurar las variables de entorno en el archivo .env
    ```
 
-3. **Instalar dependencias**
+2. **Configurar entorno**
    ```bash
-   composer install
-   npm install
+   make
    ```
 
-4. **Generar clave de aplicación**
+3. **Generar clave de aplicación**
    ```bash
-   php artisan key:generate
+   make app_key
    ```
 
-5. **Ejecutar migraciones**
+4. **Compilación de assets**
    ```bash
-   php artisan migrate --seed
+   # Modo producción
+   make compile
+   
+   # Modo desarrollo con hot-reload
+   make dev
    ```
 
-6. **Compilar assets**
+5. **Ejecutar el proyecto**
    ```bash
-   # Para desarrollo
-   npm run dev
-
-   # Para producción
-   npm run build
+   # Entorno local por defecto (localhost:8000)
+   make serve
+   
+   # Red personalizada (ejemplo)
+   make serve host=0.0.0.0 port=8080
    ```
 
 ## 🚀 Uso en Producción

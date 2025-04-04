@@ -2,8 +2,10 @@
 import Image from '@/Components/Image.vue';
 import Loader from '@/Components/Loader.vue';
 import { usePage } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
 
 const { props } = usePage();
+const isMobile = ref(false);
 
 const attributes = defineProps({
     loading: {
@@ -12,14 +14,23 @@ const attributes = defineProps({
     },
 });
 
+onMounted(() => {
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+function checkScreenSize() {
+    isMobile.value = window.innerWidth < 768;
+}
+
 </script>
 <template>
     <Loader v-if="attributes.loading"/>
-    <div class="container body-login" v-cloak>
+    <div class="container body-login d-flex align-items-center justify-content-center" v-cloak>
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
-                <Image src="assets\images\Logo_3.avif" />
-                <h3>Inicio de Sesión</h3>
+                <Image src="assets\images\Logo_3.avif" class="responsive-logo" />
+                <h3 class="login-title">Inicio de Sesión</h3>
             </div>
             <div class="card-body position-relative">
                 <slot />

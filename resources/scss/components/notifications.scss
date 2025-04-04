@@ -6,4 +6,25 @@
     div {
         padding: 7px !important;
     }
+    
+    @include respond-to('tablet') {
+        font-size: 9px !important;
+        
+        div {
+            padding: 6px !important;
+        }
+    }
+    
+    @include respond-to('mobile') {
+        font-size: 8px !important;
+        max-width: 250px !important;
+        
+        div {
+            padding: 5px !important;
+        }
+        
+        .alert {
+            margin-bottom: 0.5rem !important;
+        }
+    }
 }

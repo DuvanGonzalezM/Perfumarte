@@ -1,0 +1,35 @@
+/* Estilos para el componente ResponsiveNavLink */
+.responsive-nav-link {
+    display: block !important;
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-left: 4px solid transparent !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    
+    &.active {
+        color: $textWhite !important;
+        border-left-color: $buttonColor !important;
+        background-color: rgba($buttonColor, 0.1) !important;
+    }
+    
+    &:hover:not(.active) {
+        background-color: rgba($buttonColor, 0.05) !important;
+        border-left-color: rgba($buttonColor, 0.3) !important;
+    }
+    
+    @include respond-to('tablet') {
+        padding: 0.6rem 0.8rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    @include respond-to('mobile') {
+        padding: 0.5rem 0.7rem !important;
+        font-size: 0.9rem !important;
+        
+        &.active {
+            border-left-width: 3px !important;
+        }
+    }
+}

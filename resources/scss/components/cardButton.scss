@@ -27,6 +27,51 @@
         font-size: 20px !important;
         color: $textWhite !important;
     }
+
+    @include respond-to('tablet') {
+        max-width: 180px !important;
+        height: 180px !important;
+
+        .card-icon {
+            top: 28px !important;
+            left: 58px !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        i {
+            font-size: 22px !important;
+        }
+
+        .button-text {
+            top: 110px !important;
+            font-size: 18px !important;
+        }
+    }
+
+    @include respond-to('mobile') {
+        max-width: 150px !important;
+        height: 150px !important;
+        margin: 0 auto !important;
+
+        .card-icon {
+            top: 20px !important;
+            left: 48px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        i {
+            font-size: 18px !important;
+        }
+
+        .button-text {
+            top: 90px !important;
+            left: 22% !important;
+            width: 5rem !important;
+            font-size: 16px !important;
+        }
+    }
 }
 .button-stock:hover{
     transform: scale(1.1) !important;

@@ -19,6 +19,7 @@ class Supplier extends Model
         'address',
         'phone',
         'email',
+        'status',
     ];
     protected $casts = [
         'created_at' => 'datetime',
