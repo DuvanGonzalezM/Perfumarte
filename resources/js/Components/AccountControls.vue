@@ -1,9 +1,12 @@
 <script setup>
 import Notification from './Notification.vue';
 import { is } from 'laravel-permission-to-vuejs';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const isMobile = ref(false);
+const notifications = ref(usePage().props.auth.user.unread_notifications);
 
 onMounted(() => {
     checkScreenSize();
@@ -13,18 +16,38 @@ onMounted(() => {
 function checkScreenSize() {
     isMobile.value = window.innerWidth < 768;
 }
+
+watchEffect(() => {
+    Echo.private('App.Models.User.'+usePage().props.auth.user.user_id)
+        .notification((notification) => {
+            notifications.value.unshift(notification.newNotification);
+        });
+});
+
+const readNotification = async (notification, redirect) => {
+    await axios.post(route('notifications.read', notification.id))
+        .then((response) => {
+            notifications.value = response.data;
+            if (redirect) {
+                window.location.href = notification.data.url;
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
 </script>
 <template>
     <div class="accountControls row">
-        <div class="dropstart" :class="[isMobile ? 'col-auto' : 'col-6', $page.props.auth.user.unread_notifications.length > 0 ? 'has-unread' : '']">
+        <div class="dropstart" :class="[isMobile ? 'col-auto' : 'col-6', notifications.length > 0 ? 'has-unread' : '']">
             <div class="notification-wrapper" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-solid fa-comment"></i>
-                <span v-if="$page.props.auth.user.unread_notifications.length > 0" class="notification-badge">
-                    *
+                <span v-if="notifications.length > 0" class="notification-badge">
+                    {{ notifications.length }}
                 </span>
             </div>
             <div class="dropdown-menu">
-                <Notification />
+                <Notification :notifications="notifications" :readNotification="readNotification"/>
             </div>
         </div>
         <div class="dropdown-center profile" :class="isMobile ? 'col-auto ms-2' : 'col-6'">

@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
 
 Route::middleware('auth')->group(function () {
@@ -206,13 +207,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
         });
     });
-
-
-
-
-
-
-
-
-
+    Route::controller(NotificationController::class)->group(function () {
+        Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
+    });
 });

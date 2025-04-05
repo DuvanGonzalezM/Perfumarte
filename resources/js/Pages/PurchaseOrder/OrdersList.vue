@@ -1,6 +1,4 @@
 <script setup>
-import Alert from '@/Components/Alert.vue';
-import Notification from '@/Components/Notification.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
@@ -16,7 +14,7 @@ const props = defineProps({
     },
 });
 watchEffect(() => {
-    window.Echo.channel('purchase-order')
+    Echo.channel('purchase-order')
         .listen('CreatePurchaseOrder', (e) => {
             props.purchaseOrders.push(e.purchaseOrder);
         });

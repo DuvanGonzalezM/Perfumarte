@@ -14,6 +14,7 @@ use App\Notifications\PurchaseOrderCreate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Pest\Plugins\Parallel\Handlers\Laravel;
 
 class PurchaseOrderController extends Controller
 {
