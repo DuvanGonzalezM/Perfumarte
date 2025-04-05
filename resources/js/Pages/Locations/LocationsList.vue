@@ -164,6 +164,13 @@ const columnsTable = [
             td.appendChild(icon);
         }
     },
+    {
+        data: 'location_id',
+        title: 'Detalle',
+        render: function (data) {
+            return '<a href="' + route("locations.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+        },
+    },
 ];
 
 </script>

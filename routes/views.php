@@ -98,9 +98,14 @@ Route::middleware('auth')->group(function () {
     Route::controller(LocationsController::class)->group(function () {
         Route::get('sedes', 'getLocations')->name('locations.list');
         Route::post('sedes', 'storeLocation')->name('locations.store');
-        Route::get('sedes/{location_id}', 'detailLocation')->name('locations.detail');
+        Route::get('sedes/detalle/{location_id}', 'detailLocation')->name('locations.detail');
         Route::put('sedes/update/{location_id}', 'updateLocation')->name('locations.update');
         Route::delete('sedes/delete/{location_id}', 'destroyLocation')->name('locations.destroy');
+        Route::get('sedes/inventario/{location_id}', 'inventorylocation')->name('locations.inventory');
+        Route::get('sedes/personal/{location_id}', 'personallocation')->name('locations.personal');
+        Route::get('sedes/ventas/{location_id}', 'saleslocation')->name('locations.sales');
+        Route::get('sedes/auditoria/{location_id}', 'auditlocation')->name('locations.audit');
+
     });
 
 
