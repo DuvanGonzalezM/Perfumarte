@@ -25,16 +25,27 @@ const submit = () => {
     form.post(route('novelty.store'));
 }
 
+const listNovelties = ref([
+    { name: 'Ajuste de Inventario Bodegas' },
+    { name: 'Ajuste de Despachos' },
+    { name: 'Ajuste de Ventas' },
+    { name: 'Ajuste Ordenes de Compra' },
+    { name: 'Ajuste de Transformaciones' },
+]);
+
+const optionNovelties = ref(listNovelties.value.map(novelty => ({ 'title': novelty.name, 'value': novelty.name })));
+
+
 </script>
 
 <template>
 
-    <Head title="Nuevo Novedad" />
+    <Head title="Nueva Novedad" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing">
         <template #header>
             <!-- <Alert /> -->
-            <h1>Nuevo Novedad</h1>
+            <h1>Nueva Novedad</h1>
         </template>
 
         <SectionCard>
@@ -50,9 +61,8 @@ const submit = () => {
                             <tr>
                                 <td>TIPO DE NOVEDAD</td>
                                 <td>
-                                    <TextInput type="text" name="type_novelty[]" id="type_novelty[]" v-model="form.type_novelty"
-                                        :required="true"
-                                        :messageError="Object.keys(form.errors).length ? form.errors.type_novelty : null" />
+                                    <SelectSearch v-model="form.type_novelty" :options="optionNovelties"
+                                    :messageError="Object.keys(form.errors).length ? form.errors.type_novelty : null" />
                                 </td>
                             </tr>
 
@@ -66,7 +76,7 @@ const submit = () => {
                             </tr>
 
                             <tr>
-                                <td>BODEGA</td>
+                                <td>SEDE/BODEGA</td>
                                 <td>
                                     <SelectSearch v-model="form.warehouse_id" :options="optionWarehouse"
                                     :messageError="Object.keys(form.errors).length ? form.errors.warehouse_id : null" />

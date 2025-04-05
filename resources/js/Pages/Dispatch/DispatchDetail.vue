@@ -5,6 +5,9 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import moment from 'moment';
+import { useForm } from '@inertiajs/vue3';
+
+
 
 const props = defineProps({
     dispatch: {
@@ -24,13 +27,25 @@ const groupedDispatches = computed(() => {
     });
     return dispatches;
 });
+
+const form = useForm({
+    dispatch_id: props.dispatch.dispatch_id,
+    status: props.dispatch.status,
+});
+console.log(props.dispatch.status);
+const approved = () => {
+    form.put(route('dispatch.approved', props.dispatch.dispatch_id), {
+        status: 'En ruta',
+    });
+};
+
 </script>
 
 <template>
 
     <Head :title="'Detalle del despacho ' + dispatch.dispatch_id" />
 
-    <BaseLayout>
+    <BaseLayout :loading="form.processing">
         <template #header>
             <h1>Detalle del despacho</h1>
         </template>
@@ -75,9 +90,14 @@ const groupedDispatches = computed(() => {
                 </div>
 
                 <div class="row my-5 text-center">
-                    <div class="col">
+                    <div :class="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ? 'col' : 'col-12'">
                         <PrimaryButton :href="route('dispatch.list')" class="px-5">
                             Volver
+                        </PrimaryButton>
+                    </div>
+                    <div class="col">
+                        <PrimaryButton @click="approved" class="px-5" :disabled="form.processing" v-if="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ">
+                            Aprobar
                         </PrimaryButton>
                     </div>
                 </div>

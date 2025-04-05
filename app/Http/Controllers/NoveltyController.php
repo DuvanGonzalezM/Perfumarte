@@ -14,43 +14,45 @@ class NoveltyController extends Controller
 {
     public function getAllNovelties()
     {
-       $getnovelties = Novelty::with('warehouse')->get();
+        $getnovelties = Novelty::with(['user', 'warehouse'])->get();
 
-       $user = auth()->user();
-       $userName = User::where('user_id', $user->user_id)->value('name');
-     
-       return Inertia::render('Novelty/noveltiesList', ['getNovelties' => $getnovelties, 'userName' => $userName]);
-    
+        $user = auth()->user();
+        $userName = User::where('user_id', $user->user_id)->value('name');
+
+        return Inertia::render('Novelty/noveltiesList', ['getNovelties' => $getnovelties, 'userName' => $userName]);
+
     }
 
 
     public function createNovelty()
     {
-        $newNovelty = Novelty::with('warehouse')->get();
+        $newNovelty = Warehouse::all();
 
 
         return Inertia::render('Novelty/createNovelty', [
             'newNovelty' => $newNovelty,
-          
+
         ]);
-    }   
+    }
 
     public function storeNovelty(Request $request)
     {
 
         $request->validate([
-           'type_novelty',
-           'description_novelty',
-           'warehouse_id'
+            'type_novelty',
+            'description_novelty',
+            'warehouse_id'
         ]);
 
         Novelty::create([
             'type_novelty' => $request['type_novelty'],
             'description_novelty' => $request['description_novelty'],
+            'user_id' => auth()->user()->user_id,
             'warehouse_id' => $request['warehouse_id'],
+
         ]);
 
-        return redirect()->route('novelty.list', ['message' => '', 'status' => 200]);
+        return redirect()->route('novelties.list', ['message' => '', 'status' => 200]);
 
     }
 
@@ -60,7 +62,7 @@ class NoveltyController extends Controller
             'nit' => 'required',
             'name' => 'required',
             'country' => 'required',
-            'address' => 'required',    
+            'address' => 'required',
             'phone' => 'required',
             'email' => 'required',
         ]);

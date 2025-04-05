@@ -44,9 +44,9 @@ const columnsTable = [
         data: "dispatch_id",
         title: 'DETALLE',
         render: function (data) {
-            return '<a href="' + route("dispatch.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+            return '<a href="' + route("dispatch.edit", data) + '"><i class="fa-solid fa-eye"></i></a>';
         },
-    }
+    },
 
 ];
 

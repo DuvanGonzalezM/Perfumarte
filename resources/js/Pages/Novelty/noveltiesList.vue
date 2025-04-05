@@ -19,16 +19,16 @@ const props = defineProps({
     },
 });
 
-// const form = useForm({
-//     product_id: '',
-//     reference: '',
-//     measurement_unit: '',
-//     commercial_reference: '',
-//     category: '',
-//     supplier_id: '',
-// });
+const form = useForm({
+    product_id: '',
+    reference: '',
+    measurement_unit: '',
+    commercial_reference: '',
+    category: '',
+    supplier_id: '',
+});
 
-// const showModal = ref(false);
+const showModal = ref(false);
 
 const columnsTable = [
     {
@@ -40,7 +40,7 @@ const columnsTable = [
         title: 'DESCRIPCION'
     },
     {
-        data: () => props.userName,
+        data: 'user.name',
         title: 'USUARIO'
     },
     {
@@ -54,20 +54,20 @@ const columnsTable = [
     },
 ];
 
-// const openModal = (rowData) => {
-//     form.product_id = rowData.product_id;
-//     form.reference = rowData.reference;
-//     form.measurement_unit = rowData.measurement_unit;
-//     form.commercial_reference = rowData.commercial_reference;
-//     form.category = rowData.category;
-//     form.supplier_id = rowData.supplier?.supplier_id;
-//     showModal.value = true;
-// }
+const openModal = (rowData) => {
+    form.product_id = rowData.product_id;
+    form.reference = rowData.reference;
+    form.measurement_unit = rowData.measurement_unit;
+    form.commercial_reference = rowData.commercial_reference;
+    form.category = rowData.category;
+    form.supplier_id = rowData.supplier?.supplier_id;
+    showModal.value = true;
+}
 
-// const submit = () => {
-//     form.put(route('products.update', form.product_id));
-//     showModal.value = false;
-// }
+const submit = () => {
+    form.put(route('products.update', form.product_id));
+    showModal.value = false;
+}
 
 
 </script>
@@ -90,12 +90,12 @@ const columnsTable = [
                     Nuevo Registro
                 </PrimaryButton>
                 <Table :data="getNovelties" :columns="columnsTable">
-                    <!-- <template #templateRender="items">
+                    <template #templateRender="items">
                         <a href="#" @click="openModal(items.item.rowData)"> <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                    </template> -->
+                    </template>
                 </Table>
-                <!-- <ModalPrais v-model="showModal" @close="showModal = false">
+                <ModalPrais v-model="showModal" @close="showModal = false">
                     <template #header>
                         <h3>Editar Producto</h3>
                     </template>
@@ -137,7 +137,7 @@ const columnsTable = [
                     <template #footer>
                         <div></div>
                     </template>
-                </ModalPrais> -->
+                </ModalPrais>
 
             </div>
         </SectionCard>
