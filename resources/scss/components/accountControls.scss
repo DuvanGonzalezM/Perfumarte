@@ -1,15 +1,33 @@
 .accountControls {
-    font-size: 20px !important;
+    font-size: 1.75rem !important;
 
     .dropdown-menu.show {
-        min-width: 200px !important;
+        min-width: 20rem !important;
         border-radius: 1rem !important;
         border: 2px solid $textBlack !important;
         padding: 10px !important;
         a {
-            font-size: 13px !important;
+            font-size: 1rem !important;
             color: $textBlack !important;
             text-decoration: none !important;
+        }
+    }
+    
+    .dropstart {
+        &.has-unread {
+            .notification-wrapper {
+                position: relative;
+                display: inline-block;
+                color: red;
+                .notification-badge {
+                    position: absolute;
+                    top: .5rem;
+                    left: .6rem;
+                    color: $textWhite;
+                    font-size: 1rem !important;
+                    font-weight: bold;
+                }
+            }
         }
     }
     

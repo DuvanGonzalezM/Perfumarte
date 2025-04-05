@@ -16,8 +16,13 @@ function checkScreenSize() {
 </script>
 <template>
     <div class="accountControls row">
-        <div class="dropstart" :class="isMobile ? 'col-auto' : 'col-6'">
-            <i class="fa-solid fa-comment" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <div class="dropstart" :class="[isMobile ? 'col-auto' : 'col-6', $page.props.auth.user.unread_notifications.length > 0 ? 'has-unread' : '']">
+            <div class="notification-wrapper" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-comment"></i>
+                <span v-if="$page.props.auth.user.unread_notifications.length > 0" class="notification-badge">
+                    *
+                </span>
+            </div>
             <div class="dropdown-menu">
                 <Notification />
             </div>
