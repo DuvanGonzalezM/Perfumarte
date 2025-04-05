@@ -5,14 +5,21 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head  } from '@inertiajs/vue3';
 import moment from 'moment';
 import { can } from 'laravel-permission-to-vuejs';
+import { ref, watchEffect } from 'vue';
 
 const props = defineProps({
-        purchaseOrders: {
+    purchaseOrders: {
         type: Array,
     },
+});
+watchEffect(() => {
+    window.Echo.channel('purchase-order')
+        .listen('CreatePurchaseOrder', (e) => {
+            props.purchaseOrders.push(e.purchaseOrder);
+        });
 });
 
 const columnsTable = [
@@ -44,7 +51,6 @@ const columnsTable = [
 </script>
 
 <template>
-
     <Head title="Ordenes de compra" />
 
     <BaseLayout>
@@ -60,7 +66,10 @@ const columnsTable = [
                 <PrimaryButton :href="route('orders.create')" class="position-absolute" v-if="can('Crear Ordenes de Compra')">
                     Nuevo registro
                 </PrimaryButton>
-                <Table :data="purchaseOrders" :columns="columnsTable" />
+                <Table 
+                    :data="purchaseOrders" 
+                    :columns="columnsTable" 
+                />
             </div>
         </SectionCard>
     </BaseLayout>

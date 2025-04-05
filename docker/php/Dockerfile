@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) pdo pdo_mysql gd zip
+    && docker-php-ext-install -j$(nproc) pdo pcntl pdo_mysql gd zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -29,17 +29,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
 
+# Permissions
+RUN chown -R www-data:www-data .
+
 # Set working directory
 WORKDIR /var/www
 
 # Copy project files
 COPY . .
-
-# Install dependencies and build
-RUN composer install --no-interaction --optimize-autoloader --no-dev \
-    && npm install \
-    && npm run build \
-    && chown -R www-data:www-data .
 
 # Configure PHP
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini

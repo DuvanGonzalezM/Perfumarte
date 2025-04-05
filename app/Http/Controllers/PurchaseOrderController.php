@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CreatePurchaseOrder;
 use App\Models\Inventory;
 use App\Models\ProductEntry;
 use App\Models\PurchaseOrder;
@@ -59,7 +60,7 @@ class PurchaseOrderController extends Controller
                         'quantity' => $reference['quantity']
                     ]);
                 }
-    
+
                 ProductEntry::create([
                     'purchase_order_id' => $purchaseOrder->purchase_order_id,
                     'product_id' => $reference['reference'],
@@ -67,7 +68,8 @@ class PurchaseOrderController extends Controller
                     'batch' => $reference['batch']
                 ]);
             }
-    
+
+            broadcast(new CreatePurchaseOrder(PurchaseOrder::with('productEntryOrder.product.supplier')->findOrFail($purchaseOrder->purchase_order_id)));
             return redirect()->route('orders.list', ['message' => '', 'status' => 200]);
         } catch (\ErrorException $e) {
             dd($e);

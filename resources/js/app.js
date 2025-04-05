@@ -1,12 +1,13 @@
 import '../scss/app.scss';
 import * as bootstrap from 'bootstrap';
+import './bootstrap';
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs';
-import { VueReCaptcha,useReCaptcha } from 'vue-recaptcha-v3';   
+import { VueReCaptcha } from 'vue-recaptcha-v3';   
 
 const appName = import.meta.env.VITE_APP_NAME || 'Perfumarte';
 
