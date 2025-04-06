@@ -29,16 +29,21 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
 
-# Permissions
-RUN chown -R www-data:www-data .
-
 # Set working directory
 WORKDIR /var/www
 
 # Copy project files
 COPY . .
 
+# Permissions
+RUN chown -R www-data:www-data .
+
 # Configure PHP
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
+
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["php-fpm"]

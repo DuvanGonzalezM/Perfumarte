@@ -1,10 +1,6 @@
 up reload: recreate ?=
 up reload: ## [*] Up/Reload one or all service containers
 	docker-compose up -d --build --remove-orphans $(recreate)
-	docker-compose exec app composer install
-	docker-compose exec app npm install
-	make compile
-	make broadcast
 
 start: ## [*] Start one or all service containers
 	docker-compose start
