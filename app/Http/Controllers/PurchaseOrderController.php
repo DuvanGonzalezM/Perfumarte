@@ -105,27 +105,72 @@ class PurchaseOrderController extends Controller
 
     public function updateOrders(Request $request, $purchaseOrderId): RedirectResponse
     {
-
         $request->validate([
             'supplier_order' => 'required',
             'references' => 'required|array',
-
         ]);
-
-
+    
         PurchaseOrder::where('purchase_order_id', $purchaseOrderId)->update([
             'supplier_order' => $request->supplier_order
         ]);
-
+    
         foreach ($request->references as $reference) {
 
+            $warehouse = (strtoupper($reference['unity'] ?? '') == 'KG') ? 1 : 3;
+            $quantity = ($warehouse == 1) ? ($reference['quantity'] * 1000) : $reference['quantity'];
+    
             if (isset($reference['product_entry_id'])) {
+
+                $oldEntry = ProductEntry::find($reference['product_entry_id']);
+                $quantityDifference = $quantity - $oldEntry->quantity;
+
                 ProductEntry::where('product_entry_id', $reference['product_entry_id'])->update([
                     'product_id' => $reference['reference'],
-                    'quantity' => $reference['quantity']
+                    'quantity' => $quantity,
+                    'batch' => $reference['batch'] ?? $oldEntry->batch
                 ]);
+    
+                $inventory = Inventory::where('warehouse_id', $warehouse)
+                                    ->where('product_id', $reference['reference'])
+                                    ->first();
+    
+                if ($inventory) {
+                    $inventory->quantity += $quantityDifference;
+                    $inventory->save();
+                } else {
+
+                    Inventory::create([
+                        'warehouse_id' => $warehouse,
+                        'product_id' => $reference['reference'],
+                        'quantity' => $quantity
+                    ]);
+                }
+            } else {
+
+                ProductEntry::create([
+                    'purchase_order_id' => $purchaseOrderId,
+                    'product_id' => $reference['reference'],
+                    'quantity' => $quantity,
+                    'batch' => $reference['batch'] ?? null
+                ]);
+    
+                $inventory = Inventory::where('warehouse_id', $warehouse)
+                                    ->where('product_id', $reference['reference'])
+                                    ->first();
+    
+                if ($inventory) {
+                    $inventory->quantity += $quantity;
+                    $inventory->save();
+                } else {
+                    Inventory::create([
+                        'warehouse_id' => $warehouse,
+                        'product_id' => $reference['reference'],
+                        'quantity' => $quantity
+                    ]);
+                }
             }
         }
-        return redirect()->route('orders.edit', $purchaseOrderId);
+    
+        return redirect()->route('orders.list')->with('success', 'Orden actualizada correctamente');
     }
 }

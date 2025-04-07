@@ -164,7 +164,13 @@ const buttons = [
         active: page.component.startsWith('Supplier'),
         can: 'Ver Proveedores',
     },
-   
+    {
+        name: 'Novedades',
+        href: route('novelties.list'),
+        icon: 'fa-solid fa-file-circle-exclamation',
+        active: page.component.startsWith('Novelty'),
+        can: 'Ver Novedades',
+    },
 ];
 
 </script>

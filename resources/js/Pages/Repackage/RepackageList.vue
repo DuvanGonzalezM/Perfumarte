@@ -38,6 +38,14 @@ const columnsTable = [
             return formattedDate;
         }
     },
+    {
+        data: "change_warehouse_id",
+        title: 'EDITAR',
+        render: function (data) {
+            return '<a href="' + route("edit.repackage", data) + '"><i class="fa-solid fa-edit"></i></a>';
+        }
+    },
+  
 ];
 
 </script>

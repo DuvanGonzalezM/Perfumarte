@@ -113,7 +113,7 @@ const disableSupplier = () => {
                 <strong>Lista de Proveedores</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('supplier.create')" class="position-absolute" v-if="can('Crear Despachos')">
+                <PrimaryButton :href="route('supplier.create')" class="position-absolute" v-if="can('Crear Proveedores')">
                     Nuevo Registro
                 </PrimaryButton>
 

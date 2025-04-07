@@ -15,6 +15,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\NoveltyController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,12 +43,20 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(DispatchController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
-            Route::get('despachos', [DispatchController::class, 'getAllDispatch'])->name('dispatch.list');
-            Route::get('detalle-despachos/{dispatchId}', [DispatchController::class, 'detailDispatch'])->name('dispatch.detail');
+            Route::get('despachos',  'getAllDispatch')->name('dispatch.list');
+            Route::get('detalle-despachos/{dispatchId}',  'detailDispatch')->name('dispatch.detail');
         });
         Route::group(['middleware' => ['can:Crear Despachos']], function () {
             Route::get('despachos/nuevo-despacho', 'createDispatch')->name('dispatch.create');
             Route::post('despachos/nuevo-despacho', 'storeDispatch')->name('dispatch.store');
+        });
+        Route::group(['middleware' => ['can:Editar Despachos']], function () {
+            Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
+            Route::put('despachos/editar despacho/{dispatch_id}', ' qupdateDispatch')->name('dispatch.update');
+        });
+
+        Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
+            Route::put('detalle-despachos/{dispatchId}', 'approvedDispatch')->name('dispatch.approved');
         });
     });
     Route::controller(RequestPraisController::class)->group(function () {
@@ -113,6 +122,10 @@ Route::middleware('auth')->group(function () {
             Route::get('reenvase/nuevo-reenvase', 'createRepackage')->name('create.repackage');
             Route::post('reenvase/nuevo-reenvase', 'storeRepackage')->name('store.repackage');
         });
+        Route::group(['middleware' => ['can:Editar Reenvases']], function () {
+            Route::get('reenvase/editar/{repackage_id}', 'editRepackage')->name('edit.repackage');
+            Route::put('reenvase/editar/{repackage_id}', 'updateRepackage')->name('update.repackage');
+        });
     });
     Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
@@ -122,6 +135,10 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => ['can:Ver Transformaciones']], function () {
             Route::get('nueva-transformacion-de-laboratorio', 'createLabTransformation')->name('LabTransformation.create');
             Route::post('nueva-transformacion-de-laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
+        });
+        Route::group(['middleware' => ['can:Editar Transformaciones']], function () {
+            Route::get('transformaciones-de-laboratorio/{transformationId}/editar', 'editTransformation')->name('LabTransformation.edit');
+            Route::put('transformaciones-de-laboratorio/{transformationId}/actualizar', 'updateTransformation')->name('LabTransformation.update');
         });
     });
     Route::controller(AssignmentController::class)->group(function () {
@@ -196,15 +213,24 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => ['can:Ver Proveedores']], function () {
             Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
         });
-        Route::group(['middleware' => ['can:Crear Despachos']], function () {
+        Route::group(['middleware' => ['can:Crear Proveedores']], function () {
             Route::get('proveedores/nuevo proveedor', 'createSupplier')->name('supplier.create');
             Route::post('proveedores/nuevo proveedor', 'storeSupplier')->name('supplier.store');
         });
-        Route::group(['middleware' => ['can:Editar Ordenes de Compra']], function () {
+        Route::group(['middleware' => ['can:Editar Proveedores']], function () {
             Route::put('proveedores/editar proveedor/{supplier_id}', 'editSupplier')->name('supplier.update');
         });
         Route::group(['middleware' => ['can:Desactivar Proveedores']], function () {
             Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
+        });
+    });
+    Route::controller(NoveltyController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Novedades']], function () {
+            Route::get('novedades', 'getAllNovelties')->name('novelties.list');
+        });
+        Route::group(['middleware' => ['can:Crear Novedades']], function () {
+            Route::get('novedades/nueva novedad', 'createNovelty')->name('novelty.create');
+            Route::post('novedades/nueva novedad', 'storeNovelty')->name('novelty.store');
         });
     });
     Route::controller(NotificationController::class)->group(function () {
