@@ -1,9 +1,6 @@
 up reload: recreate ?=
 up reload: ## [*] Up/Reload one or all service containers
 	docker-compose up -d --build --remove-orphans $(recreate)
-	docker-compose exec app composer install
-	docker-compose exec app npm install
-	make compile
 
 start: ## [*] Start one or all service containers
 	docker-compose start
@@ -51,3 +48,8 @@ serve: host ?= 0.0.0.0
 serve: port ?= 8000
 serve: ## [*] Run Laravel server
 	docker-compose exec app php artisan serve --host=$(host) --port=$(port)
+
+broadcast: host ?= 0.0.0.0
+broadcast: port ?= 8088
+broadcast: ## [*] Run Laravel server
+	docker-compose exec app php artisan reverb:start

@@ -2,13 +2,12 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { useReCaptcha } from 'vue-recaptcha-v3';
-import { ref } from 'vue';
 import { useResponsive } from '@/Composables/useResponsive';
 
 // Utilizamos el composable de responsividad
-const { isMobile, isTablet, isDesktop } = useResponsive();
+const { isMobile, isTablet } = useResponsive();
 
 const form = useForm({
     username: '',
@@ -25,7 +24,6 @@ const props = defineProps({
 });
 
 const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
-
 const recaptcha = async () => {
     try {
         await recaptchaLoaded()

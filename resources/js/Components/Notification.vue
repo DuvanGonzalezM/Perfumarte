@@ -1,11 +1,12 @@
 <template>
     <div class="card notifications" :class="{'mobile-notifications': isMobile}">
-        <div v-for="notification in notifications" :key="notification.id" 
-            class="alert" :class="'alert-' + notification.type" role="alert">
-            {{ notification.message }}
-        </div>
-        <div v-if="notifications.length === 0" class="alert alert-info">
-            No tienes notificaciones nuevas.
+        <a href="#" v-for="notification in props.notifications" :key="notification.id" 
+            class="alert" :class="'alert-info'" role="alert">
+            <span @click="props.readNotification(notification, true)" >{{ notification.data.message }}</span>
+            <button type="button" class="btn-close" aria-label="Close" @click="props.readNotification(notification, false)"></button>
+        </a>
+        <div v-if="props.notifications.length === 0" class="alert alert-info">
+            <a>No tienes notificaciones nuevas.</a>
         </div>
     </div>
 </template>
@@ -14,18 +15,15 @@
 import { ref, onMounted } from 'vue';
 
 const isMobile = ref(false);
-const notifications = ref([
-    {
-        id: 1,
-        type: 'warning',
-        message: 'Este es un ejemplo de una notificación.'
+
+const props = defineProps({
+    notifications: {
+        type: Array,
     },
-    {
-        id: 2,
-        type: 'info',
-        message: 'Tienes mensajes pendientes por revisar.'
-    }
-]);
+    readNotification: {
+        type: Function,
+    },
+});
 
 onMounted(() => {
     checkScreenSize();
@@ -35,4 +33,5 @@ onMounted(() => {
 function checkScreenSize() {
     isMobile.value = window.innerWidth < 768;
 }
+
 </script>

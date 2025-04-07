@@ -7,7 +7,6 @@ import { watchEffect, ref, onMounted } from 'vue';
 import InfoLocation from '@/Components/InfoLocation.vue';
 import { is } from 'laravel-permission-to-vuejs';
 import Loader from '@/Components/Loader.vue';
-import ResponsiveDetection from '@/Mixins/ResponsiveDetection';
 
 const { props } = usePage();
 const isMobile = ref(false);
