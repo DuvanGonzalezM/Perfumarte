@@ -44,6 +44,14 @@ const columnsTable = [
             return '<a href="' + route("Labtransformation.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
         }
     },
+    {
+        data: "transformation_id",
+        title: 'EDITAR',
+        render: function (data) {
+            return '<a href="' + route("LabTransformation.edit", data) + '"><i class="fa-solid fa-edit"></i></a>';
+        }
+    },
+  
 ];
 
 </script>

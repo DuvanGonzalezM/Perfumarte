@@ -5,7 +5,7 @@ import SelectSearch from '@/Components/SelectSearch.vue';
 import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const disableButton = ref(false);
 const props = defineProps({
@@ -14,29 +14,71 @@ const props = defineProps({
     },
 });
 
+// Inicializar el formulario con los datos existentes
 const form = useForm({
     supplier_order: props.purchaseOrder.supplier_order,
-    references: props.purchaseOrder.product_entry_order.map(entry => [{ 'reference': entry.product.product_id, 'quantity': entry.quantity, 'product_entry_id': entry.product_entry_id }])[0],
+    references: props.purchaseOrder.product_entry_order.map(entry => ({
+        'reference': entry.product.product_id,
+        'quantity': entry.quantity,
+        'batch': entry.batch,
+        'unity': entry.product.measurement_unit,
+        'product_entry_id': entry.product_entry_id
+    }))
 });
 
-const unity = ref('KG');
-const products = ref(props.purchaseOrder.product_entry_order[0].product.supplier.products);
+// Obtener todos los productos del proveedor
+const products = ref(props.purchaseOrder.product_entry_order[0]?.product.supplier?.products || []);
+const showAddButtom = ref(true);
+
+// Opciones para el SelectSearch
+const optionProduts = computed(() => {
+    return products.value.map(product => ({
+        'title': product.reference,
+        'value': product.product_id
+    }));
+});
+
+// Actualizar unidad de medida cuando se selecciona un producto
 const selectedProduct = (index) => {
-    unity.value = products.value.filter((product) => product.product_id == form.references[index]['reference'])[0].measurement_unit;
-}
+    const selectedProduct = products.value.find(p => p.product_id === form.references[index].reference);
+    if (selectedProduct) {
+        form.references[index].unity = selectedProduct.measurement_unit;
+    }
+};
+
+// Enviar el formulario
 const submit = () => {
     disableButton.value = true;
     form.put(route('orders.update', props.purchaseOrder.purchase_order_id));
 };
 
+// Agregar nueva referencia
+const addReference = () => {
+    if (form.references.length < products.value.length) {
+        form.references.push({
+            'reference': '',
+            'quantity': '',
+            'unity': 'KG', // Valor por defecto
+        });
+    }
+    // Actualizar visibilidad del botón
+    showAddButtom.value = form.references.length < products.value.length;
+};
+
+// Remover referencia
+const removeReference = (index) => {
+    if (form.references.length > 1) { // Mantener al menos una referencia
+        form.references.splice(index, 1);
+    }
+    // Actualizar visibilidad del botón
+    showAddButtom.value = form.references.length < products.value.length;
+};
 </script>
 
 <template>
-
-    <Head title="Nueva registro" />
+    <Head title="Editar orden de compra" />
 
     <BaseLayout :loading="form.processing ? true : false">
-        
         <template #header>
             <h1>Editar Orden de Compra</h1>
         </template>
@@ -46,17 +88,18 @@ const submit = () => {
                 <strong>Editar Orden de Compra</strong>
             </template>
             <div class="container px-0">
-                <form class="table-responsive table-prais">
+                <form @submit.prevent="submit" class="table-prais">
                     <div class="row">
-                        <div class="col-md-6 py-3 align-middle">
-                            {{ props.purchaseOrder.product_entry_order[0].product.supplier.name }}
+                        <div class="col-6 p-2 cardboxprais cardpurcheorder">
+                            {{ props.purchaseOrder.product_entry_order[0]?.product?.supplier?.name || 'Proveedor no disponible' }}
                         </div>
                         <div class="col-md-6 py-3 align-middle">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
-                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" />
+                                v-model="form.supplier_order" labelValue="Orden de compra - Proveedor"
+                                :messageError="form.errors.supplier_order" />
                         </div>
                     </div>
-                    <table class="table table-hover dt-body-nowrap">
+                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 mt-5">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
@@ -65,36 +108,47 @@ const submit = () => {
                             </tr>
                         </thead>
                         <tbody id="productsList">
-                            <tr v-for="(product_entry_order, index) in purchaseOrder.product_entry_order">
+                            <tr v-for="(reference, index) in form.references" :key="index">
                                 <td>
-                                    <select class="selectsearch" name="reference[]"
-                                        v-model="form.references[index]['reference']" @change="selectedProduct(index)"
-                                        placeholder="Proveedores">
-                                        <option v-for="product in products" :value="product.product_id">{{
-                                            product.reference }}
-                                        </option>
-                                    </select>
+                                    <SelectSearch v-model="reference.reference" :options="optionProduts"
+                                        @change="selectedProduct(index)"
+                                        :messageError="form.errors[`references.${index}.reference`]"
+                                        placeholder="Seleccione una referencia" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="form.references[index]['quantity']" />
+                                        v-model="reference.quantity" step="0.01"
+                                        :messageError="form.errors[`references.${index}.quantity`]" />
                                 </td>
                                 <td>
-                                    {{ unity }}
+                                    <span class="unity-display">{{ reference.unity }}</span>
+                                </td>
+                                <td>
+                                    <div class="removeItem" @click="removeReference(index)" v-if="form.references.length > 1">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <i class="fa-solid fa-plus"></i>
+                    <div class="row text-center justify-content-center my-5">
+                        <div class="addItem" @click="addReference" v-if="showAddButtom">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                    </div>
+                    <div class="row my-5">
+                        <div class="col-6">
+                            <PrimaryButton :href="route('orders.list')" class="px-5">
+                                Volver
+                            </PrimaryButton>
+                        </div>
+                        <div class="col-6 text-end">
+                            <PrimaryButton type="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                                Actualizar
+                            </PrimaryButton>
+                        </div>
+                    </div>
                 </form>
-                <PrimaryButton :href="route('orders.list') "style="margin-right: 20px;">
-                    Volver
-                </PrimaryButton>
-
-                <PrimaryButton @click="submit"style="margin-right: 20px;" :class="disableButton ? 'disabled' : ''">
-                    Actualizar
-                </PrimaryButton>
-                
             </div>
         </SectionCard>
     </BaseLayout>

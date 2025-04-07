@@ -27,9 +27,6 @@ const props = defineProps({
         required: true,
     }
 });
-// const form = useForm({
-//     dispatches: props.dispatch.dispatchdetail.map(dispatchdetail => ({ 'warehouse': dispatchdetail.warehouse.warehouse_id, 'references': [{ 'reference': dispatchdetail.inventory.product.reference, 'dispatched_quantity': dispatchdetail.dispatched_quantity }] })),
-// });
 
 const form = useForm({
     dispatches: [],

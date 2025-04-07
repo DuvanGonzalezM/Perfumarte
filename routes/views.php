@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::group(['middleware' => ['can:Editar Despachos']], function () {
             Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
-            Route::put('despachos/editar despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
+            Route::put('despachos/editar despacho/{dispatch_id}', ' qupdateDispatch')->name('dispatch.update');
         });
 
         Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
@@ -121,6 +121,10 @@ Route::middleware('auth')->group(function () {
             Route::get('reenvase/nuevo-reenvase', 'createRepackage')->name('create.repackage');
             Route::post('reenvase/nuevo-reenvase', 'storeRepackage')->name('store.repackage');
         });
+        Route::group(['middleware' => ['can:Editar Reenvases']], function () {
+            Route::get('reenvase/editar/{repackage_id}', 'editRepackage')->name('edit.repackage');
+            Route::put('reenvase/editar/{repackage_id}', 'updateRepackage')->name('update.repackage');
+        });
     });
     Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
@@ -130,6 +134,10 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => ['can:Ver Transformaciones']], function () {
             Route::get('nueva-transformacion-de-laboratorio', 'createLabTransformation')->name('LabTransformation.create');
             Route::post('nueva-transformacion-de-laboratorio', 'storeLabTransformation')->name('store.LabTransformation');
+        });
+        Route::group(['middleware' => ['can:Editar Transformaciones']], function () {
+            Route::get('transformaciones-de-laboratorio/{transformationId}/editar', 'editTransformation')->name('LabTransformation.edit');
+            Route::put('transformaciones-de-laboratorio/{transformationId}/actualizar', 'updateTransformation')->name('LabTransformation.update');
         });
     });
     Route::controller(AssignmentController::class)->group(function () {
