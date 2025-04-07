@@ -164,6 +164,13 @@ const columnsTable = [
             td.appendChild(icon);
         }
     },
+    {
+        data: 'location_id',
+        title: 'Detalle',
+        render: function (data) {
+            return '<a href="' + route("locations.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+        },
+    },
 ];
 
 </script>
@@ -184,7 +191,7 @@ const columnsTable = [
                 <div class="row my-5">
                     <div class="col-6">
                         <PrimaryButton @click="openModal" class="px-5">
-                            Nuevo Sede
+                            Nueva Sede
                         </PrimaryButton>
                     </div>
                 </div>

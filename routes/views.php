@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
             Route::get('stock/bodega/{warehouse_id}', 'getAllInventory')->name('stock.inventory');
             Route::get('stock/multiple-bodega', 'getMultipleInventory')->name('stock.multiple');
             Route::get('api/bodega/{warehouse_id}', 'getInventory')->name('api.warehouse');
+            Route::put('stock/update', 'updateInventory')->name('stock.inventory.update');
         });
     });
     Route::controller(UserController::class)->group(function () {
@@ -108,9 +109,16 @@ Route::middleware('auth')->group(function () {
     Route::controller(LocationsController::class)->group(function () {
         Route::get('sedes', 'getLocations')->name('locations.list');
         Route::post('sedes', 'storeLocation')->name('locations.store');
-        Route::get('sedes/{location_id}', 'detailLocation')->name('locations.detail');
+        Route::get('sedes/detalle/{location_id}', 'detailLocation')->name('locations.detail');
         Route::put('sedes/update/{location_id}', 'updateLocation')->name('locations.update');
         Route::delete('sedes/delete/{location_id}', 'destroyLocation')->name('locations.destroy');
+        Route::get('sedes/inventario/{location_id}', 'inventorylocation')->name('locations.inventory');
+        Route::get('sedes/personal/{location_id}', 'personallocation')->name('locations.personal');
+        Route::get('sedes/ventas/{location_id}', 'saleslocation')->name('locations.sales');
+        Route::get('sedes/ventas/{location_id}/detalle/{cash_register_id}', 'salesDetail')->name('locations.salesDetail');
+        Route::get('sedes/auditoria/{location_id}', 'auditlocation')->name('locations.audit');
+
+
     });
 
 

@@ -6,6 +6,15 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Location;
 use App\Models\Zone;
+use App\Models\Product;
+use App\Models\Inventory;
+use App\Models\Warehouse;
+use App\Models\User;
+use App\Models\LocationUser;
+use App\Models\Role;
+use App\Models\CashRegister;
+use App\Models\Sale;
+
 
 class LocationsController extends Controller
 {
@@ -34,7 +43,7 @@ class LocationsController extends Controller
             'zone_id' => $request->zone_id,
             'cash_base' => $request->cash_base
         ]);
-       
+        
         return redirect()->route('locations.list');
     }
 
@@ -60,5 +69,101 @@ class LocationsController extends Controller
         return redirect()->route('locations.list');
     }
 
+    public function detailLocation($id)
+    {
 
-}   
+        return Inertia::render('Locations/LocationsDetail', [
+            'location' => Location::with('zone')->findOrFail($id)
+        ]);
+
+
+    }
+
+    public function inventorylocation($id){
+        $location = Location::with('zone')->findOrFail($id);
+        
+        $currentInventory = Inventory::with('product')
+            ->whereHas('warehouse', function ($query) use ($id) {
+                $query->where('location_id', $id);
+            })
+            ->get()
+            ->map(function ($inventory) {
+                return [
+                    'product' => $inventory->product,
+                    'quantity' => $inventory->quantity,
+                    'measurement_unit' => $inventory->product->measurement_unit ?? 'ml'
+                ];
+            });
+    
+        return Inertia::render('Locations/LocationsInventory', [
+            'location' => $location,
+            'currentInventory' => $currentInventory
+        ]);
+
+
+    }
+
+    public function personallocation($id){
+        $location = Location::with(['zone', 'users_location'])->findOrFail($id);
+        
+        return Inertia::render('Locations/LocationsStaff', [
+            'location' => $location,
+            'users' => $location->users_location
+        ]);
+    }
+
+    public function saleslocation($id){
+        $location = Location::with('zone')->findOrFail($id);
+        
+        $cashRegisters = CashRegister::where('location_id', $id)->get();
+    
+        return Inertia::render('Locations/LocationsSales', [
+            'location' => $location,
+            'cashRegisters' => $cashRegisters
+        ]);
+    }
+
+    public function salesDetail($location_id, $cash_register_id)
+{
+    $location = Location::with('zone')->findOrFail($location_id);
+    
+    $cashRegister = CashRegister::with([
+        'sales' => function($query) {
+            $query->with([
+                'saleDetails' => function($q) {
+                    $q->with('inventory.product');
+                },
+                'user'
+            ])
+            ->orderBy('created_at', 'desc');
+        }
+    ])->findOrFail($cash_register_id);
+
+    $sales = $cashRegister->sales->map(function($sale) {
+        return [
+            'id' => $sale->sale_id,
+            'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
+            'total' => $sale->total,
+            'payment_method' => $sale->payment_method,
+            'transaction_code' => $sale->transaction_code,
+            'user' => $sale->user->name,
+            'details' => $sale->saleDetails->map(function($detail) {
+                return [
+                    'product' => $detail->inventory->product->name,
+                    'reference' => $detail->inventory->product->reference,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                    'total' => $detail->quantity * $detail->price
+                ];
+            })
+        ];
+    });
+
+    return Inertia::render('Locations/LocationsSalesDetail', [
+        'location' => $location,
+        'cashRegister' => $cashRegister,
+        'sales' => $sales
+    ]);
+}
+
+}
