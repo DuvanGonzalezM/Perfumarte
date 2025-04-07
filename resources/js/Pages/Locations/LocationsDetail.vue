@@ -18,6 +18,7 @@ const icons = [
     'fa-boxes-stacked',
     'fa-solid fa-users',
     'fa-solid fa-cash-register',
+    'fa-solid fa-file-signature'
 ];
 
     
@@ -37,35 +38,39 @@ const icons = [
             </template>
 
             <div class="col mb-2">
-                <div class="col-12 p-3 cardboxprais cardpurcheorder position-relative">
-                    <h6>Direccion: {{ location.address }}</h6>
-                    <h6>Zona: {{ location.zone.zone_name}}</h6>
+                <div class="col-6 p-2 cardboxprais cardpurcheorder">
+                    <strong>Direccion: </strong>
+                    <span> {{ location.address }}</span><br>
+                    <strong>Zona: </strong>
+                    <span> {{ location.zone.zone_name}}</span>
 
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                <div class="col-6 p-5">
                     <CardButton :link="route('locations.inventory', location.location_id)" title="Inventario" :icon="icons[0]" />
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
+
+                <div class="col-6 p-5">
                     <CardButton :link="route('locations.personal', location.location_id)" title="Personal" :icon="icons[1]" />
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
+
+                <div class="col-6 p-5">
                     <CardButton :link="route('locations.sales', location.location_id)" title="Ventas" :icon="icons[2]" />
+                </div>
+
+                <div class="col-6 p-5">
+                    <CardButton :link="route('locations.audit', location.location_id)" title="Auditorías" :icon="icons[3]" />
                 </div>
             </div>
 
-
-                    
-            <div class="container">
-                <PrimaryButton :href="route('locations.list')" class="px-5">
-                    Regresar
-                </PrimaryButton>
+            <div class="row my-5 text-center">
+                <div class="container">
+                    <PrimaryButton :href="route('locations.list')" class="px-5">
+                        VOLVER
+                    </PrimaryButton>
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>

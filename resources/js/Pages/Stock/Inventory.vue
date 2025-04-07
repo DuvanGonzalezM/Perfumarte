@@ -16,6 +16,7 @@ const props = defineProps({
     },
 });
 
+
 const columnsTable = [
     {
         data: 'product.reference',

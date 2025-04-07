@@ -191,7 +191,7 @@ const columnsTable = [
                 <div class="row my-5">
                     <div class="col-6">
                         <PrimaryButton @click="openModal" class="px-5">
-                            Nuevo Sede
+                            Nueva Sede
                         </PrimaryButton>
                     </div>
                 </div>

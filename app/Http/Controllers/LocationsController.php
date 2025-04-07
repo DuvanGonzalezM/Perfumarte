@@ -115,7 +115,6 @@ class LocationsController extends Controller
     public function saleslocation($id){
         $location = Location::with('zone')->findOrFail($id);
         
-        // Obtener todas las ventas relacionadas con las cajas registradoras de esta ubicación
         $cashRegisters = CashRegister::where('location_id', $id)->get();
     
         return Inertia::render('Locations/LocationsSales', [
@@ -123,5 +122,48 @@ class LocationsController extends Controller
             'cashRegisters' => $cashRegisters
         ]);
     }
+
+    public function salesDetail($location_id, $cash_register_id)
+{
+    $location = Location::with('zone')->findOrFail($location_id);
+    
+    $cashRegister = CashRegister::with([
+        'sales' => function($query) {
+            $query->with([
+                'saleDetails' => function($q) {
+                    $q->with('inventory.product');
+                },
+                'user'
+            ])
+            ->orderBy('created_at', 'desc');
+        }
+    ])->findOrFail($cash_register_id);
+
+    $sales = $cashRegister->sales->map(function($sale) {
+        return [
+            'id' => $sale->sale_id,
+            'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
+            'total' => $sale->total,
+            'payment_method' => $sale->payment_method,
+            'transaction_code' => $sale->transaction_code,
+            'user' => $sale->user->name,
+            'details' => $sale->saleDetails->map(function($detail) {
+                return [
+                    'product' => $detail->inventory->product->name,
+                    'reference' => $detail->inventory->product->reference,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                    'total' => $detail->quantity * $detail->price
+                ];
+            })
+        ];
+    });
+
+    return Inertia::render('Locations/LocationsSalesDetail', [
+        'location' => $location,
+        'cashRegister' => $cashRegister,
+        'sales' => $sales
+    ]);
+}
 
 }

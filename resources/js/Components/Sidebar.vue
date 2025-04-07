@@ -123,7 +123,7 @@ const buttons = [
 
     },
     {
-        name: 'Recepcoion Insumos',
+        name: 'Recepción Insumos',
         href: route('dispatch.show'),
         icon: 'fa-solid fa-list-check',
         active: page.component.startsWith('Reception'),

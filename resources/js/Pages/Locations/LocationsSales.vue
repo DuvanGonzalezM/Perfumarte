@@ -20,18 +20,38 @@ const props = defineProps({
 const columnsTable = [
     {
         data: 'cash_register_id',
-        title: 'ID'
+        title: 'ID '
     },
     {
-        data: 'created_at',
-        title: 'Fecha'
+    data: 'created_at',
+    title: 'Fecha',
+    render: function (data) {
+        return new Date(data).toLocaleString('es-CO', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        });
+    }
     },
-    
+    {
+        data: (row) => row.total_collected - row.total_digital,
+        title: 'Total'
+    },
+    {
+    data: 'cash_register_id',
+    title: 'Detalle',
+    render: function (data, type, row) {
+        return '<a href="' + route("locations.salesDetail", { 
+            location_id: props.location.location_id, 
+            cash_register_id: data 
+        }) + '"><i class="fa-solid fa-eye"></i></a>';
+    }
+}
 ];
 
 </script>
 
 <template>
+
     <Head title="Ventas de Sede" />
     <BaseLayout>
         <template #header>
@@ -46,7 +66,7 @@ const columnsTable = [
             <div class="container">
                 <Table :columns="columnsTable" :data="props.cashRegisters" />
             </div>
-                    
+
             <div class="container">
                 <PrimaryButton :href="route('locations.detail', location.location_id)" class="px-5">
                     Regresar
