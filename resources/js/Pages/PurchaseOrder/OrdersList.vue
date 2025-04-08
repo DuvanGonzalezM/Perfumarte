@@ -44,6 +44,13 @@ const columnsTable = [
             return '<a href="'+ route("orders.detail", data) +'"><i class="fa-solid fa-eye"></i></a>';
         }
     },
+    {
+        data: "purchase_order_id",
+        title: 'EDITAR',
+        render: function (data) {
+            return '<a href="'+ route("orders.edit", data) +'"><i class="fa-solid fa-edit"></i></a>';
+        }
+    },
 ];
 
 </script>

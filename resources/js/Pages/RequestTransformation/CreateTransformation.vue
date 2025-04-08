@@ -87,6 +87,7 @@ const submit = () => {
                                 <th>CANTIDAD (ml)</th>
                             </tr>
                         </thead>
+                        {{console.log(form.errors)}}
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references" :key="index">
                                 <td>
