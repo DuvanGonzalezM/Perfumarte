@@ -45,18 +45,22 @@
         width: 100% !important;
     }
     
-    // .number {
-    //     font-size: 2.25rem !important;
-    //     font-weight: 700 !important;
-    //     color: $textWhite !important;
-    //     margin-top: 0.25rem !important;
-    //     margin-bottom: 0.5rem !important;
-    // }
+    .number {
+        font-size: 2.25rem !important;
+        font-weight: 700 !important;
+        color: $textWhite !important;
+        margin-top: 0.25rem !important;
+        margin-bottom: 0.5rem !important;
+        position: absolute !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
 
     &:hover {
         transform: translateY(-5px) !important;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
-        
+        cursor: pointer !important;
+
         .over-card i {
             opacity: 1 !important;
             transform: scale(1.1) !important;

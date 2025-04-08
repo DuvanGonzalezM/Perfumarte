@@ -19,14 +19,14 @@ const props = defineProps({
     <div class="card-prais">
         <div class="card-body">
             <div class="over-card">
-                <div class="number mx-4">
-                    {{ number }}
-                </div>
                 <i :class="iconClass"></i>
             </div>
         </div>
         <div class="text-card">
             {{ title }}
+        </div>
+        <div class="number mx-4">
+            {{ number }}
         </div>
     </div>
 </template>

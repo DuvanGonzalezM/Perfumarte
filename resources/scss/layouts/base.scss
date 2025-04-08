@@ -1,6 +1,7 @@
 .container-prais {
     header {
         color: $textWhite !important;
+        margin-bottom: 4rem !important;
     }
 
     .layout-container {
@@ -17,7 +18,7 @@
     .content-wrapper {
         padding-left: 1.5rem !important;
         transition: all 0.3s ease !important;
-        width: 79% !important;
+        width: 59.8vw !important;
         
         &.full-width {
             width: 100% !important;
@@ -35,12 +36,6 @@
         flex: 1 1 80% !important;
     }
 
-    // .account-controls-container {
-    //     position: absolute !important;
-    //     top: 15px !important;
-    //     right: 15px !important;
-    // }
-
     .info-location-wrapper {
         width: 100% !important;
         margin-top: 1rem !important;
@@ -49,10 +44,18 @@
     }
 
     .header-slot-wrapper {
-        width: 100% !important;
+        width: 54.5vw !important;
         margin-top: 1rem !important;
     }
 
+    @media (max-width: $breakpoint-lg) {
+        .content-wrapper {
+            width: 70.5vw !important;
+        }
+        .header-slot-wrapper {
+            width: 63vw !important;
+        }
+    }
     @media (max-width: $breakpoint-md) {
 
         .layout-container {
@@ -73,9 +76,8 @@
             margin-bottom: 0.75rem !important;
         }
 
-        .account-controls-container {
-            flex: 0 0 100% !important;
-            justify-content: center !important;
+        .header-slot-wrapper {
+            width: 75.5vw !important;
         }
     }
 
@@ -84,8 +86,8 @@
             margin-bottom: 1rem !important;
         }
 
-        header {
-            margin-top: 3rem !important;
+        .header-slot-wrapper {
+            width: 65.5vw !important;
         }
     }
 }

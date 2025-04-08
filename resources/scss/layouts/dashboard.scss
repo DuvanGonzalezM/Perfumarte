@@ -1,7 +1,5 @@
 .dashboard-title {
-    text-align: center !important;
     margin-bottom: 1.5rem !important;
-    font-size: 2rem !important;
     font-weight: 600 !important;
 }
 
@@ -9,7 +7,6 @@
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 1.5rem !important;
-    padding: 1rem !important;
     max-width: 1400px !important;
     margin: 0 auto !important;
 }

@@ -35,18 +35,18 @@ watchEffect(() => {
             <div class="content-wrapper" :class="{'full-width': props.sidebarHidden}">
                 <header>
                     <div class="header-container">
-                        <div class="breadcrumbs-wrapper">
-                            <!-- <Breadcrumbs /> -->
+                        <div class="header-slot-wrapper">
+                            <slot name="header" />
                         </div>
                         <div class="account-controls-container">
                             <AccountControls />
                         </div>
+                        <div class="breadcrumbs-wrapper">
+                            <!-- <Breadcrumbs /> -->
+                        </div>
                         <div class="info-location-wrapper" v-if="is('Asesor comercial')">
                             <InfoLocation />
                         </div>
-                    </div>
-                    <div class="header-slot-wrapper">
-                        <slot name="header" />
                     </div>
                 </header>
 
