@@ -21,7 +21,8 @@ class RequestPraisController extends Controller
                 'user.location_user' => function ($query) use ($locationId) {
                     $query->where('location_user.location_id', $locationId);
                 }
-            ])
+            ]
+        )
             ->where('request_type', '1')
             ->get();
 
@@ -31,20 +32,22 @@ class RequestPraisController extends Controller
                 ->where('status', 'Pendiente')
                 ->get();
         }
-        
+
         return Inertia::render('Requests/SuppliesRequestList', [
             'suppliesRequest' => $suppliesRequest
         ]);
     }
 
-    public function createRequst(){
+    public function createRequst()
+    {
         $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
         return Inertia::render('Requests/NewSuppliesRequest', [
             'inventory' => $inventory,
         ]);
     }
 
-    public function storeRequest(Request $request){
+    public function storeRequest(Request $request)
+    {
         $user = Auth::user();
         $request->validate([
             'references.*.reference' => 'required|exists:inventories,inventory_id',
@@ -52,7 +55,7 @@ class RequestPraisController extends Controller
         ]);
         $requestPrais = RequestPrais::create([
             'request_type' => '1',
-            'user_id'=> $user->user_id,
+            'user_id' => $user->user_id,
             'status' => 'Por solicitar'
         ]);
         foreach ($request->references as $reference) {
@@ -134,7 +137,7 @@ class RequestPraisController extends Controller
 
     public function createTransformation()
     {
-        $inventories = Inventory::with('product')->where('warehouse_id', '1')->get();
+        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', [16, 17])->get();
 
         return Inertia::render('RequestTransformation/CreateTransformation', [
             'inventories' => $inventories
@@ -143,17 +146,20 @@ class RequestPraisController extends Controller
 
     public function storeTransformation(Request $request)
     {
+        // Validación básica de campos requeridos
         $request->validate([
-            'references.*.reference' => 'required',
-            'references.*.quantity' => 'required',
+            "references.*.reference" => 'required',
+            "references.*.quantity" => 'required|numeric|min:0', // Validación de cantidad sin límite máximo
         ]);
-
+    
+        // Crear solicitud
         $transformationRequest = RequestPrais::create([
             'request_type' => '2',
             'user_id' => $request->user()->user_id,
             'status' => 'Pendiente'
         ]);
-
+    
+        // Crear detalles de la solicitud
         foreach ($request->references as $reference) {
             RequestDetail::create([
                 'request_id' => $transformationRequest->request_id,
@@ -161,8 +167,9 @@ class RequestPraisController extends Controller
                 'quantity' => $reference['quantity']
             ]);
         }
+    
         return redirect()->route('transformationRequest.list', [
-            'message' => '',
+            'message' => 'Solicitud de transformación registrada exitosamente.',
             'status' => 200
         ]);
     }

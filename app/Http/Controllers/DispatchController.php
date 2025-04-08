@@ -134,7 +134,7 @@ public function editDispatch($id)
         $dispatch->status = 'En ruta';
         $dispatch->save();
     
-        return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado y cantidades actualizadas');
+        return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado');
     }
 
 

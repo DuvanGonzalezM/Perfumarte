@@ -186,6 +186,21 @@ return [
     |
     */
 
-    'attributes' => [],
+
+    'attributes' => [
+        'username' => 'Nombre de usuario',
+        'password' => 'Contraseña',
+        'dispatches.*.references.*.dispatched_quantity' => 'Cantidad Enviada',
+        'dispatches.*.references.*.reference' => 'Referencia / Insumo',
+        'references.*.quantity' => 'Cantidad',
+        'references.*.reference' => 'Referencia',
+        'references.*.batch' => 'N° Lote',
+        'reference' => 'Referencia',
+        'escencia' => 'Escencia',
+        'dipropileno' => 'Dipropileno',
+        'disolvente' => 'Disolvente',
+        'supplier' => 'Proveedor',
+        'supplier_order' => 'Orden de compra - Proveedor',
+    ],
 
 ];

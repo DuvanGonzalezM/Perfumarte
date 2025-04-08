@@ -1,4 +1,5 @@
 <script setup>
+import ModalPrais from '@/Components/ModalPrais.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
@@ -8,6 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 const disableButton = ref(false);
+const showConfirmModal = ref(false);
 const props = defineProps({
     purchaseOrder: {
         type: Object,
@@ -46,10 +48,16 @@ const selectedProduct = (index) => {
     }
 };
 
+// Mostrar modal de confirmación
+const showConfirmation = () => {
+    showConfirmModal.value = true;
+};
+
 // Enviar el formulario
 const submit = () => {
     disableButton.value = true;
     form.put(route('orders.update', props.purchaseOrder.purchase_order_id));
+    showConfirmModal.value = false;
 };
 
 // Agregar nueva referencia
@@ -88,7 +96,7 @@ const removeReference = (index) => {
                 <strong>Editar Orden de Compra</strong>
             </template>
             <div class="form-container">
-                <form @submit.prevent="submit" class="table-prais">
+                <form @submit.prevent="showConfirmation" class="table-prais">
                     <div class="form-row">
                         <div class="supplier-info">
                             {{ props.purchaseOrder.product_entry_order[0]?.product?.supplier?.name || 'Proveedor no disponible' }}
@@ -148,7 +156,7 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="action-right">
-                            <PrimaryButton type="submit" class="submit-button" :class="disableButton ? 'disabled' : ''">
+                            <PrimaryButton @click="showConfirmation" class="submit-button" :class="disableButton ? 'disabled' : ''">
                                 Actualizar
                             </PrimaryButton>
                         </div>
@@ -157,4 +165,22 @@ const removeReference = (index) => {
             </div>
         </SectionCard>
     </BaseLayout>
+
+    <!-- Modal de Confirmación -->
+    <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
+        <template #header>
+            Confirmar actualización
+        </template>
+        <template #body>
+            <div class="text-center">
+                <h4>¿Estás seguro de actualizar esta orden de compra?</h4>
+            </div>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="submit" class="px-5" :disabled="form.processing">
+                <span v-if="form.processing">Procesando...</span>
+                <span v-else>Confirmar</span>
+            </PrimaryButton>
+        </template>
+    </ModalPrais>
 </template>

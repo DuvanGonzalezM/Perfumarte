@@ -23,9 +23,9 @@ const props = defineProps({
 
 const form = useForm({
     'reference': null,
-    'escencia': '',
-    'dipropileno': '',
-    'disolvente': '',
+    'escencia': 0,
+    'dipropileno': 0,
+    'disolvente': 0,
     'request': '',
     'status': 'En proceso',
 });
@@ -127,7 +127,7 @@ const submit = async () => {
                                             <td>CANTIDAD ESCENCIA (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.escencia" name="escencia[]"
-                                                    id="escencia[]" :required="true"
+                                                    id="escencia[]" :required="true" minimo="0"
                                                     :messageError="Object.keys(form.errors).length ? form.errors.escencia : null" />
                                             </td>
                                         </tr>
@@ -135,7 +135,7 @@ const submit = async () => {
                                             <td>CANTIDAD DIPROPILENO (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.dipropileno" name="dipropileno[]"
-                                                    id="dipropileno[]" :required="true"
+                                                    id="dipropileno[]" :required="true" minimo="0"
                                                     :messageError="Object.keys(form.errors).length ? form.errors.dipropileno : null" />
                                             </td>
                                         </tr>
@@ -143,7 +143,7 @@ const submit = async () => {
                                             <td>CANTIDAD DISOLVENTE (ml): </td>
                                             <td>
                                                 <TextInput type="number" v-model="form.disolvente" name="disolvente[]"
-                                                    id="disolvente[]" :required="true"
+                                                    id="disolvente[]" :required="true" minimo="0"
                                                     :messageError="Object.keys(form.errors).length ? form.errors.disolvente : null" />
                                             </td>
                                         </tr>

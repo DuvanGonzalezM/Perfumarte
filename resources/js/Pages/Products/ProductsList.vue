@@ -62,7 +62,7 @@ const columnsTable = [
     },
     {
         data: 'name',
-        title: 'DESACTIVAR',
+        title: 'ELIMINAR',
         render: '#rendertwo',
     },
 ];
