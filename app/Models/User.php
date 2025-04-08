@@ -26,6 +26,7 @@ class User extends Authenticatable
         'enabled',
         'boss_user',
         'zone_id',
+        'default_password',
     ];
 
     /**
@@ -41,7 +42,8 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'default_password' => 'boolean',
     ];
 
     public function location(): BelongsTo

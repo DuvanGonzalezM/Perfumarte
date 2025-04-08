@@ -36,17 +36,16 @@ const icons = [
             <template #headerSection>
                 <strong>{{ location.name }}</strong>
             </template>
-
-            <div class="col mb-2">
-                <div class="col-6 p-2 cardboxprais cardpurcheorder">
-                    <strong>Direccion: </strong>
-                    <span> {{ location.address }}</span><br>
-                    <strong>Zona: </strong>
-                    <span> {{ location.zone.zone_name}}</span>
-
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 supplier-info">
+                    <div class="info-card">
+                        <strong>Direccion: </strong>
+                        <span> {{ location.address }}</span><br>
+                        <strong>Zona: </strong>
+                        <span> {{ location.zone.zone_name}}</span>
+                    </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-6 p-5">
                     <CardButton :link="route('locations.inventory', location.location_id)" title="Inventario" :icon="icons[0]" />
@@ -68,7 +67,7 @@ const icons = [
             <div class="row my-5 text-center">
                 <div class="container">
                     <PrimaryButton :href="route('locations.list')" class="px-5">
-                        VOLVER
+                        Volver
                     </PrimaryButton>
                 </div>
             </div>

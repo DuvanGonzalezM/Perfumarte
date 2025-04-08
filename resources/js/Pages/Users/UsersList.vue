@@ -66,6 +66,17 @@ const columnsTable = [
         title: 'Nombre'
     },
     {
+        data: 'username',
+        title: 'Documento de usuario'
+    },
+    {
+        data: 'roles',
+        title: 'Roles',
+        render: function (data) {
+            return data.map(role => role.name).join(', ');
+        },
+    },
+    {
         data: "user_id",
         title: 'Detalle',
         render: function (data) {

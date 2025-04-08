@@ -12,6 +12,10 @@ const attributes = defineProps({
         type: Boolean,
         required: false
     },
+    title: {
+        type: String,
+        required: false
+    }
 });
 
 onMounted(() => {
@@ -29,8 +33,8 @@ function checkScreenSize() {
     <div class="container body-login d-flex align-items-center justify-content-center" v-cloak>
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
-                <Image src="assets\images\Logo_3.avif" class="responsive-logo" />
-                <h3 class="login-title">Inicio de Sesión</h3>
+                <Image src="\assets\images\Logo_3.avif" class="responsive-logo" />
+                <h3 class="login-title">{{ attributes.title || 'Inicio de Sesión' }}</h3>
             </div>
             <div class="card-body position-relative">
                 <slot />

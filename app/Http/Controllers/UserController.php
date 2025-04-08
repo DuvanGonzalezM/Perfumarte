@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     public function getUsers()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
         $roles = Role::all();
         $zones = Zone::all();
         $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {

@@ -18,12 +18,15 @@ const props = defineProps({
 
 const columnsTable = [
     {
-        data: 'username',
-        title: 'USUARIO'
-    },
-    {
         data: 'name',
         title: 'NOMBRE'
+    },
+    {
+        data: 'roles',
+        title: 'ROLES',
+        render: function (data) {
+            return data.map(role => role.name).join(', ');
+        },
     },
 ];
 </script>
@@ -39,15 +42,17 @@ const columnsTable = [
             <template #headerSection>
                 <strong>{{ location.name }}</strong>
             </template>
-
+            {{ console.log(props.users) }}
             <div class="container">
                 <Table :columns="columnsTable" :data="props.users" />
             </div>
                     
-            <div class="container">
-                <PrimaryButton :href="route('locations.detail', location.location_id)" class="px-5">
-                    Regresar
-                </PrimaryButton>
+            <div class="row my-5 text-center">
+                <div class="container">
+                    <PrimaryButton :href="route('locations.detail', location.location_id)" class="px-5">
+                        Volver
+                    </PrimaryButton>
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>

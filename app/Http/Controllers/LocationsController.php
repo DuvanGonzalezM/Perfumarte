@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Audit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Location;
@@ -21,7 +22,7 @@ class LocationsController extends Controller
     public function getLocations(Request $request)
     {
         $zones = Zone::all();
-        $locations = Location::with('zone')->get();
+        $locations = Location::with('zone')->whereNot('location_id', 1)->get();
         return Inertia::render('Locations/LocationsList', [
             'locations' => $locations, 
             'zones' => $zones
@@ -104,7 +105,7 @@ class LocationsController extends Controller
     }
 
     public function personallocation($id){
-        $location = Location::with(['zone', 'users_location'])->findOrFail($id);
+        $location = Location::with(['zone', 'users_location.roles'])->findOrFail($id);
         
         return Inertia::render('Locations/LocationsStaff', [
             'location' => $location,
@@ -124,46 +125,55 @@ class LocationsController extends Controller
     }
 
     public function salesDetail($location_id, $cash_register_id)
-{
-    $location = Location::with('zone')->findOrFail($location_id);
-    
-    $cashRegister = CashRegister::with([
-        'sales' => function($query) {
-            $query->with([
-                'saleDetails' => function($q) {
-                    $q->with('inventory.product');
-                },
-                'user'
-            ])
-            ->orderBy('created_at', 'desc');
-        }
-    ])->findOrFail($cash_register_id);
+    {
+        $location = Location::with('zone')->findOrFail($location_id);
+        
+        $cashRegister = CashRegister::with([
+            'sales' => function($query) {
+                $query->with([
+                    'saleDetails' => function($q) {
+                        $q->with('inventory.product');
+                    },
+                    'user'
+                ])
+                ->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($cash_register_id);
 
-    $sales = $cashRegister->sales->map(function($sale) {
-        return [
-            'id' => $sale->sale_id,
-            'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
-            'total' => $sale->total,
-            'payment_method' => $sale->payment_method,
-            'transaction_code' => $sale->transaction_code,
-            'user' => $sale->user->name,
-            'details' => $sale->saleDetails->map(function($detail) {
-                return [
-                    'product' => $detail->inventory->product->name,
-                    'reference' => $detail->inventory->product->reference,
-                    'quantity' => $detail->quantity,
-                    'price' => $detail->price,
-                    'total' => $detail->quantity * $detail->price
-                ];
-            })
-        ];
-    });
+        $sales = $cashRegister->sales->map(function($sale) {
+            return [
+                'id' => $sale->sale_id,
+                'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
+                'total' => $sale->total,
+                'payment_method' => $sale->payment_method,
+                'transaction_code' => $sale->transaction_code,
+                'user' => $sale->user->name,
+                'details' => $sale->saleDetails->map(function($detail) {
+                    return [
+                        'product' => $detail->inventory->product->name,
+                        'reference' => $detail->inventory->product->reference,
+                        'quantity' => $detail->quantity,
+                        'price' => $detail->price,
+                        'total' => $detail->quantity * $detail->price
+                    ];
+                })
+            ];
+        });
 
-    return Inertia::render('Locations/LocationsSalesDetail', [
-        'location' => $location,
-        'cashRegister' => $cashRegister,
-        'sales' => $sales
-    ]);
-}
+        return Inertia::render('Locations/LocationsSalesDetail', [
+            'location' => $location,
+            'cashRegister' => $cashRegister,
+            'sales' => $sales
+        ]);
+    }
 
+    public function auditlocation($location_id)
+    {
+        $audits = Audit::with('location', 'user')->where('location_id', $location_id)->get();
+        $location = Location::findOrFail($location_id);
+        return Inertia::render('Locations/LocationsAudit', [
+            'audits'=> $audits,
+            'location' => $location
+        ]);
+    }
 }

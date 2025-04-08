@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Rules\Recaptcha;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +36,10 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required',
             'captcha_token'  => [new Recaptcha],
         ]);
+        $user = User::where('username', $request->username)->whereAnd('enabled', true)->whereAnd('default_password', true)->first();
+        if ($user) {
+            return redirect()->route('password.change', ['username' => $user->username]);
+        }
         $request->authenticate();
 
         $request->session()->regenerate();
