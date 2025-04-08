@@ -87,63 +87,68 @@ const removeReference = (index) => {
             <template #headerSection>
                 <strong>Editar Orden de Compra</strong>
             </template>
-            <div class="container px-0">
+            <div class="form-container">
                 <form @submit.prevent="submit" class="table-prais">
-                    <div class="row">
-                        <div class="col-6 p-2 cardboxprais cardpurcheorder">
+                    <div class="form-row">
+                        <div class="supplier-info">
                             {{ props.purchaseOrder.product_entry_order[0]?.product?.supplier?.name || 'Proveedor no disponible' }}
                         </div>
-                        <div class="col-md-6 py-3 align-middle">
+                        <div class="form-group">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
                                 v-model="form.supplier_order" labelValue="Orden de compra - Proveedor"
                                 :messageError="form.errors.supplier_order" />
                         </div>
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 mt-5">
-                        <thead>
-                            <tr>
-                                <th>REFERENCIA</th>
-                                <th>CANTIDAD</th>
-                                <th>UNIDAD DE MEDIDA</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsList">
-                            <tr v-for="(reference, index) in form.references" :key="index">
-                                <td>
-                                    <SelectSearch v-model="reference.reference" :options="optionProduts"
-                                        @change="selectedProduct(index)"
-                                        :messageError="form.errors[`references.${index}.reference`]"
-                                        placeholder="Seleccione una referencia" />
-                                </td>
-                                <td>
-                                    <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="reference.quantity" step="0.01"
-                                        :messageError="form.errors[`references.${index}.quantity`]" />
-                                </td>
-                                <td>
-                                    <span class="unity-display">{{ reference.unity }}</span>
-                                </td>
-                                <td>
-                                    <div class="removeItem" @click="removeReference(index)" v-if="form.references.length > 1">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="row text-center justify-content-center my-5">
-                        <div class="addItem" @click="addReference" v-if="showAddButtom">
+                    
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>REFERENCIA</th>
+                                    <th>CANTIDAD</th>
+                                    <th>UNIDAD DE MEDIDA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsList">
+                                <tr v-for="(reference, index) in form.references" :key="index">
+                                    <td>
+                                        <SelectSearch v-model="reference.reference" :options="optionProduts"
+                                            @change="selectedProduct(index)"
+                                            :messageError="form.errors[`references.${index}.reference`]"
+                                            placeholder="Seleccione una referencia" />
+                                    </td>
+                                    <td>
+                                        <TextInput type="number" name="quantity[]" id="quantity[]"
+                                            v-model="reference.quantity" step="0.01"
+                                            :messageError="form.errors[`references.${index}.quantity`]" />
+                                    </td>
+                                    <td>
+                                        <span class="unity-display">{{ reference.unity }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="remove-item" @click="removeReference(index)" v-if="form.references.length > 1">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="add-item-container">
+                        <div class="add-item" @click="addReference" v-if="showAddButtom">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                     </div>
-                    <div class="row my-5">
-                        <div class="col-6">
-                            <PrimaryButton :href="route('orders.list')" class="px-5">
+                    
+                    <div class="action-buttons">
+                        <div class="action-left">
+                            <PrimaryButton :href="route('orders.list')" class="back-button">
                                 Volver
                             </PrimaryButton>
                         </div>
-                        <div class="col-6 text-end">
-                            <PrimaryButton type="submit" class="px-5" :class="disableButton ? 'disabled' : ''">
+                        <div class="action-right">
+                            <PrimaryButton type="submit" class="submit-button" :class="disableButton ? 'disabled' : ''">
                                 Actualizar
                             </PrimaryButton>
                         </div>

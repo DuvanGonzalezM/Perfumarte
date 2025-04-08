@@ -38,7 +38,7 @@ const options = computed(() => ({
 </script>
 
 <template>
-    <div class="table-prais">
+    <div class="table-prais table-responsive">
         <DataTable :options="options" :columns="columns" :data="data" class="table">
             <template #render="item">
                 <slot name="templateRender" :item="item"/>

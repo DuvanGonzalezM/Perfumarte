@@ -50,8 +50,10 @@
   }
 
   .section-content-prais {
-    width: 45vw;
-    margin: 7rem auto;
+    width: 90%;
+    max-width: 1200px;
+    margin: 7rem auto 2rem;
+    padding: 0 1rem;
   }
 
   @media (max-width: $breakpoint-lg) {
@@ -60,10 +62,15 @@
     .over-section {
       width: 80%;
       min-height: 120px;
-    }
-    .section-content-prais {
-        width: 55vw;
+      
+      * {
+        font-size: 26px;
       }
+    }
+    
+    .section-content-prais {
+      margin-top: 6rem;
+    }
   }
   
   @media (max-width: $breakpoint-md) {
@@ -86,7 +93,9 @@
     }
     
     .section-content-prais {
-      width: 80vw;
+      width: 100%;
+      margin-top: 5rem;
+      padding: 0 0.5rem;
     }
   }
   
@@ -109,9 +118,11 @@
         font-size: 12px;
       }
     }
+    
     .section-content-prais {
-      margin: 4rem auto;
-
+      margin-top: 4rem;
+      padding: 0 0.25rem;
+      
       .btn-prais {
         position: relative !important;
       }
@@ -119,21 +130,36 @@
   }
 }
 
-.cardboxprais {
-  border-radius: 0.3rem;
-  box-shadow: 0px 2px 4px 0px $textBlack;
-//   @include transition();
+.info-card {
+  background-color: $backgroundContent;
+  border-radius: 0.5rem;
+  border: 1px solid $borderColor;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 4px 8px 0px rgba($textBlack, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
-}
-
-.cardpurcheorder {
-  font-size: 12px;
   
-  @media (min-width: $breakpoint-sm) {
-    font-size: 14px;
+  strong {
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  
+  a {
+    color: $textBlack;
+    text-decoration: underline;
+    
+    &:hover {
+      color: darken($textBlack, 10%);
+    }
+  }
+  
+  @media (max-width: $breakpoint-sm) {
+    font-size: 0.9rem;
+    padding: 0.75rem;
   }
 }

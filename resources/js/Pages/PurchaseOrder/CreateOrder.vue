@@ -8,8 +8,6 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-
-
 const props = defineProps({
     suppliers: {
         type: Array,
@@ -95,21 +93,21 @@ const removeReference = (index) => {
             <template #headerSection>
                 <strong>Nueva orden de compra</strong>
             </template>
-            <div class="container px-0">
+            <div class="form-container">
                 <form @submit.prevent="submit" class="table-prais">
-                    <div class="row">
-                        <div class="col-md-6" style="height: 40px;">
+                    <div class="form-row">
+                        <div class="form-group">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"
                                 :changeFunction="selectedSupplier" labelValue="Proveedor"
                                 :messageError="Object.keys(form.errors).length ? form.errors.supplier : null" />
                         </div>
-                        <div class="col-md-6" style="height: 40px;">
+                        <div class="form-group">
                             <TextInput type="number" name="supplier_order" id="supplier_order"
                                 v-model="form.supplier_order" labelValue="Orden de compra - Proveedor" :required="true"
                                 :messageError="Object.keys(form.errors).length ? form.errors.supplier_order : null" />
                         </div>
                     </div>
-                    <table class="table table-hover text-center dt-body-nowrap size-prais-4 mt-5">
+                    <table class="table table-responsive">
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
@@ -138,29 +136,34 @@ const removeReference = (index) => {
                                 <td>
                                     {{ reference.unity }}
                                 </td>
-                                <div class="removeItem" @click="removeReference(index)">
-                                    <i class="fa-solid fa-trash"></i>
-                                </div>
+                                <td>
+                                    <div class="remove-item" @click="removeReference(index)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-                    <div class="row text-center justify-content-center my-5">
-                        <div class="addItem" @click="addReference" v-if="showAddButtom">
+                    <div class="add-item-container">
+                        <div class="add-item" @click="addReference" v-if="showAddButtom">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                     </div>
-                    <div class="row my-5">
-                        <div class="col-6">
-                            <PrimaryButton :href="route('orders.list')" class="px-5">
+
+                    <div class="action-buttons">
+                        <div class="action-left">
+                            <PrimaryButton :href="route('orders.list')" class="back-button">
                                 Volver
                             </PrimaryButton>
                         </div>
-                        <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                        <div class="action-right">
+                            <PrimaryButton @click="submit" class="submit-button"
+                                :class="form.processing ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
                     </div>
+
                     <ModalPrais v-model="showModal" @close="showModal = false">
                         <template #header>
                             Nueva orden de compra
@@ -169,10 +172,10 @@ const removeReference = (index) => {
                             ¿Seguro quiera registra esta nueva orden de compra?
                         </template>
                         <template #footer>
-                            <PrimaryButton @click="submit" class="px-5">
+                            <PrimaryButton @click="submit" class="confirm-button">
                                 Si
                             </PrimaryButton>
-                            <PrimaryButton @click="showModal = false" class="px-5">
+                            <PrimaryButton @click="showModal = false" class="cancel-button">
                                 No
                             </PrimaryButton>
                         </template>

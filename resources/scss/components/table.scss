@@ -1,4 +1,26 @@
+.table-container {
+    position: relative;
+    width: 100%;
+    margin-top: 2rem;
+    
+    .action-button {
+        position: absolute;
+        top: -3rem;
+        right: 1rem;
+        z-index: 2;
+        
+        @media (max-width: $breakpoint-sm) {
+            position: static;
+            display: block;
+            margin: 0 auto 1rem auto;
+            width: 80%;
+        }
+    }
+}
+
 .table-prais {
+    width: 100%;
+    
     table {
         text-align: center;
         border-collapse: collapse;
@@ -6,28 +28,43 @@
 
         tr {
             border-color: $textBlack;
+            .selectsearch {
+                width: 15vw !important;
+            }
+            .inputContainer{
+                width: 10vw !important;
+            }
+        }
+        
+        @media (max-width: $breakpoint-md) {
+            tr {
+                .selectsearch {
+                    width: 20vw !important;
+                }
+                .inputContainer{
+                    width: 15vw !important;
+                }
+            }
+        }
+        @media (max-width: $breakpoint-sm) {
+            tr {
+                .selectsearch {
+                    width: 40vw !important;
+                }
+                .inputContainer{
+                    width: 30vw !important;
+                }
+            }
         }
     }
 
     a {
         color: $textBlack;
         text-decoration: none;
-    }
-
-    .removeItem {
-        margin-top: 9px;
-        color: $textBlack;
-        cursor: pointer;
-    }
-
-    .remove-dispatch {
-        right: 3%;
-        top: 25%;
-        font-size: 20px;
-    }
-
-    .addItem:hover {
-        background: $gradient;
+        
+        &:hover {
+            color: darken($textBlack, 15%);
+        }
     }
 
     .page-link {
@@ -41,109 +78,20 @@
         }
     }
 
-    .dt-search {
-        label {
-            display: none;
-        }
-    }
-
-    .row {
-        align-items: center;
-    }
-
-    .size-prais-2 th {
-        width: calc(100%/1.5);
-    }
-
-    .size-prais-3 th {
-        width: calc(100%/2.5);
-    }
-
-    .size-prais-4 th {
-        width: calc(100%/3.5);
-    }
-
-    .size-prais-5 th {
-        width: calc(100%/5);
-    }
-
-    .size-prais-6 th {
-        width: calc(100%/6);
-    }
-
     @media (max-width: $breakpoint-lg) {
-        font-size: 15px;
+        font-size: 0.95rem;
     }
     
     @media (max-width: $breakpoint-md) {
-        font-size: 14px;
-        
-        .remove-dispatch {
-            font-size: 18px;
-        }
-        
-        .removeItem {
-            margin-top: 7px;
-        }
+        font-size: 0.9rem;
     }
     
     @media (max-width: $breakpoint-sm) {
-        font-size: 12px;
-        
-        table {
-            display: block;
-            overflow-x: auto;
-        }
-        
-        .remove-dispatch {
-            font-size: 16px;
-        }
-        
-        .removeItem {
-            margin-top: 5px;
-        }
-        
-        .dt-search {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        
-        .row {
-            flex-direction: column;
-            
-            > div {
-                width: 100%;
-                margin-bottom: 10px;
-                text-align: center;
-            }
-        }
-    }
-}
-
-.addItem {
-    background: $buttonColor;
-    font-size: 20px;
-    color: $textBlack;
-    cursor: pointer;
-    width: 5%;
-    border-radius: 50%;
-    transition: background 0.3s ease;
-    
-    @media (max-width: $breakpoint-md) {
-        font-size: 18px;
-        width: 8%;
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-        font-size: 16px;
-        width: 10%;
+        font-size: 0.85rem;
     }
 }
 
 .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    
     .dataTables_wrapper {
         margin-top: 1rem;
         display: flex;
@@ -156,6 +104,35 @@
             
             .pagination {
                 margin: 0;
+                display: flex;
+                list-style: none;
+                padding: 0;
+                
+                .page-item {
+                    margin: 0 0.25rem;
+                    
+                    .page-link {
+                        border-radius: 0.25rem;
+                        padding: 0.5rem 0.75rem;
+                        background-color: $backgroundContent;
+                        border: 1px solid $borderColor;
+                        transition: background-color 0.3s ease;
+                        
+                        &:hover {
+                            background-color: darken($backgroundContent, 5%);
+                        }
+                    }
+                    
+                    &.active .page-link {
+                        background: $gradient;
+                        border-color: $textBlack;
+                    }
+                    
+                    &.disabled .page-link {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                    }
+                }
             }
         }
         
@@ -163,9 +140,37 @@
             width: 100%;
             margin-bottom: 1rem;
             
+            label {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                
+                @media (max-width: $breakpoint-sm) {
+                    justify-content: center;
+                }
+            }
+            
             input {
                 width: 100%;
                 max-width: 300px;
+                padding: 0.5rem;
+                border-radius: 0.25rem;
+                border: 1px solid $borderColor;
+                margin-left: 0.5rem;
+                
+                &:focus {
+                    outline: none;
+                    border-color: $textBlack;
+                }
+                
+                @media (max-width: $breakpoint-md) {
+                    max-width: 250px;
+                }
+                
+                @media (max-width: $breakpoint-sm) {
+                    max-width: 100%;
+                }
             }
         }
         
@@ -189,35 +194,6 @@
                 
                 @media (max-width: $breakpoint-sm) {
                     padding: 0.25rem;
-                }
-            }
-        }
-    }
-    
-    @media (max-width: $breakpoint-md) {
-        .dataTables_wrapper {
-            .dataTables_filter {
-                margin-bottom: 0.75rem;
-                
-                input {
-                    max-width: 250px;
-                }
-            }
-        }
-        
-        .dataTables_paginate .page-link {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.85rem;
-        }
-    }
-    
-    @media (max-width: $breakpoint-sm) {
-        .dataTables_wrapper {
-            .dataTables_filter {
-                text-align: left;
-                
-                input {
-                    max-width: 100%;
                 }
             }
         }

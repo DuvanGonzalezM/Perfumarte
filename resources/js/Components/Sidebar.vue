@@ -131,13 +131,6 @@ const buttons = [
         can: 'Auditar',
     },
     {
-        name: 'Stock',
-        href: route('stock.dashboard'),
-        icon: 'fa-duotone fa-solid fa-boxes-stacked',
-        active: page.component.startsWith('Stock'),
-        can: 'Ver Stock',
-    },
-    {
         name: 'Productos',
         href: route('products.list'),
         icon: 'fa-solid fa-box-open',

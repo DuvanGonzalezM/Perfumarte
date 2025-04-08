@@ -1,6 +1,5 @@
 <script setup>
 import Alert from '@/Components/Alert.vue';
-import Notification from '@/Components/Notification.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
@@ -47,9 +46,9 @@ const columnsTable = [
             <template #headerSection>
                 <strong>Orden de compra</strong>
             </template>
-            <div class="container">
-                <div class="row">
-                    <div class="col-6 p-2 cardboxprais cardpurcheorder">
+            <div class="detail-container">
+                <div class="supplier-info">
+                    <div class="info-card">
                         <strong>Proveedor: </strong>
                         <span>{{ props.purchaseOrder.product_entry_order[0].product.supplier.name }}</span><br>
                         <strong>Nit: </strong>
@@ -63,12 +62,10 @@ const columnsTable = [
                     </div>
                 </div>
                 <Table :data="purchaseOrder.product_entry_order" :columns="columnsTable" />
-                <div class="row my-5 text-center">
-                    <div class="col">
-                        <PrimaryButton :href="route('orders.list')" class="px-5">
-                            Volver
-                        </PrimaryButton>
-                    </div>
+                <div class="actions-container">
+                    <PrimaryButton :href="route('orders.list')" class="action-button">
+                        Volver
+                    </PrimaryButton>
                 </div>
             </div>
         </SectionCard>

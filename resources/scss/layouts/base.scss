@@ -47,7 +47,14 @@
         width: 54.5vw !important;
         margin-top: 1rem !important;
     }
-
+    @media (min-width: $breakpoint-xl) {
+        .content-wrapper {
+            width: 80% !important;
+        }
+        .header-slot-wrapper {
+            width: 90%!important;
+        }
+    }
     @media (max-width: $breakpoint-lg) {
         .content-wrapper {
             width: 70.5vw !important;
