@@ -1,135 +1,135 @@
 .sidebar-card {
     background-color: $backgroundComponent !important;
-    width: 250px; 
-    height: 100%;
-    max-height: 95vh;
-    padding: 25px; 
-    border-radius: 20px; 
+    width: 250px !important; 
+    height: 100% !important;
+    max-height: 95vh !important;
+    padding: 25px !important; 
+    border-radius: 20px !important; 
     border: 3px solid #F8DFA8 !important;
-    transition: all 0.5s ease-in-out;
-    padding-bottom: 20px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: $borderColor transparent;
+    transition: all 0.5s ease-in-out !important;
+    padding-bottom: 20px !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: $borderColor transparent !important;
 
     &::-webkit-scrollbar {
-        width: 6px;
+        width: 6px !important;
     }
 
     &::-webkit-scrollbar-track {
-        background: transparent;
-        border-radius: 10px;
+        background: transparent !important;
+        border-radius: 10px !important;
     }
 
     &::-webkit-scrollbar-thumb {
-        background-color: $borderColor;
-        border-radius: 10px;
-        border: 2px solid transparent;
+        background-color: $borderColor !important;
+        border-radius: 10px !important;
+        border: 2px solid transparent !important;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-        background-color: darken($borderColor, 10%);
+        background-color: darken($borderColor, 10%) !important;
     }
 
     &.no-scroll {
-        overflow-y: hidden;
+        overflow-y: hidden !important;
     }
     img {
-        width: 80px; 
-        height: 80px;
+        width: 80px !important; 
+        height: 80px !important;
     }
 }
 
 .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1030;
-    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1030 !important;
+    display: none !important;
 
     &.active {
-        display: block;
+        display: block !important;
     }
 }
 
 .mobile-menu-toggle {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1050;
-    display: none;
+    position: fixed !important;
+    top: 15px !important;
+    left: 15px !important;
+    z-index: 1050 !important;
+    display: none !important;
 
     button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 }
 
 @media (max-width: $breakpoint-lg) {
     .sidebar-card {
-        width: 220px;
-        padding: 22px;
+        width: 250px !important;
+        padding: 22px !important;
         
         img {
-            width: 70px;
-            height: 70px;
+            width: 70px !important;
+            height: 70px !important;
         }
     }
 }
 
 @media (max-width: $breakpoint-md) {
     .mobile-menu-toggle {
-        left: 15px;
-        transition: all 0.5s ease-in-out;
-        display: block;
+        left: 15px !important;
+        transition: all 0.5s ease-in-out !important;
+        display: block !important;
     }
 
     .toggle-open {
-        left: 225px;
+        left: 250px !important;
     }
 
     .sidebar-card {
-        position: fixed;
-        top: 0;
-        left: -225px;
-        z-index: 1040;
-        overflow-y: auto;
+        position: fixed !important;
+        top: 0 !important;
+        left: -250px !important;
+        z-index: 1040 !important;
+        overflow-y: auto !important;
         
         img {
-            width: 60px;
-            height: 60px;
+            width: 60px !important;
+            height: 60px !important;
         }
         
         &.sidebar-mobile-open {
-            left: 0;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.2);
+            left: 0 !important;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.2) !important;
         }
     }
     
     .sidebar-overlay.active {
-        display: block;
+        display: block !important;
     }
 }
 
 @media (max-width: $breakpoint-sm) {
     .mobile-menu-toggle {
-        transition: all 0.1s ease-in-out;
+        transition: all 0.1s ease-in-out !important;
     }
     .sidebar-card {
-        max-width: 220px;
-        padding: 15px;
-        left: -225px;
+        max-width: 250px !important;
+        padding: 15px !important;
+        left: -250px !important;
         
         img {
-            width: 50px;
-            height: 50px;
+            width: 50px !important;
+            height: 50px !important;
         }
     }
 }

@@ -1,41 +1,25 @@
 .card-prais {
-    max-width: 284px !important;
-    height: 119px !important;
-    background-color: $backgroundComponent !important;
+    // max-width: 284px !important;
+    // height: 119px !important;
+    // background-color: $backgroundComponent !important;
 
-    i {
-        font-size: 30px !important;
-    }
 
-    .over-card {
-        position: absolute !important;
-        top: -30px !important;
-        left: 25px !important;
-        width: 80px !important;
-        height: 90px !important;
-        border-radius: 10px !important;
-        background: $gradient !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
+    // .text-card {
+    //     position: absolute !important;
+    //     top: 5px !important;
+    //     right: 0 !important;
+    //     width: 170px !important;
+    //     font-size: 17px !important;
+    //     color: $textWhite !important;
+    // }
 
-    .text-card {
-        position: absolute !important;
-        top: 5px !important;
-        right: 0 !important;
-        width: 170px !important;
-        font-size: 17px !important;
-        color: $textWhite !important;
-    }
-
-    .number{
-        color: $textWhite !important;
-        position: absolute !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        font-size: 30px !important;
-    }
+    // .number{
+    //     color: $textWhite !important;
+    //     position: absolute !important;
+    //     right: 0 !important;
+    //     bottom: 0 !important;
+    //     font-size: 30px !important;
+    // }
 
     @include respond-to('tablet') {
         max-width: 250px !important;

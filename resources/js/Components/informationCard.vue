@@ -1,8 +1,8 @@
 <script setup>
-
 const props = defineProps({
     title: {
         type: String,
+        required: true,
     },
     number: {
         type: Number,
@@ -13,22 +13,20 @@ const props = defineProps({
         required: true,
     },
 });
-
 </script>
 
-
 <template>
-    <div class="card mb-3 d-flex text-end card-prais">
+    <div class="card-prais">
         <div class="card-body">
             <div class="over-card">
+                <div class="number mx-4">
+                    {{ number }}
+                </div>
                 <i :class="iconClass"></i>
             </div>
         </div>
-        <div class="text-card mx-2 my-2">
+        <div class="text-card">
             {{ title }}
-        </div>
-        <div class="number mx-3">
-            {{ number }}
         </div>
     </div>
 </template>

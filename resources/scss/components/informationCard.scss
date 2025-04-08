@@ -1,0 +1,120 @@
+// Estilos para Information Cards
+.card-prais {
+    background-color: $backgroundComponent !important;
+    border: 3px solid $borderColor !important;
+    max-width: 15vw !important;
+    border-radius: 15px !important;
+    position: relative !important;
+    height: 150px !important;
+    margin: 2rem auto !important;
+    padding: 1rem !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    
+    .card-body {
+        padding: 0.75rem !important;
+        position: relative !important;
+        flex: 1 !important;
+        
+        .over-card {
+            position: absolute !important;
+            top: -70px !important;
+            right: 10px !important;
+            width: 80px !important;
+            height: 90px !important;
+            border-radius: 10px !important;
+            background: $gradient !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            
+            i {
+                font-size: 2.5rem !important;
+                color: $textBlack !important;
+                transition: all 0.3s ease !important;
+                opacity: 0.8 !important;
+            }
+        }
+
+    }
+    
+    .text-card {
+        font-weight: 500 !important;
+        color: $textWhite !important;
+        margin: 0.5rem 0 !important;
+        width: 100% !important;
+    }
+    
+    // .number {
+    //     font-size: 2.25rem !important;
+    //     font-weight: 700 !important;
+    //     color: $textWhite !important;
+    //     margin-top: 0.25rem !important;
+    //     margin-bottom: 0.5rem !important;
+    // }
+
+    &:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+        
+        .over-card i {
+            opacity: 1 !important;
+            transform: scale(1.1) !important;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-lg) {
+    .card-prais {
+        .card-body .over-card i {
+            font-size: 44px !important;
+        }
+        
+        .number {
+            font-size: 2rem !important;
+        }
+
+        .text-card {
+            font-size: 1rem !important;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-md) {
+    .card-prais {
+        max-width: 40vw !important;
+        
+        .card-body .over-card i {
+            font-size: 40px !important;
+        }
+        
+        .number {
+            font-size: 1.9rem !important;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-sm) {
+    .card-prais {
+        height: 140px !important;
+        margin: 1rem auto !important;
+        max-width: 70vw !important;
+        
+        .card-body {
+            padding: 0.5rem !important;
+            
+            .over-card i {
+                font-size: 34px !important;
+            }
+        }
+        
+        .text-card {
+            margin: 0.25rem 0 !important;
+        }
+        
+        .number {
+            font-size: 1.75rem !important;
+            margin-top: 0.1rem !important;
+        }
+    }
+}
