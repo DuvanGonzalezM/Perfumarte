@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::group(['middleware' => ['can:Editar Despachos']], function () {
             Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
-            Route::put('despachos/editar despacho/{dispatch_id}', ' qupdateDispatch')->name('dispatch.update');
+            Route::put('despachos/editar despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
         });
 
         Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
