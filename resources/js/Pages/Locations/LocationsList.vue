@@ -137,6 +137,13 @@ const columnsTable = [
     },
     {
         data: 'location_id',
+        title: 'Detalle',
+        render: function (data) {
+            return '<a href="' + route("locations.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
+        },
+    },
+    {
+        data: 'location_id',
         title: 'Editar',
         defaultContent: "",
         createdCell: function (td, cellData, rowData) {
@@ -164,13 +171,6 @@ const columnsTable = [
             td.appendChild(icon);
         }
     },
-    {
-        data: 'location_id',
-        title: 'Detalle',
-        render: function (data) {
-            return '<a href="' + route("locations.detail", data) + '"><i class="fa-solid fa-eye"></i></a>';
-        },
-    },
 ];
 
 </script>
@@ -188,8 +188,8 @@ const columnsTable = [
                 <strong>Sedes</strong>
             </template>
             <div class="container">
-                <div class="row my-5">
-                    <div class="col-6">
+                <div class="row">
+                    <div class="col-md-6 col-12">
                         <PrimaryButton @click="openModal" class="px-5">
                             Nueva Sede
                         </PrimaryButton>

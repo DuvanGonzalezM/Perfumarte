@@ -25,6 +25,8 @@ class User extends Authenticatable
         'location_id',
         'enabled',
         'boss_user',
+        'zone_id',
+        'default_password',
     ];
 
     /**
@@ -40,7 +42,8 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'default_password' => 'boolean',
     ];
 
     public function location(): BelongsTo
@@ -61,5 +64,10 @@ class User extends Authenticatable
     public function location_user(): BelongsToMany
     {
         return $this->belongsToMany(Location::class,'location_user', 'user_id', 'location_id');
+    }
+
+    public function zone(): BelongsTo
+    {
+        return $this->belongsTo(Zone::class, 'zone_id');
     }
 }

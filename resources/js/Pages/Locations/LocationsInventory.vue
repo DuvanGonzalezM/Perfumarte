@@ -48,10 +48,12 @@ const columnsTable = [
                 <Table :columns="columnsTable" :data="props.currentInventory" />
             </div>
                     
-            <div class="container">
-                <PrimaryButton :href="route('locations.detail', location.location_id)" class="px-5">
-                    Regresar
-                </PrimaryButton>
+            <div class="row my-5 text-center">
+                <div class="container">
+                    <PrimaryButton :href="route('locations.detail', location.location_id)" class="px-5">
+                        Volver
+                    </PrimaryButton>
+                </div>
             </div>
         </SectionCard>
     </BaseLayout>

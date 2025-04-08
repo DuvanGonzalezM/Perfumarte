@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
@@ -14,19 +15,19 @@ class UserController extends Controller
 {
     public function getUsers()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
         $roles = Role::all();
+        $zones = Zone::all();
         $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
             $query->where('name', 'Subdirector');
         })->get();
-        return Inertia::render('Users/UsersList', ['users' => $users, 'roles' => $roles, 'boss' => $boss]);
+        return Inertia::render('Users/UsersList', ['users' => $users, 'roles' => $roles, 'zones' => $zones, 'boss' => $boss]);
     }
 
     public function storeUser(Request $request)
     {
         $request->validate([
             'username' => 'required|string|max:255|unique:' . User::class,
-            // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
 
@@ -37,7 +38,8 @@ class UserController extends Controller
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
             'location_id' => (int) $request->location_id,
-                    ]);
+            'zone_id' => (int) $request->zone_id,
+        ]);
 
         $user->syncRoles($request->role_id);
         
@@ -62,6 +64,7 @@ class UserController extends Controller
             'name' => (string) $request->name,
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
+            'zone_id' => (int) $request->zone_id,
         ]);
 
         return redirect()->route('users.list');
@@ -72,9 +75,10 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($user_id);
             $user->delete();
+            return redirect()->route('users.list');
            
         } catch (\Exception $e) {
-            
+            return back();
         }
     }
 
@@ -82,9 +86,13 @@ class UserController extends Controller
     {
         $user = User::with('roles', 'permissions')->findOrFail($user_id);
         $roles = Role::with('permissions')->get();
+        $zones = Zone::all();
         $permissions = Permission::all();
+        $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
+            $query->where('name', 'Subdirector');
+        })->get();
         if ($user) {
-            return Inertia::render('Users/UserDetail', ['user' => $user, 'roles' => $roles, 'permissions' => $permissions]);
+            return Inertia::render('Users/UserDetail', ['user' => $user, 'roles' => $roles, 'zones' => $zones, 'permissions' => $permissions, 'boss' => $boss]);
         } else {
             return redirect()->route('users.list');
         }
@@ -94,9 +102,21 @@ class UserController extends Controller
     {
         $request->validate([
             'roles' => 'required',
-        ]);
-
+                'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
+                'name' => 'required|string|max:255',
+                'boss_user' => 'required|integer',
+                'enabled' => 'required|boolean',
+    
+            ]);
+    
         $user = User::findOrFail($user_id);
+        $user->update([
+            'username' => (string) $request->username,
+            'name' => (string) $request->name,
+            'boss_user' => (int) $request->boss_user,
+            'enabled' => (bool) $request->enabled,
+            'zone_id' => (int) $request->zone_id,
+        ]);
         $user->syncRoles($request->roles);
         $user->syncPermissions($request->permissions);
         return redirect()->route('users.list');
