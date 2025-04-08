@@ -13,6 +13,7 @@ const props = defineProps({
         type: Array,
     },
 });
+
 const form = useForm({
     supplier: props.suppliers[0].supplier_id,
     supplier_order: '',
@@ -25,15 +26,20 @@ const form = useForm({
         }
     ],
 });
-const products = ref(props.suppliers[0].products);
+
 const optionSuppliers = ref(props.suppliers.map((supplier) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
-const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
+const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.commercial_reference, 'value': product.product_id }][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 const showModal = ref(false);
+const showConfirmModal = ref(false);
 
 const submit = () => {
     form.post(route('orders.store'));
-    showModal.value = false;
+    showConfirmModal.value = false;
+};
+
+const showConfirmation = () => {
+    showConfirmModal.value = true;
 };
 
 const selectedSupplier = () => {
@@ -94,7 +100,7 @@ const removeReference = (index) => {
                 <strong>Nueva orden de compra</strong>
             </template>
             <div class="form-container">
-                <form @submit.prevent="submit" class="table-prais">
+                <form @submit.prevent="showConfirmation" class="table-prais">
                     <div class="form-row">
                         <div class="form-group">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"
@@ -157,7 +163,7 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="action-right">
-                            <PrimaryButton @click="submit" class="submit-button"
+                            <PrimaryButton @click="showConfirmation" class="submit-button"
                                 :class="form.processing ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
@@ -184,4 +190,22 @@ const removeReference = (index) => {
             </div>
         </SectionCard>
     </BaseLayout>
+
+    <!-- Modal de Confirmación -->
+    <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
+        <template #header>
+            Confirmar creación
+        </template>
+        <template #body>
+            <div class="text-center">
+                <h4>¿Estás seguro de crear esta orden de compra?</h4>
+            </div>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="submit" class="px-5" :disabled="form.processing">
+                <span v-if="form.processing">Procesando...</span>
+                <span v-else>Confirmar</span>
+            </PrimaryButton>
+        </template>
+    </ModalPrais>
 </template>

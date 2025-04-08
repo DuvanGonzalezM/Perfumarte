@@ -108,6 +108,8 @@ class PurchaseOrderController extends Controller
         $request->validate([
             'supplier_order' => 'required',
             'references' => 'required|array',
+            'references.*.reference' => 'required',
+            'references.*.quantity' => 'required',
         ]);
     
         PurchaseOrder::where('purchase_order_id', $purchaseOrderId)->update([
@@ -117,7 +119,7 @@ class PurchaseOrderController extends Controller
         foreach ($request->references as $reference) {
 
             $warehouse = (strtoupper($reference['unity'] ?? '') == 'KG') ? 1 : 3;
-            $quantity = ($warehouse == 1) ? ($reference['quantity'] * 1000) : $reference['quantity'];
+            $quantity = ($warehouse == 1) ? ($reference['quantity']) : $reference['quantity'];
     
             if (isset($reference['product_entry_id'])) {
 

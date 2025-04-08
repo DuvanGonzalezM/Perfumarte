@@ -26,46 +26,57 @@ class RepackageController extends Controller
 
         return Inertia::render('Repackage/CreateRepackage', ['getProduct' => $getProduct]);
     }
-
-    public function storeRepackage(request $request)
+    public function storeRepackage(Request $request)
     {
-
-        $warehouse = '2';
-
+        $warehouse = '2'; // Bodega destino
+        $esenceWarehouse = '1'; // Bodega origen
+    
         $request->validate([
             'reference' => 'required',
-            'quantity' => 'required|numeric',
+            'quantity' => 'required|numeric|min:0',
         ]);
-
-        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
-
-        $inventoryOut = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
-
-        if ($inventory) {
-            $quantity = $inventory->quantity + $request['quantity'];
-            $inventory->update([
-                'quantity' => $quantity
-            ]);
-        } else {
-            $inventory = Inventory::create([
-                'warehouse_id' => $warehouse,
-                'product_id' => $request['reference'],
-                'quantity' => $request['quantity']
+    
+        // Obtener inventario en bodega origen (warehouse_1)
+        $inventoryOut = Inventory::where('warehouse_id', $esenceWarehouse)
+                                ->where('product_id', $request['reference'])
+                                ->first();
+    
+    
+        // Validar que haya suficiente cantidad
+        if ($inventoryOut->quantity < $request['quantity']) {
+            return back()->withErrors([
+                'quantity' => 'No hay suficiente stock en la bodega de origen. Disponible: '.$inventoryOut->quantity
             ]);
         }
-
-        $quantity = $inventoryOut->quantity - $request['quantity'];
-        $inventoryOut->update([
-            'quantity' => $quantity
-        ]);
-
-        ChangeWarehouse::create([
-            'inventory_id' => $inventory->inventory_id,
-            'quantity' => $request['quantity'],
-        ]);
-
-        return redirect()->route('repackage.list');
-
+    
+        // Procesar el reenvase (sin transacciones)
+        try {
+            // Actualizar o crear en bodega destino (warehouse_2)
+            $inventory = Inventory::firstOrNew([
+                'warehouse_id' => $warehouse,
+                'product_id' => $request['reference']
+            ]);
+    
+            $inventory->quantity = $inventory->quantity + $request['quantity'];
+            $inventory->save();
+    
+            // Actualizar bodega origen (warehouse_1)
+            $inventoryOut->quantity -= $request['quantity'];
+            $inventoryOut->save();
+    
+            // Registrar el movimiento
+            ChangeWarehouse::create([
+                'inventory_id' => $inventory->inventory_id,
+                'quantity' => $request['quantity'],
+            ]);
+    
+            return redirect()->route('repackage.list')->with('success', 'Reenvase realizado correctamente');
+    
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Ocurrió un error al procesar el reenvase: '.$e->getMessage()
+            ]);
+        }
     }
 
     public function editRepackage($repackageId)
