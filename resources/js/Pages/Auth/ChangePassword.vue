@@ -6,6 +6,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+const props = defineProps({
+    username: { type: String },
+});
 const form = useForm({
     current_password: '',
     password: '',
@@ -13,36 +16,22 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('password.update'), {
-        onFinish: () => form.reset(),
-    });
+    form.put(route('password.update', props.username));
 };
 </script>
 
 <template>
-    <GuestLayout title="Cambiar Contraseña">
+    <GuestLayout title="Cambiar Contraseña" :loading="form.processing">
         <Head title="Cambiar Contraseña" />
-
+        <div class="text-center mb-1">
+            <p>Su cuenta tiene una contraseña predeterminada. Por razones de seguridad, debe cambiarla antes de continuar.</p>
+        </div>
         <form @submit.prevent="submit" class="form-container">
-            <div class="text-center mb-4">
-                <p>Su cuenta tiene una contraseña predeterminada. Por razones de seguridad, debe cambiarla antes de continuar.</p>
-            </div>
-
-            <div class="form-group">
-                <TextInput
-                    labelValue="Contraseña Actual"
-                    id="current_password"
-                    type="password"
-                    v-model="form.current_password"
-                    required
-                    :messageError="form.errors.current_password"
-                />
-            </div>
-
             <div class="form-group">
                 <TextInput
                     labelValue="Nueva Contraseña"
                     id="password"
+                    name="password"
                     type="password"
                     v-model="form.password"
                     required
@@ -54,6 +43,7 @@ const submit = () => {
                 <TextInput
                     labelValue="Confirmar Nueva Contraseña"
                     id="password_confirmation"
+                    name="password_confirmation"
                     type="password"
                     v-model="form.password_confirmation"
                     required
@@ -63,10 +53,10 @@ const submit = () => {
 
             <div class="button-wrapper d-flex justify-content-center">
                 <PrimaryButton 
+                    @click="submit" 
                     :class="form.processing ? 'disabled' : ''"
-                    :disabled="form.processing"
                 >
-                    Cambiar Contraseña
+                Cambiar Contraseña
                 </PrimaryButton>
             </div>
         </form>

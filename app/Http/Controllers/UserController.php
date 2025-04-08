@@ -38,6 +38,7 @@ class UserController extends Controller
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
             'location_id' => (int) $request->location_id,
+            'default_password' => true,
             'zone_id' => (int) $request->zone_id,
         ]);
 

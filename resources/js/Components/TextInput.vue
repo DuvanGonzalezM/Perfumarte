@@ -59,7 +59,7 @@ const togglePasswordVisibility = () => {
 <template>
     <div class="inputContainer position-relative" 
          :class="{
-             'errorField': messageError && !(hasFocus || model || focus),
+             'errorField': messageError && !(hasFocus ||  focus),
              'input-mobile': isMobile,
              'input-tablet': isTablet
          }">
@@ -97,7 +97,7 @@ const togglePasswordVisibility = () => {
             <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
         </a>
         <div class="mt-1" 
-             v-if="messageError && !(hasFocus || model || focus)"
+             v-if="messageError && !(hasFocus ||  focus)"
              :class="{
                  'error-message-mobile': isMobile,
                  'error-message-tablet': isTablet

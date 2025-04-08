@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
             'captcha_token'  => [new Recaptcha],
         ]);
         $user = User::where('username', $request->username)->whereAnd('enabled', true)->whereAnd('default_password', true)->first();
-        if ($user) {
+        if ($user && $user->default_password) {
             return redirect()->route('password.change', ['username' => $user->username]);
         }
         $request->authenticate();
