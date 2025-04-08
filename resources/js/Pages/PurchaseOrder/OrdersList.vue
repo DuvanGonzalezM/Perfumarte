@@ -44,13 +44,6 @@ const columnsTable = [
             return '<a href="'+ route("orders.detail", data) +'"><i class="fa-solid fa-eye"></i></a>';
         }
     },
-    {
-        data: "purchase_order_id",
-        title: 'EDITAR',
-        render: function (data) {
-            return '<a href="'+ route("orders.edit", data) +'"><i class="fa-solid fa-pen-to-square"></i></a>';
-        }
-    },
 ];
 
 </script>
@@ -69,7 +62,7 @@ const columnsTable = [
             </template>
             <div class="container">
                 <PrimaryButton :href="route('orders.create')" class="position-absolute" v-if="can('Crear Ordenes de Compra')">
-                    Nuevo registro
+                    Nueva orden
                 </PrimaryButton>
                 <Table 
                     :data="purchaseOrders" 

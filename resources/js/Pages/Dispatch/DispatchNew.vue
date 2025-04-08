@@ -106,13 +106,17 @@ const submit = () => {
                     <div v-for="(dispatch, dispatchIndex) in form.dispatches" :key="dispatchIndex">
                         <div v-if="dispatch.warehouse">
                             <div class="row mb-2">
-                                <div class="col-12 p-4 cardboxprais cardpurcheorder position-relative">
-                                    <h6>{{ props.warehouses.find(warehouse => warehouse.warehouse_id ==
-                                        dispatch.warehouse).location.name }}</h6>
-                                    <div class="position-absolute remove-dispatch">
-                                        <a href="#" @click="removeDispatch(dispatchIndex)">
-                                            <i class="fa-solid fa-house-circle-xmark"></i>
-                                        </a>
+                                <div class="supplier-info">
+                                    <div class="info-card">
+                                        <div style="display: flex;">
+                                            <h6 style="width: 80%;">{{ props.warehouses.find(warehouse => warehouse.warehouse_id ==
+                                                dispatch.warehouse).location.name }}</h6>
+                                            <div class="remove-dispatch text-end" style="width: 20%;">
+                                                <a href="#" @click="removeDispatch(dispatchIndex)">
+                                                    <i class="fa-solid fa-house-circle-xmark"></i>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

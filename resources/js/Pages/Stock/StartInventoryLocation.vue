@@ -90,27 +90,29 @@ const handleSubmit = () => {
                 <h4>¿Confirma la base y el inventario inicial para continuar con el módulo?</h4>
             </template>
             <template #body>
+                <h6>Base de la caja: ${{ props.location.cash_base }}</h6>
+
                 <h5>Cantidades en caja ${{ (form.count_50_bill * 50000) + (form.count_20_bill * 20000) +
                     (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) +
                     (form.count_100_bill * 100000) + (form.total_coins * 1) }}</h5>
                 <div class="row">
 
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_100_bill" :min="0" title="N° Billetes 100 mil" />
                     </div>
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_50_bill" :min="0" title="N° Billetes 50 mil" />
                     </div>
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_20_bill" :min="0" title="N° Billetes 20 mil" />
                     </div>
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_10_bill" :min="0" title="N° Billetes 10 mil" />
                     </div>
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_5_bill" :min="0" title="N° Billetes 5 mil" />
                     </div>
-                    <div class="col-md-4 my-3">
+                    <div class="col-6 col-md-4 my-3">
                         <CountControl v-model="form.count_2_bill" :min="0" title="N° Billetes 2 mil" />
                     </div>
                     <div class="col-md-12 my-3">
@@ -121,10 +123,10 @@ const handleSubmit = () => {
                 </div>
             </template>
             <template #footer>
-                <PrimaryButton @click="closeModal" class="mx-5 px-5">No</PrimaryButton>
+                <PrimaryButton @click="closeModal" class="col-6 mx-5 px-5">No</PrimaryButton>
                 <PrimaryButton @click="handleSubmit"
                     :class="((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) != (props.location.cash_base) ? 'disabled' : ''"
-                    class="mx-5 px-5">Sí</PrimaryButton>
+                    class="col-6 mx-5 px-5">Sí</PrimaryButton>
             </template>
         </ModalPrais>
     </BaseLayout>

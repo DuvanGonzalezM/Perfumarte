@@ -30,12 +30,12 @@
         }
     }
 
-    @include respond-to('desktop-sm') {
+    @media (max-width: $breakpoint-lg) {
         width: 35vw !important;
         left: 33vw !important;
     }
 
-    @include respond-to('tablet') {
+    @media (max-width: $breakpoint-md) {
         width: 50vw !important;
         left: 25vw !important;
         
@@ -44,7 +44,7 @@
         }
     }
 
-    @include respond-to('mobile') {
+    @media (max-width: $breakpoint-sm) {
         width: 85vw !important;
         left: 7.5vw !important;
         top: 25vh !important;
@@ -67,13 +67,22 @@
 body:has(.body-login){
     background-image: url('/assets/images/background.webp') !important;
     background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    
+    @media (max-width: $breakpoint-md) {
+        background-position: 70% center !important;
+    }
+    
+    @media (max-width: $breakpoint-sm) {
+        background-position: 80% center !important;
+    }
 }
 
-/* Estilos adicionales para el layout de invitados */
 .body-login {
     min-height: 100vh !important;
     
-    @include respond-to('mobile') {
+    @media (max-width: $breakpoint-sm) {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;

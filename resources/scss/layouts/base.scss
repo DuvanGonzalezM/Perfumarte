@@ -1,30 +1,127 @@
-.container-prais{
-    header{
+.container-prais {
+    header {
         color: $textWhite !important;
+        margin-bottom: 4rem !important;
     }
 
-    /* Estilos responsivos para el layout base */
-    @include respond-to('tablet') {
-        .row {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-        }
+    .layout-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        max-width: 1400px !important;
+        margin: 0 auto !important;
     }
 
-    @include respond-to('mobile') {
-        .sidebar-hidden {
-            padding-left: 15px !important;
-            padding-right: 15px !important;
-        }
+    .sidebar-wrapper {
+        transition: all 0.3s ease !important;
+    }
+
+    .content-wrapper {
+        padding-left: 1.5rem !important;
+        transition: all 0.3s ease !important;
+        width: 80% !important;
         
-        header {
-            margin-top: 50px !important;
+        &.full-width {
+            width: 100% !important;
+            padding-left: 0 !important;
+        }
+    }
+
+    .header-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .full-width{
+        .header-slot-wrapper{
+            width: 90% !important;
+        }
+    }
+
+    .breadcrumbs-wrapper {
+        flex: 1 1 80% !important;
+    }
+
+    .info-location-wrapper {
+        width: 100% !important;
+        color: $textBlack !important;
+        margin-top: 1rem !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
+
+    .header-slot-wrapper {
+        width: 92% !important;
+        margin-top: 1rem !important;
+    }
+    @media (max-width: $breakpoint-xl) {
+        .content-wrapper {
+            width: 59.8vw !important;
+        }
+        .header-slot-wrapper {
+            width: 52.5vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 82vw !important;
+            }
+        }
+    }
+    @media (max-width: $breakpoint-lg) {
+        .content-wrapper {
+            width: 69.5vw !important;
+        }
+        .header-slot-wrapper {
+            width: 61vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 83vw !important;
+            }
+        }
+    }
+    @media (max-width: $breakpoint-md) {
+
+        .layout-container {
+            flex-direction: column !important;
         }
 
-        .account-controls-container {
-            position: absolute !important;
-            top: 15px !important;
-            right: 15px !important;
+        .sidebar-wrapper,
+        .content-wrapper {
+            width: 100% !important;
+        }
+
+        .content-wrapper {
+            margin-top: 1.5rem !important;
+        }
+
+        .breadcrumbs-wrapper {
+            flex: 1 1 100% !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        .header-slot-wrapper {
+            width: 75.5vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 79vw !important;
+            }
+        }
+    }
+
+    @media (max-width: $breakpoint-sm) {
+        .sidebar-wrapper {
+            margin-bottom: 1rem !important;
+        }
+
+        .header-slot-wrapper {
+            width: 65.5vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 68vw !important;
+            }
         }
     }
 }

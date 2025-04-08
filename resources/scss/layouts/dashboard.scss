@@ -1,0 +1,34 @@
+.dashboard-title {
+    margin-bottom: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.dashboard-container {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5rem !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+}
+
+.dashboard-card-container {
+    width: 100% !important;
+}
+
+@media (max-width: $breakpoint-md) {
+    .dashboard-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.25rem !important;
+    }
+    
+    .dashboard-title {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: $breakpoint-sm) {    
+    .dashboard-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+}

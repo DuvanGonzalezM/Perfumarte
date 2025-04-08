@@ -1,30 +1,22 @@
 <script setup>
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
-import { ref, onMounted, computed } from 'vue';
+import { computed } from 'vue';
 
 DataTable.use(DataTablesCore);
 
 const props = defineProps({
     columns: {
         type: Array,
+        required: true
     },
     data: {
         type: Array,
-    },
+        required: true
+    }
 });
 
-const isMobile = ref(false);
-const paginVisibility = computed(() => props.data.length > (isMobile.value ? 5 : 10));
-
-onMounted(() => {
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-});
-
-function checkScreenSize() {
-    isMobile.value = window.innerWidth < 768;
-}
+const paginVisibility = computed(() => props.data.length > 10);
 
 const options = computed(() => ({
     language: {
@@ -34,15 +26,20 @@ const options = computed(() => ({
     info: paginVisibility.value,
     order: [[0, 'desc']],
     paging: paginVisibility.value,
+    pagingType: 'simple_numbers',
     responsive: true,
-    scrollX: isMobile.value,
-    pageLength: isMobile.value ? 5 : 10
+    pageLength: 10,
+    classes: {
+        sPageButton: 'paginate_button page-item',
+        sPageButtonActive: 'paginate_button page-item active',
+        sPageButtonDisabled: 'paginate_button page-item disabled'
+    }
 }));
 </script>
 
 <template>
     <div class="table-prais table-responsive">
-        <DataTable :options="options" :columns="columns" :data="data" class="table table-hover">
+        <DataTable :options="options" :columns="columns" :data="data" class="table">
             <template #render="item">
                 <slot name="templateRender" :item="item"/>
             </template>

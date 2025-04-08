@@ -1,180 +1,203 @@
+.table-container {
+    position: relative;
+    width: 100%;
+    margin-top: 2rem;
+    
+    .action-button {
+        position: absolute;
+        top: -3rem;
+        right: 1rem;
+        z-index: 2;
+        
+        @media (max-width: $breakpoint-sm) {
+            position: static;
+            display: block;
+            margin: 0 auto 1rem auto;
+            width: 80%;
+        }
+    }
+}
+
 .table-prais {
+    width: 100%;
+    
     table {
-        text-align: center !important;
+        text-align: center;
+        border-collapse: collapse;
+        width: 100%;
 
         tr {
-            border-color: $textBlack !important;
+            border-color: $textBlack;
+            .selectsearch {
+                width: 15vw !important;
+                margin: auto;
+            }
+            .inputContainer{
+                width: 10vw !important;
+                margin: auto;
+            }
+        }
+        
+        @media (max-width: $breakpoint-md) {
+            tr {
+                .selectsearch {
+                    width: 20vw !important;
+                }
+                .inputContainer{
+                    width: 15vw !important;
+                }
+            }
+        }
+        @media (max-width: $breakpoint-sm) {
+            tr {
+                .selectsearch {
+                    width: 40vw !important;
+                }
+                .inputContainer{
+                    width: 30vw !important;
+                }
+            }
         }
     }
 
     a {
-        color: $textBlack !important;
-        text-decoration: none !important;
-    }
-
-    .removeItem {
-        margin-top: 9px !important;
-        color: $textBlack !important;
-        cursor: pointer !important;
-    }
-
-    .remove-dispatch {
-        right: 3% !important;
-        top: 25% !important;
-        font-size: 20px !important;
-    }
-
-    .addItem:hover {
-        background: $gradient !important;
+        color: $textBlack;
+        text-decoration: none;
+        
+        &:hover {
+            color: darken($textBlack, 15%);
+        }
     }
 
     .page-link {
-        color: $textBlack !important;
+        color: $textBlack;
     }
 
     .active {
         button {
-            color: $textBlack !important;
-            background: $gradient !important;
+            color: $textBlack;
+            background: $gradient;
         }
     }
 
-    .dt-search {
-        label {
-            display: none !important;
-        }
-    }
-
-    .row {
-        align-items: center !important;
-    }
-
-    .size-prais-2 {
-        th {
-            width: calc(100%/1.5) !important;
-        }
-    }
-
-    .size-prais-3 {
-        th {
-            width: calc(100%/2.5) !important;
-        }
-    }
-
-    .size-prais-4 {
-        th {
-            width: calc(100%/3.5) !important;
-        }
-    }
-
-    .size-prais-5 {
-        th {
-            width: calc(100%/5) !important;
-        }
-    }
-
-    .size-prais-6 {
-        th {
-            width: calc(100%/6) !important;
-        }
+    @media (max-width: $breakpoint-lg) {
+        font-size: 0.95rem;
     }
     
-    @include respond-to('tablet') {
-        font-size: 14px !important;
-        
-        .remove-dispatch {
-            font-size: 18px !important;
-        }
-        
-        .removeItem {
-            margin-top: 7px !important;
-        }
+    @media (max-width: $breakpoint-md) {
+        font-size: 0.9rem;
     }
     
-    @include respond-to('mobile') {
-        font-size: 12px !important;
-        
-        table {
-            display: block;
-            overflow-x: auto;
-        }
-        
-        .remove-dispatch {
-            font-size: 16px !important;
-        }
-        
-        .removeItem {
-            margin-top: 5px !important;
-        }
-        
-        .dt-search {
-            width: 100% !important;
-            margin-bottom: 10px !important;
-        }
-        
-        .row {
-            flex-direction: column !important;
-            
-            > div {
-                width: 100% !important;
-                margin-bottom: 10px !important;
-                text-align: center !important;
-            }
-        }
+    @media (max-width: $breakpoint-sm) {
+        font-size: 0.85rem;
     }
 }
 
-.addItem {
-    background: $buttonColor !important;
-    font-size: 20px !important;
-    color: $textBlack !important;
-    cursor: pointer !important;
-    width: 5% !important;
-    border-radius: 50% !important;
-    
-    @include respond-to('tablet') {
-        font-size: 18px !important;
-        width: 8% !important;
-    }
-    
-    @include respond-to('mobile') {
-        font-size: 16px !important;
-        width: 10% !important;
-    }
-}
-
-/* Estilos adicionales para tablas responsivas */
 .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    
-    @include respond-to('mobile') {
-        .dataTables_wrapper {
-            overflow-x: auto;
-        }
+    .dataTables_wrapper {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
         
-        table.dataTable {
-            font-size: 0.85rem;
-        }
-        
-        .dataTables_paginate .page-link {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.85rem;
+        .dataTables_paginate {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            
+            .pagination {
+                margin: 0;
+                display: flex;
+                list-style: none;
+                padding: 0;
+                
+                .page-item {
+                    margin: 0 0.25rem;
+                    
+                    .page-link {
+                        border-radius: 0.25rem;
+                        padding: 0.5rem 0.75rem;
+                        background-color: $backgroundContent;
+                        border: 1px solid $borderColor;
+                        transition: background-color 0.3s ease;
+                        
+                        &:hover {
+                            background-color: darken($backgroundContent, 5%);
+                        }
+                    }
+                    
+                    &.active .page-link {
+                        background: $gradient;
+                        border-color: $textBlack;
+                    }
+                    
+                    &.disabled .page-link {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                    }
+                }
+            }
         }
         
         .dataTables_filter {
             width: 100%;
-            margin-bottom: 0.75rem;
-            text-align: left;
-        }
-        
-        .dataTables_filter input {
-            width: 100%;
-            max-width: 100%;
+            margin-bottom: 1rem;
+            
+            label {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                
+                @media (max-width: $breakpoint-sm) {
+                    justify-content: center;
+                }
+            }
+            
+            input {
+                width: 100%;
+                max-width: 300px;
+                padding: 0.5rem;
+                border-radius: 0.25rem;
+                border: 1px solid $borderColor;
+                margin-left: 0.5rem;
+                
+                &:focus {
+                    outline: none;
+                    border-color: $textBlack;
+                }
+                
+                @media (max-width: $breakpoint-md) {
+                    max-width: 250px;
+                }
+                
+                @media (max-width: $breakpoint-sm) {
+                    max-width: 100%;
+                }
+            }
         }
         
         table.dataTable {
-            font-size: 0.75rem;
+            font-size: 1rem;
+            
+            @media (max-width: $breakpoint-md) {
+                font-size: 0.85rem;
+            }
+            
+            @media (max-width: $breakpoint-sm) {
+                font-size: 0.75rem;
+            }
+            
+            thead th, tbody td {
+                padding: 0.75rem;
+                
+                @media (max-width: $breakpoint-md) {
+                    padding: 0.5rem;
+                }
+                
+                @media (max-width: $breakpoint-sm) {
+                    padding: 0.25rem;
+                }
+            }
         }
     }
 }
