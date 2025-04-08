@@ -67,6 +67,16 @@
 body:has(.body-login){
     background-image: url('/assets/images/background.webp') !important;
     background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    
+    @media (max-width: $breakpoint-md) {
+        background-position: 70% center !important;
+    }
+    
+    @media (max-width: $breakpoint-sm) {
+        background-position: 80% center !important;
+    }
 }
 
 .body-login {

@@ -44,7 +44,7 @@ watchEffect(() => {
                         <div class="breadcrumbs-wrapper">
                             <!-- <Breadcrumbs /> -->
                         </div>
-                        <div class="info-location-wrapper" v-if="is('Asesor comercial')">
+                        <div class="supplier-info info-location-wrapper" v-if="is('Asesor comercial')">
                             <InfoLocation />
                         </div>
                     </div>

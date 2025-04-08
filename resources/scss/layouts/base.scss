@@ -18,7 +18,7 @@
     .content-wrapper {
         padding-left: 1.5rem !important;
         transition: all 0.3s ease !important;
-        width: 59.8vw !important;
+        width: 80% !important;
         
         &.full-width {
             width: 100% !important;
@@ -32,35 +32,52 @@
         margin-bottom: 1rem !important;
     }
 
+    .full-width{
+        .header-slot-wrapper{
+            width: 90% !important;
+        }
+    }
+
     .breadcrumbs-wrapper {
         flex: 1 1 80% !important;
     }
 
     .info-location-wrapper {
         width: 100% !important;
+        color: $textBlack !important;
         margin-top: 1rem !important;
         display: flex !important;
         justify-content: flex-end !important;
     }
 
     .header-slot-wrapper {
-        width: 54.5vw !important;
+        width: 92% !important;
         margin-top: 1rem !important;
     }
-    @media (min-width: $breakpoint-xl) {
+    @media (max-width: $breakpoint-xl) {
         .content-wrapper {
-            width: 80% !important;
+            width: 59.8vw !important;
         }
         .header-slot-wrapper {
-            width: 90%!important;
+            width: 52.5vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 82vw !important;
+            }
         }
     }
     @media (max-width: $breakpoint-lg) {
         .content-wrapper {
-            width: 70.5vw !important;
+            width: 69.5vw !important;
         }
         .header-slot-wrapper {
-            width: 63vw !important;
+            width: 61vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 83vw !important;
+            }
         }
     }
     @media (max-width: $breakpoint-md) {
@@ -86,6 +103,11 @@
         .header-slot-wrapper {
             width: 75.5vw !important;
         }
+        .full-width{
+            .header-slot-wrapper{
+                width: 79vw !important;
+            }
+        }
     }
 
     @media (max-width: $breakpoint-sm) {
@@ -95,6 +117,11 @@
 
         .header-slot-wrapper {
             width: 65.5vw !important;
+        }
+        .full-width{
+            .header-slot-wrapper{
+                width: 68vw !important;
+            }
         }
     }
 }
