@@ -69,7 +69,7 @@ const columnsTable = [
             </template>
             <div class="container">
                 <PrimaryButton :href="route('orders.create')" class="position-absolute" v-if="can('Crear Ordenes de Compra')">
-                    Nuevo registro
+                    Nueva orden
                 </PrimaryButton>
                 <Table 
                     :data="purchaseOrders" 

@@ -1,157 +1,139 @@
 .section-prais {
-    margin-top: 70px !important;
-    background-color: $backgroundContent !important;
-    min-height: 700px !important;
-    border-radius: 10px !important;
-    border: 1px solid $borderColor !important;
+  margin-top: 70px;
+  background-color: $backgroundContent;
+  min-height: 700px;
+  border-radius: 10px;
+  border: 1px solid $borderColor;
+  position: relative;
+  width: 100%;
+  padding: 0 10px;
 
+  .over-section {
+    width: 75%;
+    min-height: 140px;
+    background: $gradient;
+    position: absolute;
+    top: -4rem;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 1.2rem;
+    border: 1px solid $textBlack;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    z-index: 1;
+
+    * {
+      font-size: 28px;
+    }
+
+    .idSection {
+      position: absolute;
+      right: 1rem;
+    }
+
+    .subtitle {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 1rem;
+      font-size: 18px;
+    }
+
+    .subextra {
+      position: absolute;
+      right: 1rem;
+      bottom: 0.5rem;
+      font-size: 18px;
+    }
+  }
+
+  .section-content-prais {
+    width: 45vw;
+    margin: 7rem auto;
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    min-height: 600px;
+    
     .over-section {
-        width: 85% !important;
-        min-height: 120px !important;
-        background: $gradient !important;
-        top: -4rem !important;
-        left: 0 !important;
-        right: 0 !important;
-        border-radius: 1.2rem !important;
-        border: 1px solid $textBlack !important;
-
-        * {
-            font-size: 25px !important;
-        }
-
-        .idSection {
-            right: 0 !important;
-        }
-
-        .subtitle {
-            bottom: 0 !important;
-            font-size: 16px !important;
-        }
-
-        .subextra {
-            right: 0 !important;
-            bottom: 0 !important;
-            font-size: 16px !important;
-        }
+      width: 80%;
+      min-height: 120px;
     }
-
     .section-content-prais {
-        width: 85% !important;
-        margin-top: 90px !important;
+        width: 55vw;
+      }
+  }
+  
+  @media (max-width: $breakpoint-md) {
+    margin-top: 60px;
+    min-height: 500px;
+    
+    .over-section {
+      width: 90%;
+      min-height: 100px;
+      top: -3rem;
+      
+      * {
+        font-size: 22px;
+      }
+      
+      .subtitle,
+      .subextra {
+        font-size: 14px;
+      }
     }
     
-    @include respond-to('tablet') {
-        margin-top: 60px !important;
-        min-height: 600px !important;
-        
-        .over-section {
-            width: 90% !important;
-            min-height: 100px !important;
-            top: -3rem !important;
-            
-            * {
-                font-size: 22px !important;
-            }
-            
-            .subtitle, .subextra {
-                font-size: 14px !important;
-            }
-        }
-        
-        .section-content-prais {
-            width: 95% !important;
-            margin-top: 70px !important;
-        }
+    .section-content-prais {
+      width: 80vw;
     }
+  }
+  
+  @media (max-width: $breakpoint-sm) {
+    margin-top: 50px;
+    min-height: 400px;
     
-    @include respond-to('mobile') {
-        margin-top: 50px !important;
-        min-height: 500px !important;
-        
-        .over-section {
-            width: 95% !important;
-            min-height: 80px !important;
-            top: -2.5rem !important;
-            padding: 10px !important;
-            
-            * {
-                font-size: 18px !important;
-            }
-            
-            .idSection {
-                position: relative !important;
-                text-align: center !important;
-                margin-bottom: 5px !important;
-            }
-            
-            .subtitle, .subextra {
-                font-size: 12px !important;
-                position: relative !important;
-                text-align: center !important;
-            }
-        }
-        
-        .section-content-prais {
-            width: 95% !important;
-            margin-top: 50px !important;
-        }
+    .over-section {
+      width: 92%;
+      min-height: 80px;
+      top: -2.5rem;
+      flex-direction: column;
+      
+      * {
+        font-size: 18px;
+      }
+      
+      .subtitle,
+      .subextra {
+        font-size: 12px;
+      }
     }
+    .section-content-prais {
+      margin: 4rem auto;
+
+      .btn-prais {
+        position: relative !important;
+      }
+    }
+  }
 }
 
 .cardboxprais {
-    border-radius: 0.3rem !important;
-    box-shadow: 0px 2px 4px 0px $textBlack;
-    transition: all 0.5s ease;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    -ms-transition: all 0.5s ease;
+  border-radius: 0.3rem;
+  box-shadow: 0px 2px 4px 0px $textBlack;
+//   @include transition();
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 4px 8px 0px rgba($textBlack, 0.3);
+  }
 }
 
 .cardpurcheorder {
-    font-size: 12px !important;
-    
-    @include respond-to('mobile') {
-        font-size: 10px !important;
-    }
-}
-
-/* Estilos adicionales para diseño responsivo */
-@media (max-width: 768px) {
-    .over-section {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-    }
-    
-    .idSection, .subtitle, .subextra {
-        position: relative !important;
-        margin: 5px 0 !important;
-    }
-    
-    .idSection {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    
-    .subextra {
-        margin-left: 0 !important;
-        align-self: flex-start !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .section-prais {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
-    
-    .over-section {
-        width: 92% !important;
-        padding: 10px !important;
-    }
-    
-    .section-content-prais {
-        width: 95% !important;
-        padding: 10px !important;
-    }
+  font-size: 12px;
+  
+  @media (min-width: $breakpoint-sm) {
+    font-size: 14px;
+  }
 }

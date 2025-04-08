@@ -1,98 +1,94 @@
 .table-prais {
     table {
-        text-align: center !important;
+        text-align: center;
+        border-collapse: collapse;
+        width: 100%;
 
         tr {
-            border-color: $textBlack !important;
+            border-color: $textBlack;
         }
     }
 
     a {
-        color: $textBlack !important;
-        text-decoration: none !important;
+        color: $textBlack;
+        text-decoration: none;
     }
 
     .removeItem {
-        margin-top: 9px !important;
-        color: $textBlack !important;
-        cursor: pointer !important;
+        margin-top: 9px;
+        color: $textBlack;
+        cursor: pointer;
     }
 
     .remove-dispatch {
-        right: 3% !important;
-        top: 25% !important;
-        font-size: 20px !important;
+        right: 3%;
+        top: 25%;
+        font-size: 20px;
     }
 
     .addItem:hover {
-        background: $gradient !important;
+        background: $gradient;
     }
 
     .page-link {
-        color: $textBlack !important;
+        color: $textBlack;
     }
 
     .active {
         button {
-            color: $textBlack !important;
-            background: $gradient !important;
+            color: $textBlack;
+            background: $gradient;
         }
     }
 
     .dt-search {
         label {
-            display: none !important;
+            display: none;
         }
     }
 
     .row {
-        align-items: center !important;
+        align-items: center;
     }
 
-    .size-prais-2 {
-        th {
-            width: calc(100%/1.5) !important;
-        }
+    .size-prais-2 th {
+        width: calc(100%/1.5);
     }
 
-    .size-prais-3 {
-        th {
-            width: calc(100%/2.5) !important;
-        }
+    .size-prais-3 th {
+        width: calc(100%/2.5);
     }
 
-    .size-prais-4 {
-        th {
-            width: calc(100%/3.5) !important;
-        }
+    .size-prais-4 th {
+        width: calc(100%/3.5);
     }
 
-    .size-prais-5 {
-        th {
-            width: calc(100%/5) !important;
-        }
+    .size-prais-5 th {
+        width: calc(100%/5);
     }
 
-    .size-prais-6 {
-        th {
-            width: calc(100%/6) !important;
-        }
+    .size-prais-6 th {
+        width: calc(100%/6);
+    }
+
+    @media (max-width: $breakpoint-lg) {
+        font-size: 15px;
     }
     
-    @include respond-to('tablet') {
-        font-size: 14px !important;
+    @media (max-width: $breakpoint-md) {
+        font-size: 14px;
         
         .remove-dispatch {
-            font-size: 18px !important;
+            font-size: 18px;
         }
         
         .removeItem {
-            margin-top: 7px !important;
+            margin-top: 7px;
         }
     }
     
-    @include respond-to('mobile') {
-        font-size: 12px !important;
+    @media (max-width: $breakpoint-sm) {
+        font-size: 12px;
         
         table {
             display: block;
@@ -100,81 +96,130 @@
         }
         
         .remove-dispatch {
-            font-size: 16px !important;
+            font-size: 16px;
         }
         
         .removeItem {
-            margin-top: 5px !important;
+            margin-top: 5px;
         }
         
         .dt-search {
-            width: 100% !important;
-            margin-bottom: 10px !important;
+            width: 100%;
+            margin-bottom: 10px;
         }
         
         .row {
-            flex-direction: column !important;
+            flex-direction: column;
             
             > div {
-                width: 100% !important;
-                margin-bottom: 10px !important;
-                text-align: center !important;
+                width: 100%;
+                margin-bottom: 10px;
+                text-align: center;
             }
         }
     }
 }
 
 .addItem {
-    background: $buttonColor !important;
-    font-size: 20px !important;
-    color: $textBlack !important;
-    cursor: pointer !important;
-    width: 5% !important;
-    border-radius: 50% !important;
+    background: $buttonColor;
+    font-size: 20px;
+    color: $textBlack;
+    cursor: pointer;
+    width: 5%;
+    border-radius: 50%;
+    transition: background 0.3s ease;
     
-    @include respond-to('tablet') {
-        font-size: 18px !important;
-        width: 8% !important;
+    @media (max-width: $breakpoint-md) {
+        font-size: 18px;
+        width: 8%;
     }
     
-    @include respond-to('mobile') {
-        font-size: 16px !important;
-        width: 10% !important;
+    @media (max-width: $breakpoint-sm) {
+        font-size: 16px;
+        width: 10%;
     }
 }
 
-/* Estilos adicionales para tablas responsivas */
 .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     
-    @include respond-to('mobile') {
-        .dataTables_wrapper {
-            overflow-x: auto;
+    .dataTables_wrapper {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        
+        .dataTables_paginate {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            
+            .pagination {
+                margin: 0;
+            }
+        }
+        
+        .dataTables_filter {
+            width: 100%;
+            margin-bottom: 1rem;
+            
+            input {
+                width: 100%;
+                max-width: 300px;
+            }
         }
         
         table.dataTable {
-            font-size: 0.85rem;
+            font-size: 1rem;
+            
+            @media (max-width: $breakpoint-md) {
+                font-size: 0.85rem;
+            }
+            
+            @media (max-width: $breakpoint-sm) {
+                font-size: 0.75rem;
+            }
+            
+            thead th, tbody td {
+                padding: 0.75rem;
+                
+                @media (max-width: $breakpoint-md) {
+                    padding: 0.5rem;
+                }
+                
+                @media (max-width: $breakpoint-sm) {
+                    padding: 0.25rem;
+                }
+            }
+        }
+    }
+    
+    @media (max-width: $breakpoint-md) {
+        .dataTables_wrapper {
+            .dataTables_filter {
+                margin-bottom: 0.75rem;
+                
+                input {
+                    max-width: 250px;
+                }
+            }
         }
         
         .dataTables_paginate .page-link {
             padding: 0.25rem 0.5rem;
             font-size: 0.85rem;
         }
-        
-        .dataTables_filter {
-            width: 100%;
-            margin-bottom: 0.75rem;
-            text-align: left;
-        }
-        
-        .dataTables_filter input {
-            width: 100%;
-            max-width: 100%;
-        }
-        
-        table.dataTable {
-            font-size: 0.75rem;
+    }
+    
+    @media (max-width: $breakpoint-sm) {
+        .dataTables_wrapper {
+            .dataTables_filter {
+                text-align: left;
+                
+                input {
+                    max-width: 100%;
+                }
+            }
         }
     }
 }
