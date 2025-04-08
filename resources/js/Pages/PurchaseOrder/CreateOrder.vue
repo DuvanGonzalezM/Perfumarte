@@ -8,13 +8,12 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-
-
 const props = defineProps({
     suppliers: {
         type: Array,
     },
 });
+
 const form = useForm({
     supplier: props.suppliers[0].supplier_id,
     supplier_order: '',
@@ -27,15 +26,20 @@ const form = useForm({
         }
     ],
 });
-const products = ref(props.suppliers[0].products);
+
 const optionSuppliers = ref(props.suppliers.map((supplier) => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
-const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.reference, 'value': product.product_id }][0]));
+const optionProduts = ref(props.suppliers.find(supplier => supplier.supplier_id == form.supplier).products.map(product => [{ 'title': product.commercial_reference, 'value': product.product_id }][0]));
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
 const showModal = ref(false);
+const showConfirmModal = ref(false);
 
 const submit = () => {
     form.post(route('orders.store'));
-    showModal.value = false;
+    showConfirmModal.value = false;
+};
+
+const showConfirmation = () => {
+    showConfirmModal.value = true;
 };
 
 const selectedSupplier = () => {
@@ -96,7 +100,7 @@ const removeReference = (index) => {
                 <strong>Nueva orden de compra</strong>
             </template>
             <div class="container px-0">
-                <form @submit.prevent="submit" class="table-prais">
+                <form @submit.prevent="showConfirmation" class="table-prais">
                     <div class="row">
                         <div class="col-md-6" style="height: 40px;">
                             <SelectSearch v-model="form.supplier" :options="optionSuppliers"
@@ -156,29 +160,31 @@ const removeReference = (index) => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                            <PrimaryButton @click="showConfirmation" class="px-5" :class="form.processing ? 'disabled' : ''">
                                 Enviar
                             </PrimaryButton>
                         </div>
                     </div>
-                    <ModalPrais v-model="showModal" @close="showModal = false">
-                        <template #header>
-                            Nueva orden de compra
-                        </template>
-                        <template #body>
-                            ¿Seguro quiera registra esta nueva orden de compra?
-                        </template>
-                        <template #footer>
-                            <PrimaryButton @click="submit" class="px-5">
-                                Si
-                            </PrimaryButton>
-                            <PrimaryButton @click="showModal = false" class="px-5">
-                                No
-                            </PrimaryButton>
-                        </template>
-                    </ModalPrais>
                 </form>
             </div>
         </SectionCard>
     </BaseLayout>
+
+    <!-- Modal de Confirmación -->
+    <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
+        <template #header>
+            Confirmar creación
+        </template>
+        <template #body>
+            <div class="text-center">
+                <h4>¿Estás seguro de crear esta orden de compra?</h4>
+            </div>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="submit" class="px-5" :disabled="form.processing">
+                <span v-if="form.processing">Procesando...</span>
+                <span v-else>Confirmar</span>
+            </PrimaryButton>
+        </template>
+    </ModalPrais>
 </template>

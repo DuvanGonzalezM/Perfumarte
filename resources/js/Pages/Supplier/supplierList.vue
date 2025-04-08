@@ -45,18 +45,18 @@ const columnsTable = [
         data: "country",
         title: 'PAIS'
     },
-    {
-        data: "address",
-        title: 'DIRECCION'
-    },
-    {
-        data: "phone",
-        title: 'TELEFONO'
-    },
-    {
-        data: "email",
-        title: 'CORREO'
-    },
+    // {
+    //     data: "address",
+    //     title: 'DIRECCION'
+    // },
+    // {
+    //     data: "phone",
+    //     title: 'TELEFONO'
+    // },
+    // {
+    //     data: "email",
+    //     title: 'CORREO'
+    // },
     {
         data: 'name',
         title: 'EDITAR',
@@ -64,7 +64,7 @@ const columnsTable = [
     },
     {
         data: 'name',
-        title: 'DESACTIVAR',
+        title: 'ELIMINAR',
         render: '#rendertwo',
     },
 ];

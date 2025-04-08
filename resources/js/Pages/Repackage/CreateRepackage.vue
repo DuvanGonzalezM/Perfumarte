@@ -4,6 +4,7 @@ import TextInput from '@/Components/TextInput.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ModalPrais from '@/Components/ModalPrais.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -18,12 +19,28 @@ const form = useForm({
     quantity: '',
 });
 
-const optionProduts = ref(props.getProduct.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.product_id }][0]));
+const optionProduts = ref(
+    props.getProduct.map(inventory => ({
+        title: inventory.product.reference,
+        value: inventory.product_id,
+    }))
+);
 
+const showConfirmModal = ref(false);
+
+// Mostrar modal
+const showConfirmation = () => {
+    showConfirmModal.value = true;
+};
+
+// Enviar formulario
 const submit = () => {
-    form.post(route('store.repackage'));
-}
-
+    form.post(route('store.repackage'), {
+        onFinish: () => {
+            showConfirmModal.value = false;
+        }
+    });
+};
 </script>
 
 <template>
@@ -32,7 +49,6 @@ const submit = () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
             <h1>Nuevo reenvase</h1>
         </template>
 
@@ -41,9 +57,12 @@ const submit = () => {
                 <strong>Nuevo reenvase</strong>
             </template>
             <div class="container px-0">
-                <form @submit.prevent="submit" class="table-prais">
-                    <div class="row">
-                    </div>
+                <!-- Mostrar mensaje de error general (como "No hay suficiente stock") -->
+                <div v-if="form.errors.quantity" class="alert alert-danger text-center my-3">
+                    {{ form.errors.quantity }}
+                </div>
+
+                <form @submit.prevent="showConfirmation" class="table-prais">
                     <table class="table table-hover text-center dt-body-nowrap size-prais-2 align-middle">
                         <thead>
                             <tr>
@@ -55,18 +74,16 @@ const submit = () => {
                             <tr>
                                 <td>
                                     <SelectSearch v-model="form.reference" :options="optionProduts"
-                                    :messageError="Object.keys(form.errors).length ? form.errors.reference : null" />
+                                        :messageError="form.errors.reference" />
                                 </td>
                                 <td>
                                     <TextInput type="number" name="quantity[]" id="quantity[]" v-model="form.quantity"
-                                        :required="true"
-                                        :messageError="Object.keys(form.errors).length ? form.errors.quantity : null" />
+                                        :required="true" :messageError="form.errors.quantity" />
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <div class="row text-center justify-content-center my-5">
-                    </div>
+
                     <div class="row my-5">
                         <div class="col-6">
                             <PrimaryButton :href="route('repackage.list')" class="px-5">
@@ -74,7 +91,8 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                            <PrimaryButton @click="showConfirmation" class="px-5"
+                                :class="form.processing ? 'disabled' : ''">
                                 Registrar
                             </PrimaryButton>
                         </div>
@@ -82,5 +100,26 @@ const submit = () => {
                 </form>
             </div>
         </SectionCard>
+
+        <!-- Modal de Confirmación -->
+        <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
+            <template #header>
+                Confirmar reenvase
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <h4>¿Estás seguro de crear este reenvase?</h4>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="submit" class="px-5" :disabled="form.processing">
+                    <span v-if="form.processing">Procesando...</span>
+                    <span v-else>Confirmar</span>
+                </PrimaryButton>
+                <PrimaryButton @click="showConfirmModal = false" class="px-5">
+                    Cancelar
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
     </BaseLayout>
 </template>

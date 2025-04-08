@@ -4,66 +4,82 @@ import TextInput from '@/Components/TextInput.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ModalPrais from '@/Components/ModalPrais.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-
 
 const props = defineProps({
     inventories: {
         type: Array,
     },
+    errors: Object // Asegura recibir errores del backend
 });
 
 const form = useForm({
     references: [
         {
-            'reference': '',
-            'quantity': '',
+            reference: '',
+            quantity: '',
         }
     ],
 });
 
-const optionProduts = ref(props.inventories.map(inventory => [{ 'title': inventory.product.reference, 'value': inventory.inventory_id }][0]));
+// Opciones para el select
+const optionProduts = ref(
+    props.inventories.map(inventory => ({
+        title: inventory.product.commercial_reference,
+        value: inventory.inventory_id
+    }))
+);
+
 const showAddButtom = ref(form.references.length < optionProduts.value.length);
+const showConfirmModal = ref(false);
 
 const addRow = () => {
-    showAddButtom.value = form.references.length < (optionProduts.value.length - 1);
     if (form.references.length < optionProduts.value.length) {
-        form.references.push({
-            'reference': '',
-            'quantity': '',
-        });
+        form.references.push({ reference: '', quantity: '' });
+        showAddButtom.value = form.references.length < optionProduts.value.length;
     }
-}
+};
 
 const removeReference = (index) => {
     form.references.splice(index, 1);
     showAddButtom.value = form.references.length < optionProduts.value.length;
-}
-const submit = () => {
-    form.post(route('transformation.store'));
-}
+};
 
+const showConfirmation = () => {
+ 
+    showConfirmModal.value = true;
+};
+
+const submit = () => {
+    form.post(route('transformation.store'), {
+        onSuccess: () => {
+            showConfirmModal.value = false;
+        },
+        onError: () => {
+            showConfirmModal.value = false;
+        }
+    });
+};
 </script>
 
 <template>
+    <Head title="Nueva Transformación" />
 
-    <Head title="Nueva Transformacion" />
-
-    <BaseLayout :loading="form.processing ? true : false">
+    <BaseLayout :loading="form.processing">
         <template #header>
-            <!-- <Alert /> -->
-            <h1>Nueva Transformacion</h1>
+            <h1>Nueva Transformación</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Nueva Transformacion</strong>
+                <strong>Nueva Transformación</strong>
             </template>
+
             <div class="container px-0">
-                <form @submit.prevent="submit" class="table-prais">
-                    <div class="row">
-                    </div>
+
+                <form @submit.prevent="showConfirmation" class="table-prais">
                     <table class="table table-hover text-center dt-body-nowrap size-prais-2">
                         <thead>
                             <tr>
@@ -72,15 +88,14 @@ const submit = () => {
                             </tr>
                         </thead>
                         <tbody id="productsList">
-                            <tr v-for="(reference, index) in form.references">
+                            <tr v-for="(reference, index) in form.references" :key="index">
                                 <td>
-                                    <SelectSearch v-model="reference['reference']" :options="optionProduts"
-                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.reference'] : null" />
+                                    <SelectSearch v-model="reference.reference" :options="optionProduts"
+                                        :messageError="form.errors[`references.${index}.reference`] || null" />
                                 </td>
                                 <td>
-                                    <TextInput type="number" name="quantity[]" id="quantity[]"
-                                        v-model="reference['quantity']" :required="true"
-                                        :messageError="Object.keys(form.errors).length ? form.errors['references.' + index + '.quantity'] : null" />
+                                    <TextInput type="number" v-model="reference.quantity" :required="true"
+                                        :messageError="form.errors[`references.${index}.quantity`] || null" />
                                 </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
@@ -88,11 +103,13 @@ const submit = () => {
                             </tr>
                         </tbody>
                     </table>
+
                     <div class="row text-center justify-content-center my-5">
                         <div class="addItem" @click="addRow" v-if="showAddButtom">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                     </div>
+
                     <div class="row my-5">
                         <div class="col-6">
                             <PrimaryButton :href="route('transformationRequest.list')" class="px-5">
@@ -100,7 +117,8 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                            <PrimaryButton @click="showConfirmation" class="px-5"
+                                :class="{ disabled: form.processing }">
                                 Enviar
                             </PrimaryButton>
                         </div>
@@ -108,5 +126,23 @@ const submit = () => {
                 </form>
             </div>
         </SectionCard>
+
+        <!-- Modal de Confirmación -->
+        <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
+            <template #header>
+                Confirmar solicitud
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <h4>¿Estás seguro de registrar esta solicitud de transformación?</h4>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="submit" class="px-5" :disabled="form.processing">
+                    <span v-if="form.processing">Procesando...</span>
+                    <span v-else>Confirmar</span>
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
     </BaseLayout>
 </template>

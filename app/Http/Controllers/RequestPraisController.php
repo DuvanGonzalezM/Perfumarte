@@ -134,7 +134,7 @@ class RequestPraisController extends Controller
 
     public function createTransformation()
     {
-        $inventories = Inventory::with('product')->where('warehouse_id', '1')->get();
+        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', [16, 17])->get();
 
         return Inertia::render('RequestTransformation/CreateTransformation', [
             'inventories' => $inventories
@@ -145,15 +145,32 @@ class RequestPraisController extends Controller
     {
         $request->validate([
             'references.*.reference' => 'required',
-            'references.*.quantity' => 'required',
+            'references.*.quantity' => 'required|numeric|min:0',
         ]);
-
+        
+        $sourceWarehouse = 1;
+    
+        // Validar inventario de todos los productos antes de guardar
+        foreach ($request->references as $index => $reference) {
+            $inventory = Inventory::where('warehouse_id', $sourceWarehouse)
+                                ->where('product_id', $reference['reference'])
+                                ->first();
+                                
+    
+            if ($inventory->quantity < $reference['quantity']) {
+                return back()->withErrors([
+                    "references.$index.quantity" => "No hay suficiente stock en la bodega de origen. Disponible: " . $inventory->quantity
+                ])->withInput();
+            }
+        }
+    
+        // Crear solicitud y detalles si todas las validaciones pasan
         $transformationRequest = RequestPrais::create([
             'request_type' => '2',
             'user_id' => $request->user()->user_id,
             'status' => 'Pendiente'
         ]);
-
+    
         foreach ($request->references as $reference) {
             RequestDetail::create([
                 'request_id' => $transformationRequest->request_id,
@@ -161,8 +178,9 @@ class RequestPraisController extends Controller
                 'quantity' => $reference['quantity']
             ]);
         }
+    
         return redirect()->route('transformationRequest.list', [
-            'message' => '',
+            'message' => 'Solicitud de transformación registrada exitosamente.',
             'status' => 200
         ]);
     }
