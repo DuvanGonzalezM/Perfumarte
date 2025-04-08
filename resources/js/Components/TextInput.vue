@@ -48,6 +48,12 @@ function checkScreenSize() {
     isMobile.value = window.innerWidth < 576;
     isTablet.value = window.innerWidth >= 576 && window.innerWidth < 992;
 }
+
+const showPassword = ref(false);
+
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
 </script>
 
 <template>
@@ -65,7 +71,7 @@ function checkScreenSize() {
                 'input-field-mobile': isMobile,
                 'input-field-tablet': isTablet
             }"
-            :type="type"
+            :type="showPassword ? 'text' : type"
             @focus="hasFocus = true"
             @blur="hasFocus = false"
             v-model="model"
@@ -83,6 +89,13 @@ function checkScreenSize() {
                }">
             {{ labelValue }}
         </label>
+        <a type="button" v-if="type === 'password'" 
+            class="password-toggle" 
+            @click="togglePasswordVisibility"
+            tabindex="-1"
+        >
+            <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+        </a>
         <div class="mt-1" 
              v-if="messageError && !(hasFocus || model || focus)"
              :class="{

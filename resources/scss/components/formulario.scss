@@ -18,7 +18,7 @@
   
   .form-group {
     flex: 1;
-    min-width: 250px;
+    margin-bottom: 1rem;
     
     @media (max-width: $breakpoint-md) {
       width: 100%;
