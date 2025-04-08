@@ -25,6 +25,7 @@ class User extends Authenticatable
         'location_id',
         'enabled',
         'boss_user',
+        'zone_id',
     ];
 
     /**
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function location_user(): BelongsToMany
     {
         return $this->belongsToMany(Location::class,'location_user', 'user_id', 'location_id');
+    }
+
+    public function zone(): BelongsTo
+    {
+        return $this->belongsTo(Zone::class, 'zone_id');
     }
 }
