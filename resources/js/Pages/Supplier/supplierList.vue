@@ -31,6 +31,7 @@ const showModal = ref(false);
 const showConfirmUnableModal = ref(false);
 const supplierToDisableId = ref(null);
 const disableForm = useForm({});
+const confirmUpdate = ref(false);  
 
 const columnsTable = [
     {
@@ -45,18 +46,6 @@ const columnsTable = [
         data: "country",
         title: 'PAIS'
     },
-    // {
-    //     data: "address",
-    //     title: 'DIRECCION'
-    // },
-    // {
-    //     data: "phone",
-    //     title: 'TELEFONO'
-    // },
-    // {
-    //     data: "email",
-    //     title: 'CORREO'
-    // },
     {
         data: 'name',
         title: 'EDITAR',
@@ -81,8 +70,16 @@ const openModal = (rowData) => {
 }
 
 const submit = () => {
-    form.put(route('supplier.update', form.supplier_id));
-    showModal.value = false;
+    confirmUpdate.value = true;
+}
+
+const confirmUpdateAction = () => {
+    form.put(route('supplier.update', form.supplier_id), {
+        onFinish: () => {
+            confirmUpdate.value = false;
+            showModal.value = false;
+        }
+    });
 }
 
 const confirmUnable = (rowData) => {
@@ -94,7 +91,6 @@ const disableSupplier = () => {
     disableForm.put(route('supplier.disable', supplierToDisableId.value));
     showConfirmUnableModal.value = false;
     supplierToDisableId.value = null;
-
 };
 
 </script>
@@ -174,25 +170,39 @@ const disableSupplier = () => {
 
                 <ModalPrais v-model="showConfirmUnableModal" @close="showConfirmUnableModal = false">
                     <template #header>
-                        Confirmar Desactivación
+                        Confirmar Eliminación
                     </template>
                     <template #body>
                         <div class="text-center">
-                            <i class="fa-solid fa-triangle-exclamation text-warning fa-3x"></i>
-                            <h3 class="mt-3">¿Estás seguro de desactivar este proveedor?</h3>
+                            <h3 class="mt-3">¿Estás seguro de eliminar este proveedor?</h3>
                         </div>
                     </template>
                     <template #footer>
                         <PrimaryButton @click="disableSupplier()" class="px-5 btn-danger">
                             Confirmar
                         </PrimaryButton>
-                        <PrimaryButton @click="showConfirmUnableModal = false" class="px-5 btn-secondary">
-                            Cancelar
-                        </PrimaryButton>
                     </template>
                 </ModalPrais>
 
             </div>
         </SectionCard>
+
+        <ModalPrais v-model="confirmUpdate" @close="confirmUpdate = false">
+            <template #header>
+                Confirmar Actualización
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <h4>¿Estás seguro de actualizar este proveedor?</h4>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="confirmUpdateAction" class="px-5" :disabled="form.processing">
+                    <span v-if="form.processing">Procesando...</span>
+                    <span v-else>Confirmar</span>
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
+
     </BaseLayout>
 </template>

@@ -34,7 +34,6 @@ class ProductController extends Controller
 
     public function storeProduct(Request $request)
     {
-
         $request->validate([
             'reference' => 'required',
             'measurement_unit' => 'required',
