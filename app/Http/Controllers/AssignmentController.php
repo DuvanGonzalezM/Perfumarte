@@ -125,11 +125,11 @@ class AssignmentController extends Controller
             $location->users_location()->detach($userAssigned['user_id']);
         }
         
-        User::findOrFail($request['caja1']['user_id'])->update(['enabled' => 1]);
+        User::findOrFail($request['caja1']['user_id'])->update(['enabled' => 1, 'location_id' => $request['location_id']]);
         $location->users_location()->attach($request['caja1']['user_id']);
 
         if ($request['caja2']['user_id'] !== '' && $request['caja2']['user_id'] !== null) {
-            User::findOrFail($request['caja2']['user_id'])->update(['enabled' => 1]);
+            User::findOrFail($request['caja2']['user_id'])->update(['enabled' => 1, 'location_id' => $request['location_id']]);
             $location->users_location()->attach($request['caja2']['user_id']);
         }
 
@@ -139,7 +139,7 @@ class AssignmentController extends Controller
             }
         }
 
-        return redirect()->route('list.location')->with('success', 'Despacho creado exitosamente.');
+        return redirect()->route('list.location')->with('success', 'Asignación exitosa.');
     }
 
 }

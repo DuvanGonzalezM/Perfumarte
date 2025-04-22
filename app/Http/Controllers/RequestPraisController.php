@@ -15,7 +15,7 @@ class RequestPraisController extends Controller
     public function getAllRequest()
     {
         $user = Auth::user();
-        $locationId = $user->location_user[0]->location_id;
+        $locationId = $user->location_user->first()?->location_id;
         $suppliesRequest = RequestPrais::with(
             [
                 'user.location_user' => function ($query) use ($locationId) {

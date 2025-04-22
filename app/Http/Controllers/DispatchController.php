@@ -102,33 +102,17 @@ public function editDispatch($id)
             $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
                                     ->where('warehouse_id', 2)
                                     ->first();
-    
+
             if (!$inventoryOrigin) {
                 return redirect()->back()->withErrors(['error' => 'Inventario no encontrado en bodega principal']);
             }
-    
+
             if ($inventoryOrigin->quantity < $detail->dispatched_quantity) {
                 return redirect()->back()->withErrors(['error' => 'Cantidad insuficiente en bodega principal']);
             }
-    
+
             $inventoryOrigin->quantity -= $detail->dispatched_quantity;
             $inventoryOrigin->save();
-    
-            $productId = $inventoryOrigin->product_id;
-            $inventoryDestination = Inventory::where('warehouse_id', $detail->warehouse_id)
-                                        ->where('product_id', $productId)
-                                        ->first();
-    
-            if ($inventoryDestination) {
-                $inventoryDestination->quantity += $detail->dispatched_quantity;
-                $inventoryDestination->save();
-            } else {
-                Inventory::create([
-                    'warehouse_id' => $detail->warehouse_id,
-                    'product_id' => $productId,
-                    'quantity' => $detail->dispatched_quantity,
-                ]);
-            }
         }
         
         $dispatch->status = 'En ruta';

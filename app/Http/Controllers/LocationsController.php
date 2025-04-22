@@ -38,11 +38,16 @@ class LocationsController extends Controller
             'cash_base' => 'required',
         ]);
 
-        Location::create([
+        $location = Location::create([
             'name' => $request->name,
             'address' => $request->address,
             'zone_id' => $request->zone_id,
             'cash_base' => $request->cash_base
+        ]);
+
+        $warehouse = Warehouse::create([
+            'location_id' => $location->location_id,
+            'name' => $request->name
         ]);
         
         return redirect()->route('locations.list');
