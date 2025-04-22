@@ -38,6 +38,7 @@ class UserController extends Controller
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
             'location_id' => (int) $request->location_id,
+            'default_password' => true,
             'zone_id' => (int) $request->zone_id,
         ]);
 
@@ -53,18 +54,15 @@ class UserController extends Controller
         $request->validate([
             'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
             'name' => 'required|string|max:255',
-            'boss_user' => 'required|integer',
-            'enabled' => 'required|boolean',
-
         ]);
 
         $user = User::findOrFail($user_id);
         $user->update([
             'username' => (string) $request->username,
             'name' => (string) $request->name,
-            'boss_user' => (int) $request->boss_user,
-            'enabled' => (bool) $request->enabled,
-            'zone_id' => (int) $request->zone_id,
+            'boss_user' => (int) $request->boss_user ?? null,
+            'enabled' => (bool) $request->enabled ?? false,
+            'zone_id' => (int) $request->zone_id ?? null,
         ]);
 
         return redirect()->route('users.list');
@@ -104,8 +102,8 @@ class UserController extends Controller
             'roles' => 'required',
                 'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
                 'name' => 'required|string|max:255',
-                'boss_user' => 'required|integer',
-                'enabled' => 'required|boolean',
+                // 'boss_user' => 'required|integer',
+                // 'enabled' => 'required|boolean',
     
             ]);
     
@@ -113,9 +111,9 @@ class UserController extends Controller
         $user->update([
             'username' => (string) $request->username,
             'name' => (string) $request->name,
-            'boss_user' => (int) $request->boss_user,
-            'enabled' => (bool) $request->enabled,
-            'zone_id' => (int) $request->zone_id,
+            'boss_user' => (int) $request->boss_user ?? null,
+            'enabled' => (bool) $request->enabled ?? false,
+            'zone_id' => (int) $request->zone_id ?? null,
         ]);
         $user->syncRoles($request->roles);
         $user->syncPermissions($request->permissions);

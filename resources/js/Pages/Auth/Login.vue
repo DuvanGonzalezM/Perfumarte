@@ -45,7 +45,8 @@ const recaptcha = async () => {
                     required
                 />
             </div>
-
+            {{ console.log(form.errors.username, errors)
+             }}
             <div class="form-group">
                 <div class="input-wrapper">
                     <TextInput

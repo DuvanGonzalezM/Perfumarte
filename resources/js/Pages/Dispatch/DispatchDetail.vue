@@ -6,6 +6,9 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import moment from 'moment';
 import { useForm } from '@inertiajs/vue3';
+import ModalPrais from '@/Components/ModalPrais.vue';
+import { ref } from 'vue';
+
 
 
 
@@ -27,7 +30,8 @@ const groupedDispatches = computed(() => {
     });
     return dispatches;
 });
-
+const showModalSuccess = ref(false);
+const showModalError = ref(false);
 const form = useForm({
     dispatch_id: props.dispatch.dispatch_id,
     status: props.dispatch.status,
@@ -36,8 +40,15 @@ console.log(props.dispatch.status);
 const approved = () => {
     form.put(route('dispatch.approved', props.dispatch.dispatch_id), {
         status: 'En ruta',
+        onSuccess() {
+            showModalSuccess.value = true;
+        },
+        onError() {
+            showModalError.value = true;
+        }
     });
 };
+
 
 </script>
 
@@ -104,4 +115,20 @@ const approved = () => {
             </div>
         </SectionCard>
     </BaseLayout>
+    <ModalPrais v-model="showModalSuccess" @close="showModalSuccess = false">
+        <template #header>
+            Despacho Aprobado
+        </template>
+        <template #body>
+            El despacho ha sido aprobado correctamente.
+        </template>
+    </ModalPrais>
+    <ModalPrais v-model="showModalError" @close="showModalError = false">
+        <template #header>
+            Error al aprobar el despacho
+        </template>
+        <template #body>
+            Ha ocurrido un error al aprobar el despacho. Por favor verifique cantidades y existencias e intente nuevamente.
+        </template>
+    </ModalPrais>
 </template>

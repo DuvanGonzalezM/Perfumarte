@@ -32,42 +32,50 @@ class SupplyReceptionController extends Controller
             'products.*.observation' => 'nullable|string',
             'products.*.quantity' => 'required|numeric|min:0'
         ]);
-        // DB::transaction(function () use ($dispatch, $validated, $request) {
-            // Actualizar estado del despacho
+
         if(count($request['products']) > 0){
             $dispatch = Dispatch::findOrFail($request['products'][0]['dispatch_id']);
-            $dispatch->update(['status' => 'Recibido']);
+            
+            DB::transaction(function () use ($dispatch, $validated, $request) {
+                // Actualizar estado del despacho
+                $dispatch->update(['status' => 'Recibido']);
 
-            // Actualizar cada detalle del despacho
+                // Actualizar cada detalle del despacho
+                foreach ($request['products'] as $product) {
+                    $dispatchDetail = DispatchDetail::where('dispatchs_detail_id', $product['dispatchs_detail_id'])
+                        ->first();
 
-            foreach ($request['products'] as $product) {
-                $dispatchDetail = DispatchDetail::where('dispatchs_detail_id', $product['dispatchs_detail_id'])
-                    ->first();
+                    if ($dispatchDetail) {
+                        $dispatchDetail->update([
+                            'received' => $product['received'],
+                            'observations' => $product['observation']
+                        ]);
 
-                if ($dispatchDetail) {
-                    $dispatchDetail->update([
-                        'received' => $product['received'],
-                        'observations' => $product['observation']
-                    ]);
+                        // Solo actualizar el inventario si el producto fue recibido
+                        if ($product['received']) {
+                            // Buscar si ya existe el producto en este almacén
+                            $inventory = Inventory::where('product_id', $dispatchDetail->inventory->product_id)
+                                ->where('warehouse_id', $dispatchDetail->warehouse_id)
+                                ->first();
 
-                    // Actualizar inventario del punto de venta si fue recibido
-                    // if ($product['received']) {
-                    //     $inventory = Inventory::where('inventory_id', $dispatchDetail->inventory_id)->first();
-                    //     $inventory->update([
-                    //         'quantity' => ($inventory->quantity + $product['quantity'])
-                    //     ]);
-
-                    //     $pointOfSaleWarehouse = auth()->user()->location->warehouse;
-
-                    //     $pointOfSaleWarehouse->inventory()->updateOrCreate(
-                    //         ['product_id' => $product['product_id']],
-                    //         ['quantity' => DB::raw('quantity + ' . $product['quantity'])]
-                    //     );
-                    // }
+                            if($inventory){
+                                $inventory->update([
+                                    'quantity' => ($inventory->quantity + $product['quantity'])
+                                ]);
+                            }else{
+                                // Crear nuevo registro de inventario
+                                $inventory = Inventory::create([
+                                    'product_id' => $dispatchDetail->inventory->product_id,
+                                    'warehouse_id' => $dispatchDetail->warehouse_id,
+                                    'quantity' => $product['quantity']
+                                ]);
+                            }
+                        }
+                    }
                 }
-            }
+            });
         }
-        // });
+
         return redirect()->route('dispatch.show', ['message' => '', 'status' => 200]);
     }
 }
