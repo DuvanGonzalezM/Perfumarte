@@ -14,7 +14,6 @@ const props = defineProps({
     getProducts: {
         type: Array,
     },
-
     supplierProduct: {
         type: Array,
     }
@@ -31,6 +30,7 @@ const form = useForm({
 
 const showModal = ref(false);
 const showConfirmUnableModal = ref(false);
+const confirmUpdate = ref(false);
 const productToDisableId = ref(null); 
 const disableForm = useForm({}); 
 
@@ -67,6 +67,21 @@ const columnsTable = [
     },
 ];
 
+const listCategory = ref([
+    { name: 'Hombre' },
+    { name: 'Dama' },
+    { name: 'Niño' },
+    { name: 'Unisex' },
+    { name: 'N/A' },
+]);
+
+const listMeasurement = ref([
+    { name: 'KG' },
+    { name: 'UNIDAD' },
+]);
+
+const optionCategory = ref(props.listCategory.map(category => ({ 'title': category.name, 'value': category.name })));
+const optionMeasurement = ref(props.listMeasurement.map(measurement => ({ 'title': measurement.name, 'value': measurement.name }))); 
 const optionSupplier = ref(props.supplierProduct.map(supplier => ({ 'title': supplier.name, 'value': supplier.supplier_id })));
 
 const openModal = (rowData) => {
@@ -80,8 +95,19 @@ const openModal = (rowData) => {
 }
 
 const submit = () => {
-    form.put(route('products.update', form.product_id));
-    showModal.value = false;
+    confirmUpdate.value = true;
+}
+
+const confirmUpdateAction = () => {
+    form.put(route('products.update', form.product_id), {
+        onSuccess: () => {
+            confirmUpdate.value = false;
+            showModal.value = false;
+        },
+        onError: () => {
+            confirmUpdate.value = false;
+        }
+    });
 }
 
 const confirmUnable = (rowData) => {
@@ -91,18 +117,15 @@ const confirmUnable = (rowData) => {
 
 const disableProduct = () => {
     disableForm.put(route('products.disable', productToDisableId.value)); 
-            showConfirmUnableModal.value = false;
-            productToDisableId.value = null;
-        
+    showConfirmUnableModal.value = false;
+    productToDisableId.value = null;
 };
-
 </script>
 
 <template>
-
     <Head title="Productos" />
 
-    <BaseLayout :loading="disableForm.processing || form.processing ? true : false" >
+    <BaseLayout :loading="disableForm.processing || form.processing ? true : false">
         <template #header>
             <h1>Productos</h1>
         </template>
@@ -117,15 +140,19 @@ const disableProduct = () => {
                 </PrimaryButton>
                 <Table :data="getProducts" :columns="columnsTable">
                     <template #templateRender="items">
-                        <a href="#" @click="openModal(items.item.rowData)"> <i class="fa-solid fa-pen-to-square"></i>
+                        <a href="#" @click="openModal(items.item.rowData)"> 
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                     </template>
 
                     <template #templateRendertwo="items">
-                        <a href="#" @click="confirmUnable(items.item.rowData)"> <i class="fa-solid fa-trash"></i>
+                        <a href="#" @click="confirmUnable(items.item.rowData)"> 
+                            <i class="fa-solid fa-trash"></i>
                         </a>
                     </template>
                 </Table>
+                
+              
                 <ModalPrais v-model="showModal" @close="showModal = false">
                     <template #header>
                         <h3>Editar Producto</h3>
@@ -135,31 +162,26 @@ const disableProduct = () => {
                             <div class="col-md-12 my-3">
                                 <TextInput type="string" name="reference" id="reference" v-model="form.reference"
                                     :focus="form.reference != null ? true : false" labelValue="Referencia"
-                                    :required="true" />
+                                    :required="true" :error="form.errors.reference"/>
                             </div>
                             <div class="col-md-12 my-3">
-                                <TextInput type="string" name="measurement_unit" id="measurement_unit"
-                                    v-model="form.measurement_unit"
-                                    :focus="form.measurement_unit != null ? true : false" labelValue="Unidad de medida"
-                                    :required="true" />
+                                <SelectSearch v-model="form.measurement_unit" :options="optionMeasurement" :error="form.errors.measurement_unit" />
                             </div>
                             <div class="col-md-12 my-3">
                                 <TextInput type="string" name="commercial_reference" id="commercial_reference"
                                     v-model="form.commercial_reference"
                                     :focus="form.commercial_reference != null ? true : false"
-                                    labelValue="Referencia comercial" :required="true" />
+                                    labelValue="Referencia comercial" :required="true" :error="form.errors.commercial_reference" />
                             </div>
                             <div class="col-md-12 my-3">
-                                <TextInput type="string" name="category" id="category" v-model="form.category"
-                                    :focus="form.category != null ? true : false" labelValue="Categoria"
-                                    :required="true" />
+                                <SelectSearch v-model="form.category" :options="optionCategory" :error="form.errors.category" />
                             </div>
                             <div class="col-md-12 my-3">
                                 <SelectSearch v-model="form.supplier_id" :options="optionSupplier"
-                                    :messageError="Object.keys(form.errors).length ? form.errors.supplier_id : null" />
+                                    :messageError="Object.keys(form.errors).length ? form.errors.supplier_id : null" :error="form.errors.supplier_id" />
                             </div>
                         </div>
-                        <div class="col-md-12 my-4 d-flex justify-content-center ">
+                        <div class="col-md-12 my-4 d-flex justify-content-center">
                             <PrimaryButton @click="submit" class="px-5">
                                 Guardar
                             </PrimaryButton>
@@ -171,25 +193,38 @@ const disableProduct = () => {
                 </ModalPrais>
 
                 <ModalPrais v-model="showConfirmUnableModal" @close="showConfirmUnableModal = false">
-        <template #header>
-            Confirmar Desactivación
-        </template>
-        <template #body>
-            <div class="text-center">
-                <i class="fa-solid fa-triangle-exclamation text-warning fa-3x"></i>
-                <h3 class="mt-3">¿Estás seguro de desactivar este producto?</h3>
-            </div>
-        </template>
-        <template #footer>
-            <PrimaryButton @click="disableProduct()" class="px-5 btn-danger">
-                Confirmar
-            </PrimaryButton>
-            <PrimaryButton @click="showConfirmUnableModal = false" class="px-5 btn-secondary">
-                Cancelar
-            </PrimaryButton>
-        </template>
-    </ModalPrais>
+                    <template #header>
+                        Confirmar Eliminación
+                    </template>
+                    <template #body>
+                        <div class="text-center">
+                            <h3 class="mt-3">¿Estás seguro de eliminar este producto?</h3>
+                        </div>
+                    </template>
+                    <template #footer>
+                        <PrimaryButton @click="disableProduct()" class="px-5 btn-danger">
+                            Confirmar
+                        </PrimaryButton>
+                    </template>
+                </ModalPrais>
 
+                <!-- Modal de Confirmación de Actualización -->
+                <ModalPrais v-model="confirmUpdate" @close="confirmUpdate = false">
+                    <template #header>
+                        Confirmar Edicion
+                    </template>
+                    <template #body>
+                        <div class="text-center">
+                            <h4>¿Estás seguro de editar este producto?</h4>
+                        </div>
+                    </template>
+                    <template #footer>
+                        <PrimaryButton @click="confirmUpdateAction" class="px-5" :disabled="form.processing">
+                            <span v-if="form.processing">Procesando...</span>
+                            <span v-else>Confirmar</span>
+                        </PrimaryButton>
+                    </template>
+                </ModalPrais>
             </div>
         </SectionCard>
     </BaseLayout>
