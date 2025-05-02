@@ -22,7 +22,7 @@ class LabTransformationController extends Controller
 
     public function createLabTransformation()
     {
-        $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id', ['16', '17'])->get();
+        $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id', ['1', '2'])->get();
         $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 2)->whereIn('status', ['Pendiente', 'En proceso'])->get();
         return Inertia::render('LabTransformations/CreateLabTransformation', ['newProduct' => $newProduct, 'requests' => $requests]);
     }
@@ -46,9 +46,9 @@ class LabTransformationController extends Controller
 
         $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
 
-        $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '16')->first();
+        $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->first();
 
-        $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '17')->first();
+        $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->first();
 
 
         if ($escencia && $escencia->quantity >= $request['escencia']) {
@@ -149,14 +149,14 @@ class LabTransformationController extends Controller
     $escenciaInventory->save();
 
     $dipropilenoInventory = Inventory::firstOrCreate(
-        ['warehouse_id' => 1, 'product_id' => 16],
+        ['warehouse_id' => 1, 'product_id' => 1],
         
     );
     $dipropilenoInventory->quantity -= ($request['dipropylene'] - $initialValues['dipropylene']);
     $dipropilenoInventory->save();
 
     $disolventeInventory = Inventory::firstOrCreate(
-        ['warehouse_id' => 1, 'product_id' => 17],
+        ['warehouse_id' => 1, 'product_id' => 2],
         
     );
     $disolventeInventory->quantity -= ($request['solvent'] - $initialValues['solvent']);

@@ -182,8 +182,9 @@ const buttons = [
          }">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <img src="\assets\images\Logo_1.avif" alt="Logo" />
-            <h5 class="mx-2">{{ $page.props.auth.user.name }}</h5>
+            <h5 class="mx-2">{{ $page.props.auth.user.roles[0]?.name }}</h5>
         </a>
+       
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li v-for="button in buttons" :key="button.name" class="nav-item">

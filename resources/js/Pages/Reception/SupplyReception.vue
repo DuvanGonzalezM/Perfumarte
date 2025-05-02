@@ -7,19 +7,25 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import moment from 'moment';
 import ModalPrais from '@/Components/ModalPrais.vue';
+import SelectSearch from '@/Components/SelectSearch.vue';
 
 const props = defineProps({
     dispatchDetails: {
         type: Array,
         required: true,
+    },
+    showProduct: {
+        type: Array,
+        required: true,
     }
 });
+
 
 const form = useForm({
     products: props.dispatchDetails.map(detail => ({
         dispatchs_detail_id: detail.dispatchs_detail_id || '',
         dispatch_id: detail.dispatch_id || '',
-        name: detail.inventory?.product?.reference || '',
+        name: detail.inventory?.product?.commercial_reference || '',
         quantity: detail.dispatched_quantity || 0,
         received: detail.received || false,
         observation: detail.observations || ''
@@ -33,7 +39,6 @@ const allProductsReceived = computed(() => {
 const submit = () => {
     form.post(route('dispatch.receive'), {
         onSuccess: () => {
-            // Manejar éxito
         },
     });
 };
@@ -78,7 +83,7 @@ const submit = () => {
                                                 </td>
                                             </template>
                                             <template v-else>
-                                                <td>{{ product.name }}</td>
+                                                <td>{{ product.commercial_reference }}</td>
                                                 <td>{{ product.quantity }}</td>
                                                 <td>
                                                     <input type="checkbox" v-model="form.products[index].received"
@@ -91,6 +96,45 @@ const submit = () => {
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <!-- Tabla de devoluciones -->
+                                <!-- <table class="table">
+                                    <thead>
+                                        <tr><strong>Devoluciones</strong></tr>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(product, index) in form.products" :key="index">
+                                            <template v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
+                                                <td>
+                                                    <SelectSearch v-model="form.products[index].product_id"
+                                                        :options="optionProducts" placeholder="Selecciona un producto" />
+                                                </td>
+                                                <td>
+                                                    <TextInput v-model="form.products[index].quantity"
+                                                        placeholder="Agregar cantidad" />
+                                                </td>
+                                            </template>
+                                            <template v-else>
+                                                <td>{{ product.name }}</td>
+                                                <td>{{ product.quantity }}</td>
+                                                <td>
+                                                    <input type="checkbox" v-model="form.products[index].received"
+                                                        disabled>
+                                                </td>
+                                                <td>
+                                                    {{ form.products[index].observation }}
+                                                </td>
+                                            </template>
+                                        </tr>
+                                    </tbody>
+                                </table> -->
+
+
+
                             </div>
                         </div>
                     </div>
@@ -111,8 +155,8 @@ const submit = () => {
                             </ModalPrais>
                         </div>
                     </div>
-                    <div class="row my-5">
-                        <div class="col-12 d-flex justify-content-between">
+                    <div class="row my-5 text-center">
+                        <div class="col-12">
                             <PrimaryButton v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
                                 @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
                                 type="submit" :disabled="!allProductsReceived">
