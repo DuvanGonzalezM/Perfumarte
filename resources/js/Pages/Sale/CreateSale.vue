@@ -165,7 +165,7 @@ const removeReference = (index) => {
         </template>
 
         <SectionCard :subextra="'Valor total: $' + form.total">
-            <template #headerSection>
+            <template #headerSection>   
                 <strong>Nueva Venta</strong>
             </template>
             <div class="container">

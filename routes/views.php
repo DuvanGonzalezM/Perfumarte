@@ -22,6 +22,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\CashRegisterController;
 
 Route::middleware('auth')->group(function () {
     Route::get('change-password', [PasswordController::class, 'show'])->name('change-password');
@@ -243,5 +244,9 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(NotificationController::class)->group(function () {
         Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
+    });
+    Route::controller(CashRegisterController::class)->group(function () {
+        Route::get('Ver caja', 'closeCashRegister')->name('cash_register.close');
+        Route::post('Cerrar caja', 'store')->name('cash.close');
     });
 });
