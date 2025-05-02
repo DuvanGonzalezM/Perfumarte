@@ -1,4 +1,4 @@
-<script setup>
+    <script setup>
 import InputError from '@/Components/InputError.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -18,6 +18,10 @@ const props = defineProps({
     zones: {
         type: Array,
         required: true
+    },
+    warehouses: {
+        type: Array,
+        required: true
     }
 });
 
@@ -26,6 +30,9 @@ const form = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price30: null,
+    price50: null,
+    price100: null,
 });
 
 const formEdit = useForm({
@@ -34,7 +41,11 @@ const formEdit = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price30: '',
+    price50: '',
+    price100: '',
 });
+console.log(formEdit);
 
 const openModal = () => {
     form.reset();
@@ -73,11 +84,18 @@ const showModal = ref(false);
 
 const openEditModal = (location) => {
     locationToEdit.value = location;
+
+    const warehouse = location.warehouses?.[0]; 
+
     formEdit.id = location.location_id;
     formEdit.name = location.name;
     formEdit.address = location.address;
     formEdit.zone_id = location.zone_id;
     formEdit.cash_base = location.cash_base;
+    formEdit.price30 = warehouse?.price30 ?? null;
+    formEdit.price50 = warehouse?.price50 ?? null;
+    formEdit.price100 = warehouse?.price100 ?? null;
+
     showEditModal.value = true;
 };
 
@@ -222,6 +240,18 @@ const columnsTable = [
                         v-model="form.cash_base" required autocomplete="cash_base" />
                 </div>
                 <div class="mt-4">
+                    <TextInput labelValue="Precio 30 ml" id="price30" name="price30" type="number"
+                        v-model="form.price30" required autocomplete="price30" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 50 ml" id="price50" name="price50" type="number"
+                        v-model="form.price50" required autocomplete="price50" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 100 ml" id="price100" name="price100" type="number"
+                        v-model="form.price100" required autocomplete="price100" />
+                </div>
+                <div class="mt-4">
                     <SelectSearch v-model="form.zone_id" :options="optionsZones" labelValue="Zona" required />
                     <InputError class="mt-2" :message="form.errors.zone_id" />
                 </div>
@@ -239,7 +269,7 @@ const columnsTable = [
 
     <ModalPrais v-model="showEditModal" @close="showEditModal = false">
         <template #header>
-            Editar Sede
+            Editar Sede 
         </template>
         <template #body>
             <form @submit.prevent="submitEdit">
@@ -258,6 +288,21 @@ const columnsTable = [
                     <TextInput labelValue="Base de Caja" id="edit-cash_base" type="number"
                         v-model="formEdit.cash_base" required autocomplete="cash_base" />
                     <InputError class="mt-2" :message="formEdit.errors.cash_base" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 30 ml" id="edit-price30" type="number"
+                        v-model="formEdit.price30" required autocomplete="price30" />
+                    <InputError class="mt-2" :message="formEdit.errors.price30" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 50 ml" id="edit-price50" type="number"
+                        v-model="formEdit.price50" required autocomplete="price50" />
+                    <InputError class="mt-2" :message="formEdit.errors.price50" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 100 ml" id="edit-price100" type="number"
+                        v-model="formEdit.price100" required autocomplete="price100" />
+                    <InputError class="mt-2" :message="formEdit.errors.price100" />
                 </div>
 
                 <div class="mt-4">

@@ -45,6 +45,7 @@ const form = useForm({
     advisorList: props.getSede.users_location.filter((user) => !usersEnabled.find((u) => u.user_id === user.user_id)),
 });
 
+
 const addAdvisor = () => {
     form.advisorList.push({
         user_id: '',
@@ -90,11 +91,6 @@ const resetForm = () => {
                             <!-- <div class="row cardboxprais cardpurcheorder"> -->
                             <thead>
                                 <tr>
-                                    <!-- <th>
-                                        <form @submit.prevent="submit">
-                                            <SelectSearch class="mt-5" :options="optionSedes"  labelValue="Sede" />
-                                        </form>
-                                    </th> -->
                                     <th>
                                         <form @submit.prevent="submit">
                                             <SelectSearch class="mt-5" :options="optionAdvisors" v-model="form.caja1.user_id"

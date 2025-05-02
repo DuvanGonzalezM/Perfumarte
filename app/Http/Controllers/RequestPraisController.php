@@ -37,10 +37,11 @@ class RequestPraisController extends Controller
             'suppliesRequest' => $suppliesRequest
         ]);
     }
-
     public function createRequst()
     {
-        $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
+        $inventory = Inventory::with('product')
+            ->whereIn('warehouse_id', [2, 3])
+            ->get();
         return Inertia::render('Requests/NewSuppliesRequest', [
             'inventory' => $inventory,
         ]);
@@ -83,7 +84,9 @@ class RequestPraisController extends Controller
             'detailRequest.inventory.product',
             'user.location_user'
         ])->findOrFail($requestId);
-        $inventory = Inventory::with('product')->where('warehouse_id', '2')->get();
+        $inventory = Inventory::with('product')
+            ->whereIn('warehouse_id', [2, 3])
+            ->get();
         return Inertia::render('Requests/EditSuppliesRequest', [
             'requestPrais' => $requestPrais,
             'inventory' => $inventory,
@@ -137,7 +140,7 @@ class RequestPraisController extends Controller
 
     public function createTransformation()
     {
-        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', [16, 17])->get();
+        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', [1, 2])->get();
 
         return Inertia::render('RequestTransformation/CreateTransformation', [
             'inventories' => $inventories
