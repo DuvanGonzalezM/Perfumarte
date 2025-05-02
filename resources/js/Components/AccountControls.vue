@@ -55,12 +55,12 @@ const readNotification = async (notification, redirect) => {
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.name }}</strong>
                 <li class="my-2">
-                    <a :href="route('users.list')" v-if="is('Administrador')">
+                    <a :href="route('users.list')" v-if="is('Administrador | Gerencia')">
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios
                     </a>
                     <hr>
-                    <a :href="route('locations.list')" v-if="is('Administrador')">
+                    <a :href="route('locations.list')" v-if="is('Administrador | Gerencia')">
                         <i class="fa-solid fa-warehouse me-2"></i>
                         Sedes
                     </a>
