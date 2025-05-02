@@ -12,16 +12,28 @@ class AssignmentController extends Controller
 {
     public function getAllSupervisor()
     {
-        $locations = Location::whereNotIn('locations.location_id', ['1'])
-            ->with([
-                'users_location' => function ($query) {
-                    $query->whereHas('roles', function ($q) {
-                        $q->where('name', 'Supervisor');
-                    });
-                }
-            ])->get();
+        $user = Auth::user();
+        if ($user->hasRole('Subdirector')) {
+            $locations = Location::where('locations.zone_id', '=', $user->zone_id)
+                ->with([
+                    'users_location' => function ($query) {
+                        $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'Supervisor');
+                        });
+                    }
+                ])->get();
+        } else {
+            $locations = Location::whereNotIn('locations.location_id', ['1'])
+                ->with([
+                    'users_location' => function ($query) {
+                        $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'Supervisor');
+                        });
+                    }
+                ])->get();
+        }
 
-        $supervisors = User::select('user_id', 'name')->whereHas('roles', function ($query) {
+        $supervisors = User::select('user_id', 'name')->where('boss_user', '=', $user->user_id)->whereHas('roles', function ($query) {
             $query->where('name', 'Supervisor');
         })->get();
 
@@ -44,14 +56,14 @@ class AssignmentController extends Controller
                 }
             ])
             ->first();
-            
-        if($location->users_location->count() > 0){
+
+        if ($location->users_location->count() > 0) {
             foreach ($location->users_location as $user) {
                 $location->users_location()->detach($user->user_id);
             }
         }
 
-        if($request->user_id !== null){
+        if ($request->user_id !== null) {
             User::findOrFail($request->user_id)->location_user()->attach($request->location_id);
         }
 
@@ -64,7 +76,10 @@ class AssignmentController extends Controller
 
     public function getAllLocation()
     {
-        $getSede = Location::select('locations.location_id', 'locations.name')
+        $user = Auth::user();
+        $getSede = Location::select('locations.location_id', 'locations.name')->whereHas('users_location', function ($query) use ($user) {
+            $query->where('location_user.user_id', '=', $user->user_id);
+        })
             ->whereNotIn('locations.location_id', ['1'])->get();
 
         $advisors = User::select('user_id', 'name')->whereHas('roles', function ($roladvisor) {
@@ -76,7 +91,10 @@ class AssignmentController extends Controller
 
     public function getAllAdvisor($location_id)
     {
-        $getSede = Location::where('location_id', $location_id)
+        $user = Auth::user();
+        $getSede = Location::where('location_id', $location_id)->whereHas('users_location', function ($query) use ($user) {
+            $query->where('location_user.user_id', '=', $user->user_id);
+        })
             ->with([
                 'users_location' => function ($query) {
                     $query->whereHas('roles', function ($q) {
@@ -87,7 +105,7 @@ class AssignmentController extends Controller
             ->first();
         $advisors = User::whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Asesor comercial');
-            })
+        })->where('boss_user', '=', $user->user_id)
             ->whereDoesntHave('location_user', function ($query) use ($location_id) {
                 $query->where('location_user.location_id', '!=', $location_id);
             })
@@ -95,7 +113,7 @@ class AssignmentController extends Controller
 
         $users = User::whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Usuario');
-            })
+        })->where('boss_user', '=', $user->user_id)
             ->whereDoesntHave('location_user', function ($query) use ($location_id) {
                 $query->where('location_user.location_id', '!=', $location_id);
             })
@@ -111,20 +129,20 @@ class AssignmentController extends Controller
         ]);
 
         $location = Location::where('location_id', $request['location_id'])
-        ->with([
-            'users_location' => function ($query) {
-                $query->whereHas('roles', function ($q) {
-                    $q->whereIn('name', ['Usuario', 'Asesor comercial']);
-                });
-            }
-        ])
-        ->first();
+            ->with([
+                'users_location' => function ($query) {
+                    $query->whereHas('roles', function ($q) {
+                        $q->whereIn('name', ['Usuario', 'Asesor comercial']);
+                    });
+                }
+            ])
+            ->first();
 
         foreach ($location->users_location as $userAssigned) {
             User::findOrFail($userAssigned['user_id'])->update(['enabled' => 0]);
             $location->users_location()->detach($userAssigned['user_id']);
         }
-        
+
         User::findOrFail($request['caja1']['user_id'])->update(['enabled' => 1, 'location_id' => $request['location_id']]);
         $location->users_location()->attach($request['caja1']['user_id']);
 

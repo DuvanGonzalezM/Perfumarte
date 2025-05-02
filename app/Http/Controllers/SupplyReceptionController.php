@@ -6,6 +6,7 @@ use App\Models\Dispatch;
 use App\Models\DispatchDetail;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+use App\Models\Product;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -37,10 +38,10 @@ class SupplyReceptionController extends Controller
             $dispatch = Dispatch::findOrFail($request['products'][0]['dispatch_id']);
             
             DB::transaction(function () use ($dispatch, $validated, $request) {
-                // Actualizar estado del despacho
+             
                 $dispatch->update(['status' => 'Recibido']);
 
-                // Actualizar cada detalle del despacho
+            
                 foreach ($request['products'] as $product) {
                     $dispatchDetail = DispatchDetail::where('dispatchs_detail_id', $product['dispatchs_detail_id'])
                         ->first();
@@ -51,9 +52,9 @@ class SupplyReceptionController extends Controller
                             'observations' => $product['observation']
                         ]);
 
-                        // Solo actualizar el inventario si el producto fue recibido
+                    
                         if ($product['received']) {
-                            // Buscar si ya existe el producto en este almacén
+                           
                             $inventory = Inventory::where('product_id', $dispatchDetail->inventory->product_id)
                                 ->where('warehouse_id', $dispatchDetail->warehouse_id)
                                 ->first();
@@ -63,7 +64,7 @@ class SupplyReceptionController extends Controller
                                     'quantity' => ($inventory->quantity + $product['quantity'])
                                 ]);
                             }else{
-                                // Crear nuevo registro de inventario
+                             
                                 $inventory = Inventory::create([
                                     'product_id' => $dispatchDetail->inventory->product_id,
                                     'warehouse_id' => $dispatchDetail->warehouse_id,
@@ -75,7 +76,6 @@ class SupplyReceptionController extends Controller
                 }
             });
         }
-
         return redirect()->route('dispatch.show', ['message' => '', 'status' => 200]);
     }
 }

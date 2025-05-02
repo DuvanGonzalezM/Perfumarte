@@ -20,7 +20,7 @@ class RepackageController extends Controller
     public function createRepackage()
     {
 
-        $productsId = ['16', '17'];
+        $productsId = ['1', '2'];
 
         $getProduct = Inventory::with('product')->where('warehouse_id', '1')->whereIn('product_id', $productsId)->get();
 
@@ -135,7 +135,7 @@ class RepackageController extends Controller
             ]);
         }
     
-        $productsId = ['16', '17'];
+        $productsId = ['1', '2'];
         $getProduct = Inventory::with('product')
             ->where('warehouse_id', '1')
             ->whereIn('product_id', $productsId)

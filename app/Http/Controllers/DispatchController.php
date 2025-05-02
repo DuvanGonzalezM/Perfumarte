@@ -12,42 +12,42 @@ class DispatchController extends Controller
 {
     public function getAllDispatch()
     {
-        $dispatch = Dispatch::with( 'dispatchdetail.warehouse.location')->get();
+        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')->get();
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 
 
-public function editDispatch($id)
-{
-    $user = auth()->user();
-    $dispatch = Dispatch::with(['dispatchdetail.inventory.product', 'dispatchdetail.warehouse.location'])->findOrFail($id);
+    public function editDispatch($id)
+    {
+        $user = auth()->user();
+        $dispatch = Dispatch::with(['dispatchdetail.inventory.product', 'dispatchdetail.warehouse.location'])->findOrFail($id);
 
-    if ($dispatch->status == 'En aprobacion') {
-        
-        if (!$user->hasRole('Jefe de Operaciones')) {
+        if ($dispatch->status == 'En aprobacion') {
+
+            if (!$user->hasRole('Jefe de Operaciones')) {
+                return Inertia::render('Dispatch/DispatchDetail', [
+                    'dispatch' => $dispatch,
+                ]);
+            }
+
+            $warehouses = Warehouse::with('location')->whereDoesntHave('location.userLocation', function ($query) {
+                return $query->where('user_id', '=', session('user_id'));
+            })->get();
+            $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
+            $inventory = Inventory::with('product')->whereIn('warehouse_id', [2, 3])->get();
+            return Inertia::render('Dispatch/DispatchEdit', [
+                'inventory' => $inventory,
+                'dispatch' => $dispatch,
+                'warehouses' => $warehouses,
+                'requests' => $requests
+            ]);
+
+        } else {
             return Inertia::render('Dispatch/DispatchDetail', [
                 'dispatch' => $dispatch,
             ]);
         }
-
-        $warehouses = Warehouse::with('location')->whereDoesntHave('location.userLocation', function ($query) {
-            return $query->where('user_id', '=', session('user_id'));
-        })->get();
-        $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
-        $inventory = Inventory::with('product')->where('warehouse_id', 2)->get();
-        return Inertia::render('Dispatch/DispatchEdit', [
-            'inventory' => $inventory,
-            'dispatch' => $dispatch,
-            'warehouses' => $warehouses,
-            'requests' => $requests
-        ]);
-
-    } else {
-        return Inertia::render('Dispatch/DispatchDetail', [
-            'dispatch' => $dispatch,
-        ]);
     }
-}
 
     public function updateDispatch(Request $request, $dispatchId)
     {
@@ -57,38 +57,38 @@ public function editDispatch($id)
             'dispatches.*.references.*.dispatched_quantity' => 'required',
         ]);
         try {
-         
+
             DispatchDetail::where('dispatch_id', $dispatchId)->delete();
-    
+
             foreach ($request->dispatches as $location) {
                 foreach ($location['references'] as $reference) {
-              
+
                     $inventory = Inventory::with('product')
                         ->where('inventory_id', $reference['reference'])
-                        ->where('warehouse_id', 2)
+                        ->whereIn('warehouse_id', [2, 3])
                         ->firstOrFail();
-    
+
                     if ($inventory->quantity < $reference['dispatched_quantity']) {
                         throw new \Exception("No hay suficiente stock para {$inventory->product->reference}. Disponible: {$inventory->quantity}, Solicitado: {$reference['dispatched_quantity']}");
                     }
-    
+
                     DispatchDetail::create([
                         'dispatch_id' => $dispatchId,
                         'warehouse_id' => $location['warehouse'],
                         'inventory_id' => $reference['reference'],
                         'dispatched_quantity' => $reference['dispatched_quantity'],
-                        'received'=>0
+                        'received' => 0
                     ]);
                 }
             }
-    
+
             return redirect()->route('dispatch.list')->with('success', 'Despacho actualizado correctamente');
-    
-        
+
+
         } catch (\Exception $e) {
-     
+
             return redirect()->back()
-                ->withInput() 
+                ->withInput()
                 ->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -96,12 +96,12 @@ public function editDispatch($id)
     public function approvedDispatch($id)
     {
         $dispatch = Dispatch::with('dispatchdetail')->findOrFail($id);
-        
+
         foreach ($dispatch->dispatchdetail as $detail) {
 
             $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
-                                    ->where('warehouse_id', 2)
-                                    ->first();
+                ->whereIn('warehouse_id', [2, 3])
+                ->first();
 
             if (!$inventoryOrigin) {
                 return redirect()->back()->withErrors(['error' => 'Inventario no encontrado en bodega principal']);
@@ -114,10 +114,10 @@ public function editDispatch($id)
             $inventoryOrigin->quantity -= $detail->dispatched_quantity;
             $inventoryOrigin->save();
         }
-        
+
         $dispatch->status = 'En ruta';
         $dispatch->save();
-    
+
         return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado');
     }
 
@@ -128,7 +128,9 @@ public function editDispatch($id)
             return $query->where('user_id', '=', session('user_id'));
         })->get();
         $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
-        $inventory = Inventory::with('product')->where('warehouse_id', 2)->get();
+        $inventory = Inventory::with('product')
+            ->whereIn('warehouse_id', [2, 3])
+            ->get();
         return Inertia::render('Dispatch/DispatchNew', [
             'inventory' => $inventory,
             'warehouses' => $warehouses,
@@ -143,37 +145,37 @@ public function editDispatch($id)
             'dispatches.*.references.*.reference' => 'required|exists:inventories,inventory_id',
             'dispatches.*.references.*.dispatched_quantity' => 'required|integer|min:1',
         ]);
-        
+
         try {
-   
+
             $dispatch = new Dispatch();
             $dispatch->status = 'En aprobacion';
             $dispatch->save();
-         
+
             foreach ($request->dispatches as $location) {
                 foreach ($location['references'] as $reference) {
-                   
+
                     $inventory = Inventory::where('inventory_id', $reference['reference'])
-                                      ->where('warehouse_id', 2)
-                                      ->firstOrFail();
-    
-                        $detail = new DispatchDetail();
-                        $detail->warehouse_id = $location['warehouse'];
-                        $detail->dispatch_id = $dispatch->dispatch_id;
-                        $detail->inventory_id = $inventory->inventory_id;
-                        $detail->dispatched_quantity = $reference['dispatched_quantity'];
-                        $detail->received = 0;
-                        $detail->save();
+                        ->whereIn('warehouse_id', [2, 3])
+                        ->firstOrFail();
+
+                    $detail = new DispatchDetail();
+                    $detail->warehouse_id = $location['warehouse'];
+                    $detail->dispatch_id = $dispatch->dispatch_id;
+                    $detail->inventory_id = $inventory->inventory_id;
+                    $detail->dispatched_quantity = $reference['dispatched_quantity'];
+                    $detail->received = 0;
+                    $detail->save();
 
                 }
             }
-    
+
             return redirect()->route('dispatch.list')->with('success');
-    
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Error al crear el despacho: '.$e->getMessage()]);
+                ->withErrors(['error' => 'Error al crear el despacho: ' . $e->getMessage()]);
         }
     }
 }

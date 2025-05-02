@@ -82,6 +82,7 @@ const approved = () => {
                                     <th>Cantidad Despachada</th>
                                     <th>Recibido</th>
                                     <th>Observaciones</th>
+                             
                                 </tr>
                             </thead>
                             <tbody>

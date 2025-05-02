@@ -22,10 +22,10 @@ class LocationsController extends Controller
     public function getLocations(Request $request)
     {
         $zones = Zone::all();
-        $locations = Location::with('zone')->whereNot('location_id', 1)->get();
+        $locations = Location::with('zone', 'warehouses')->whereNot('location_id', 1)->get();
         return Inertia::render('Locations/LocationsList', [
             'locations' => $locations, 
-            'zones' => $zones
+            'zones' => $zones,
         ]);
     }
 
@@ -36,6 +36,9 @@ class LocationsController extends Controller
             'address' => 'required',
             'zone_id' => 'required',
             'cash_base' => 'required',
+            'price30' => 'required',
+            'price50' => 'required',
+            'price100' => 'required',
         ]);
 
         $location = Location::create([
@@ -47,7 +50,10 @@ class LocationsController extends Controller
 
         $warehouse = Warehouse::create([
             'location_id' => $location->location_id,
-            'name' => $request->name
+            'name' => $request->name,
+            'price30' => $request->price30,
+            'price50' => $request->price50,
+            'price100' => $request->price100,
         ]);
         
         return redirect()->route('locations.list');
@@ -61,16 +67,27 @@ class LocationsController extends Controller
 
     public function updateLocation(Request $request, $id)
     {
+
         $request->validate([
             'name' => 'required',
             'address' => 'required',
             'zone_id' => 'required',
             'cash_base' => 'required',
+            'price30' => 'required',
+            'price50' => 'required',
+            'price100' => 'required',
         ]);
+       
         
 
         $location = Location::findOrFail($id);
         $location->update($request->all());
+        $warehouse = Warehouse::where('location_id', $id)->first();
+        $warehouse->update([
+            'price30' => $request->price30,
+            'price50' => $request->price50,
+            'price100' => $request->price100,
+        ]);
 
         return redirect()->route('locations.list');
     }
