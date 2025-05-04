@@ -44,7 +44,7 @@ const form = useForm({
     rest_total_coins: null,
 });
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
-const optionProducts = ref(props.inventory.map((reference) => [{ 'title': reference.product.commercial_reference, 'value': reference.inventory_id }][0]));
+const optionProducts = ref(props.inventory.map((reference) => [{ 'title': `${reference.product.commercial_reference} - ${reference.product.category}`, 'value': reference.inventory_id }][0]));
 const optionPayMethod = ref([{ 'title': 'Efectivo', 'value': 'Efectivo' }, { 'title': 'Transferencia', 'value': 'Transferencia' }]);
 const showModal = ref(false);
 const showModalReference = ref(false);
@@ -181,6 +181,7 @@ const removeReference = (index) => {
                         <thead>
                             <tr>
                                 <th>REFERENCIA</th>
+                                <th>CATEGORIA</th>
                                 <th>PRESENTACION</th>
                                 <th>UNIDAD(ES)</th>
                                 <th>N° GOTAS</th>
@@ -191,6 +192,8 @@ const removeReference = (index) => {
                             <tr v-for="(reference, index) in form.references">
                                 <td>{{ props.inventory.find(item => item.inventory_id ===
                                     reference.reference)?.product.commercial_reference }}</td>
+                                <td>{{ props.inventory.find(item => item.inventory_id ===
+                                    reference.reference)?.product.category }}</td>
                                 <td>{{ reference.quantity }} ml</td>
                                 <td>{{ reference.units }}</td>
                                 <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>

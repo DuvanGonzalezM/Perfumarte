@@ -13,9 +13,21 @@ const props = defineProps({
     },
 });
 const columnsTable = [
+{
+        data: "created_at",
+        title: 'HORA DE LA VENTA',
+        render: function (data) {
+            const formattedDate = moment(data).format('hh:mm');
+            return formattedDate;
+        }
+    },
     {
         data: 'user.name',
         title: 'VENDEDOR'
+    },
+    {
+        data: "payment_method",
+        title: 'METODO DE PAGO'
     },
     {
         data: "total",
@@ -24,14 +36,7 @@ const columnsTable = [
             return '$' + data;
         }
     },
-    {
-        data: "created_at",
-        title: 'HORA DE LA VENTA',
-        render: function (data) {
-            const formattedDate = moment(data).format('hh:mm');
-            return formattedDate;
-        }
-    },
+
     {
         data: "sale_id",
         title: 'DETALLE',
