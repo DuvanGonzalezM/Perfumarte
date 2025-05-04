@@ -14,11 +14,26 @@ class CashRegisterController extends Controller
     {
         $today = Carbon::today();
         
+        // Obtener la ubicación del usuario
+        $userLocation = auth()->user()->location_user()->first();
+        
+        if (!$userLocation) {
+            return response()->json([
+                'error' => 'No se encontró ninguna ubicación asignada al usuario'
+            ], 404);
+        }
+
         // Buscar la caja del día actual para la sede del usuario que no esté cerrada
         $cashRegister = CashRegister::whereDate('created_at', $today)
-            ->where('location_id', auth()->user()->location_id)
-            ->where('confirmationclosingcash', null )
+            ->where('location_id', $userLocation->location_id)
+            ->where('confirmationclosingcash', null)
             ->first();
+
+        if (!$cashRegister) {
+            return response()->json([
+                'error' => 'No se encontró ninguna caja abierta para la fecha y ubicación actual'
+            ], 404);
+        }
 
         $totalDigital = (float) Sale::whereDate('created_at', $today)
             ->where('payment_method', 'Transferencia')
@@ -35,9 +50,9 @@ class CashRegisterController extends Controller
             'totalDigital' => $totalDigital,
             'totalCash' => $totalCash,
             'totalSales' => $totalDigital + $totalCash,
-            'cashRegisterId' => $cashRegister ? $cashRegister->cash_register_id : null
+            'cashRegisterId' => $cashRegister->cash_register_id
         ];
-    
+
         return Inertia::render('Sale/CashClose', $data);
     }
 
