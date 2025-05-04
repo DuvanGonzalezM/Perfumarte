@@ -18,9 +18,11 @@ class UserController extends Controller
         $users = User::with('roles')->get();
         $roles = Role::all();
         $zones = Zone::all();
-        $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
-            $query->where('name', 'Subdirector');
-        })->get();
+        $boss = User::with(['roles', 'zone'])
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
+            })
+            ->get(['user_id', 'name', 'zone_id']);
         return Inertia::render('Users/UsersList', ['users' => $users, 'roles' => $roles, 'zones' => $zones, 'boss' => $boss]);
     }
 
@@ -87,7 +89,7 @@ class UserController extends Controller
         $zones = Zone::all();
         $permissions = Permission::all();
         $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
-            $query->where('name', 'Subdirector');
+            $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
         })->get();
         if ($user) {
             return Inertia::render('Users/UserDetail', ['user' => $user, 'roles' => $roles, 'zones' => $zones, 'permissions' => $permissions, 'boss' => $boss]);

@@ -17,17 +17,17 @@ class CashRegisterController extends Controller
         // Buscar la caja del día actual para la sede del usuario que no esté cerrada
         $cashRegister = CashRegister::whereDate('created_at', $today)
             ->where('location_id', auth()->user()->location_id)
-            ->where('confirmationclosingcash', false)
+            ->where('confirmationclosingcash', null )
             ->first();
 
-        // Obtener el total de ventas digitales del día
         $totalDigital = (float) Sale::whereDate('created_at', $today)
             ->where('payment_method', 'Transferencia')
+            ->where('cash_register_id', $cashRegister->cash_register_id)
             ->sum('total');
-    
-        // Obtener el total de ventas en efectivo del día
+        
         $totalCash = (float) Sale::whereDate('created_at', $today)
             ->where('payment_method', 'Efectivo')
+            ->where('cash_register_id', $cashRegister->cash_register_id)
             ->sum('total');
 
         // Preparar los datos para la vista

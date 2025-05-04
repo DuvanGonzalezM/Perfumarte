@@ -186,7 +186,7 @@ class SaleController extends Controller
             $denominations[$maxDenomination]['count'] -= $maxCount;
         }
 
-        // Actualizar la caja registradora
+
         foreach ($denominations as $denomination => $data) {
             $cashRegister->{'count_' . str_replace(',', '', $data['name']) . '_bill'} = $data['count'];
         }
