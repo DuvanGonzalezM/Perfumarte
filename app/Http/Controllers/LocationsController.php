@@ -175,6 +175,7 @@ class LocationsController extends Controller
                         'product' => $detail->inventory->product->name,
                         'reference' => $detail->inventory->product->reference,
                         'quantity' => $detail->quantity,
+                        'units' => $detail->units,
                         'price' => $detail->price,
                         'total' => $detail->quantity * $detail->price
                     ];

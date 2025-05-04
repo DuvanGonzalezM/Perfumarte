@@ -33,8 +33,14 @@ const columnsTable = [
     }
     },
     {
-        data: (row) => row.total_collected - row.total_digital,
-        title: 'Total'
+        data: (row) => row.total_collected,
+        title: 'Total',
+        render: function (data, type, row) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP'
+            }).format(data);
+        }
     },
     {
     data: 'cash_register_id',

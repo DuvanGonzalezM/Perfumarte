@@ -174,7 +174,7 @@ const removeReference = (index) => {
                         <div class="col-md-12" style="height: 40px;">
                             <SelectSearch v-model="form.assessor" :options="optionAssesors"
                                 labelValue="Asesor de la venta"
-                                :messageError="Object.keys(form.errors).length ? form.errors.supplier : null" />
+                                :messageError="form.errors.assessor" />
                         </div>
                     </div>
                     <table class="table table-hover text-center dt-body-nowrap size-prais-5 mt-5">
@@ -216,7 +216,7 @@ const removeReference = (index) => {
                         </div>
                         <div class="col-6 text-end">
                             <PrimaryButton @click="openModal" class="px-5"
-                                :class="form.processing || form.references.length == 0 ? 'disabled' : ''">
+                                :class="form.processing || form.references.length == 0 || !form.assessor ? 'disabled' : ''">
                                 Registrar Venta
                             </PrimaryButton>
                         </div>
