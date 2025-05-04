@@ -37,7 +37,10 @@ const form = useForm({
 });
 
 const optionsRoles = ref(props.roles.map((rol) => [{ 'title': rol.name, 'value': rol.id }][0]))
-const optionsBoss = ref(props.boss.map((user) => [{ 'title': user.name, 'value': user.user_id }][0]))
+const optionsBoss = ref(props.boss.map((user) => ({
+    'title': `${user.roles?.[0]?.name || 'Sin rol'} - ${user.name} - Zona: ${user.zone_id ?? 'Sin zona'}`,
+    'value': user.user_id
+})))
 const optionsZones = ref(props.zones.map((zone) => [{ 'title': zone.zone_name, 'value': zone.zone_id }][0]))
 const showModal = ref(false);
 const showSuccessCreateModal = ref(null);

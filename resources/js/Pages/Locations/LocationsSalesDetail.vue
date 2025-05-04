@@ -71,9 +71,10 @@ const selectedSale = ref(null);
 const showDetailsModal = ref(false);
 
 window.showDetails = (saleId) => {
-    selectedSale.value = props.sales.find(sale => sale.id === saleId);
+    selectedSale.value = props.sales.find(sale => sale.id === saleId) ;
     showDetailsModal.value = true;
 };
+
 </script>
 
 <template>
@@ -123,18 +124,17 @@ window.showDetails = (saleId) => {
                                     <thead>
                                         <tr>
                                             <th>Referencia</th>
-                                            <th>Valor Unitario</th>
-                                            <th>Cantidad</th>
+                                            <th>Unidades</th>
+                                            <th>Tamaño</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="detail in selectedSale.details" :key="detail.reference">
                                             <td>{{ detail.reference }}</td>
-                                            <td>{{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(detail.price / detail.quantity) }}</td>
-                                            <td>{{ detail.quantity }}</td>
+                                            <td>{{ detail.units }}</td>
+                                            <td>{{ detail.quantity + ' ml' }}</td>
                                             <td>{{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(detail.price) }}</td>
-                                            
                                         </tr>
                                     </tbody>
                                 </table>
