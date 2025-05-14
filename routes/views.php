@@ -96,6 +96,7 @@ Route::middleware('auth')->group(function () {
         Route::post('users', 'storeUser')->name('users.store');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
         Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi');
+        Route::post('users/{user_id}/reset-password', 'resetPassword')->name('users.reset-password');
         Route::get('api/permissions_roles/{roles_id}', 'getPermissionRol')->name('api.permi_roles');
         Route::get('permissions', 'getPermissions')->name('permissions.list');
         Route::post('permissions', 'storePermission')->name('permissions.store');

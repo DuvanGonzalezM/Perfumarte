@@ -33,7 +33,9 @@ const optionsBoss = ref(props.boss.map((user_boss) => [{ 'title': user_boss.name
 const optionsZones = ref(props.zones.map((zone) => [{ 'title': zone.zone_name, 'value': zone.zone_id }][0]));
 const showConfirmEditModal = ref(null);
 const showConfirmDeleteModal = ref(null);
+const showConfirmResetPasswordModal = ref(null);
 let permissionsNameRole = [];
+
 const form = useForm({
     name: props.user.name,
     username: props.user.username,
@@ -43,7 +45,16 @@ const form = useForm({
     enabled: props.user.enabled ? true : false,
     roles: rolesIdUser,
     permissions: permissionsIdUser,
+    default_password: props.user.default_password,
 });
+
+const formResetPassword = useForm({
+    default_password: true,
+});
+
+const showSuccessEditModal = ref(null);
+const showSuccessDeleteModal = ref(null);
+const showSuccessResetPasswordModal = ref(null);
 
 const optionsRoles = ref(props.roles.map((rol) => [{ 'title': rol.name, 'value': rol.id }][0]));
 const optionsPermission = ref(props.permissions.map((permission) => [{ 'title': permission.name, 'value': permission.id }][0]));
@@ -56,8 +67,24 @@ if (form.roles) {
     }
 }
 
+
 const submit = () => {
     form.post(route('users.role_permi', props.user.user_id));
+};
+
+const submitResetPassword = () => {
+    showConfirmResetPasswordModal.value = false;
+    formResetPassword.post(route('users.reset-password', props.user.user_id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showSuccessResetPasswordModal.value = true;
+            formResetPassword.reset();
+        },
+        onError: (errors) => {
+            showSuccessResetPasswordModal.value = false;
+            console.error('Error al restablecer contraseña:', errors);
+        }
+    });
 };
 
 const selectedRoles = async () => {
@@ -99,10 +126,19 @@ const deleteUser = () => {
                 <strong>{{ props.user.name }}</strong>
             </template>
             <div class="row my-5">
-                <div class="col-12 text-end">
-                    <PrimaryButton @click="showConfirmDeleteModal = true;" class="px-5">
-                        Eliminar
-                    </PrimaryButton>
+
+                <div class="col-12">
+
+                    <div class="d-flex justify-content-between">
+                        <div class="col-md-6">
+                            <PrimaryButton @click="showConfirmResetPasswordModal = true;" class="px-5">
+                                Restablecer contraseña
+                            </PrimaryButton>
+                        </div>
+                        <PrimaryButton @click="showConfirmDeleteModal = true;" class="px-5">
+                            Eliminar
+                        </PrimaryButton>
+                    </div>
                 </div>
             </div>
             <form @submit.prevent="submit" class="table-prais">
@@ -163,6 +199,26 @@ const deleteUser = () => {
             </form>
         </SectionCard>
 
+        <ModalPrais v-model="showConfirmResetPasswordModal" @close="showConfirmResetPasswordModal = false">
+            <template #header>
+                Confirmar Restablecimiento de Contraseña
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <i class="fa-solid fa-check text-success"></i>
+                    <h3>¿Estás seguro de que quieres restablecer la contraseña de este usuario?</h3>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="submitResetPassword()" class="px-5">
+                    Confirmar
+                </PrimaryButton>
+                <PrimaryButton @click="showConfirmResetPasswordModal = false" class="px-5">
+                    Cancelar
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
+
         <ModalPrais v-model="showConfirmEditModal" @close="showConfirmEditModal = false">
             <template #header>
                 Confirmar Edición
@@ -202,5 +258,22 @@ const deleteUser = () => {
                 </PrimaryButton>
             </template>
         </ModalPrais>
+        <ModalPrais v-model="showSuccessResetPasswordModal" @close="showSuccessResetPasswordModal = false">
+            <template #header>
+                Restablecimiento de Contraseña
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <i class="fa-solid fa-check text-success"></i>
+                    <h3>Contraseña restablecida correctamente</h3>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="showSuccessResetPasswordModal = false" class="px-5">
+                    Aceptar
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
+        
     </BaseLayout>
 </template>
