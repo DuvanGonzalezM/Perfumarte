@@ -23,6 +23,10 @@ const columnsTable = [
         title: 'REFERENCIAS'
     },
     {
+        data: 'product.category',
+        title: 'CATEGORIA'
+    },
+    {
         data: 'null',
         title: 'CANTIDAD',
         render: function (data, type, row) {
