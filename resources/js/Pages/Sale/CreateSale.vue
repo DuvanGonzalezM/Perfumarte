@@ -152,6 +152,17 @@ const addReference = () => {
 const removeReference = (index) => {
     form.references.splice(index, 1);
 }
+
+function calculateDiscount(reference) {
+    if (reference.units >= 12) {
+        if (reference.quantity == 30) {
+            return 1000 * reference.units;
+        } else if (reference.quantity == 50 || reference.quantity == 100) {
+            return 2000 * reference.units;
+        }
+    }
+    return 0;
+}
 </script>
 
 <template>
@@ -165,7 +176,7 @@ const removeReference = (index) => {
         </template>
 
         <SectionCard :subextra="'Valor total: $' + form.total">
-            <template #headerSection>   
+            <template #headerSection>
                 <strong>Nueva Venta</strong>
             </template>
             <div class="container">
@@ -173,8 +184,7 @@ const removeReference = (index) => {
                     <div class="row">
                         <div class="col-md-12" style="height: 40px;">
                             <SelectSearch v-model="form.assessor" :options="optionAssesors"
-                                labelValue="Asesor de la venta"
-                                :messageError="form.errors.assessor" />
+                                labelValue="Asesor de la venta" :messageError="form.errors.assessor" />
                         </div>
                     </div>
                     <table class="table table-hover text-center dt-body-nowrap size-prais-5 mt-5">
@@ -190,16 +200,19 @@ const removeReference = (index) => {
                         </thead>
                         <tbody id="productsList">
                             <tr v-for="(reference, index) in form.references">
-                                <td>{{ props.inventory.find(item => item.inventory_id ===
-                                    reference.reference)?.product.commercial_reference }}</td>
-                                <td>{{ props.inventory.find(item => item.inventory_id ===
-                                    reference.reference)?.product.category }}</td>
+                                <td>{{props.inventory.find(item => item.inventory_id ===
+                                    reference.reference)?.product.commercial_reference}}</td>
+                                <td>{{props.inventory.find(item => item.inventory_id ===
+                                    reference.reference)?.product.category}}</td>
                                 <td>{{ reference.quantity }} ml</td>
                                 <td>{{ reference.units }}</td>
-                                <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
-                                <td>$ {{ reference.units * priceReference(reference.quantity) +
-                                    reference.perdurable.reduce((a,
-                                        b) => a + Number(b), 0) * props.warehouse.price_drops }}</td>
+                                <td>{{reference.perdurable.reduce((a, b) => a + Number(b), 0)}}</td>
+                                <td>
+                                    {{reference.units * priceReference(reference.quantity) -
+                                        calculateDiscount(reference) +
+                                        reference.perdurable.reduce((a, b) => a + Number(b), 0) *
+                                        props.warehouse.price_drops }}
+                                </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
@@ -337,7 +350,10 @@ const removeReference = (index) => {
                                         labelValue="Metodo de pago" :options="optionPayMethod" />
                                 </div>
                                 <div class="row" v-if="form.pay_method == 'Efectivo'">
-                                    <h4 class="mt-3 d-flex justify-content-center">$ {{ ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) }}</h4>
+                                    <h4 class="mt-3 d-flex justify-content-center">$ {{ ((form.count_50_bill * 50000) +
+                                        (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill
+                                            * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) +
+                                        (form.total_coins * 1)) }}</h4>
                                     <div class="col-md-4 my-3">
                                         <CountControl v-model="form.count_100_bill" :min="0"
                                             title="N° Billetes 100 mil" />
@@ -421,7 +437,8 @@ const removeReference = (index) => {
                                 </div>
                                 <div class="col-md-12 my-3">
                                     <TextInput type="number" name="total_coins" id="total_coins"
-                                        v-model="form.rest_total_coins" :focus="form.rest_total_coins != null ? true : false"
+                                        v-model="form.rest_total_coins"
+                                        :focus="form.rest_total_coins != null ? true : false"
                                         labelValue="Cantidad total de monedas" :minimo="0" :required="true" />
                                 </div>
                             </div>
