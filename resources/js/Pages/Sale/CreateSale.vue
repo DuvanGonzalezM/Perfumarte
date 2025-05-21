@@ -145,7 +145,12 @@ const addReference = () => {
         }
     );
     showModalReference.value = false;
-    form.total = form.references.reduce((acc, reference) => acc + (reference.units * priceReference(reference.quantity) + reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops), 0);
+    form.total = form.references.reduce((acc, reference) => {
+        const basePrice = reference.units * priceReference(reference.quantity);
+        const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
+        const discount = calculateDiscount(reference);
+        return acc + (basePrice - discount + dropsPrice);
+    }, 0);
     referenceNew.value = { 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] };
 }
 
@@ -211,7 +216,7 @@ function calculateDiscount(reference) {
                                     {{reference.units * priceReference(reference.quantity) -
                                         calculateDiscount(reference) +
                                         reference.perdurable.reduce((a, b) => a + Number(b), 0) *
-                                        props.warehouse.price_drops }}
+                                        props.warehouse.price_drops}}
                                 </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
