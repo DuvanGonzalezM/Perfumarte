@@ -18,3 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 /.git 
+/.local
+/.config
+/.cache
+/.atmp

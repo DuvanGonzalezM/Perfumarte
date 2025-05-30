@@ -39,8 +39,6 @@ const recaptcha = async () => {
                 <TextInput labelValue="Nombre de usuario" id="username" name="username" type="text"
                     v-model="form.username" :messageError="form.errors.username" required />
             </div>
-            {{ console.log(form.errors.username, errors)
-            }}
             <div class="form-group">
                 <div class="input-wrapper">
                     <TextInput labelValue="Contraseña" id="password" name="password" type="password"
