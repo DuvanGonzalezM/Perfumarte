@@ -46,7 +46,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->put('user_id', $request->user()->user_id);
         
         if ($request->user()->hasRole('Asesor comercial')) {
-            return redirect()->route('inventory.current');
+            return redirect()->intended(RouteServiceProvider::INVENTORY_ADVISOR);
         }
 
         return Inertia::location(RouteServiceProvider::HOME);
