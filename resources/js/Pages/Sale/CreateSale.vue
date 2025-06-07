@@ -156,7 +156,14 @@ const addReference = () => {
 
 const removeReference = (index) => {
     form.references.splice(index, 1);
-}
+
+    form.total = form.references.reduce((acc, reference) => {
+        const basePrice = reference.units * priceReference(reference.quantity);
+        const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
+        const discount = calculateDiscount(reference);
+        return acc + (basePrice - discount + dropsPrice);
+    }, 0);
+};
 
 function calculateDiscount(reference) {
     if (reference.units >= 12) {
