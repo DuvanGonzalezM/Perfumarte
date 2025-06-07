@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         ]);
         $user = User::where('username', $request->username)->whereAnd('enabled', true)->whereAnd('default_password', true)->first();
         if ($user && $user->default_password) {
-            return redirect()->route('password.change', ['username' => $user->username]);
+            return Inertia::location(route('password.change', ['username' => $user->username]));
         }
         $request->authenticate();
 
@@ -49,7 +49,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(RouteServiceProvider::INVENTORY_ADVISOR);
         }
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return Inertia::location(RouteServiceProvider::HOME);
     }
 
     /**

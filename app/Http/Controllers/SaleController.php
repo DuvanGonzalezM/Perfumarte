@@ -78,13 +78,29 @@ class SaleController extends Controller
             }, $reference['perdurable']);
 
             $price = $drops * $warehouse->price_drops;
+
+            // Precio base por unidad
+            $unitPrice = $this->priceReference($reference['quantity'], $warehouse);
+            
+            // Descuento por cantidad y unidades
+            if ($reference['units'] >= 12) {
+                if ($reference['quantity'] == 30) {
+                    $unitPrice -= 1000;
+                } elseif ($reference['quantity'] == 50 || $reference['quantity'] == 100) {
+                    $unitPrice -= 2000;
+                }
+            }
+            
+            // Calcular precio total
+            $totalPrice = ($unitPrice * $reference['units']) + $price;
+            
             SaleDetail::create([
-               'inventory_id' => $reference['reference'],
-               'sale_id' => $sale->sale_id,
-               'quantity' => $reference['quantity'],
-               'units' => $reference['units'],
-               'drops' => $drops,
-               'price' => ($this->priceReference($reference['quantity'], $warehouse) * $reference['units']) + $price,
+                'inventory_id' => $reference['reference'],
+                'sale_id' => $sale->sale_id,
+                'quantity' => $reference['quantity'],
+                'units' => $reference['units'],
+                'drops' => $drops,
+                'price' => $totalPrice,
             ]);
             $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
             $inventory->quantity -= ($reference['quantity'] * $reference['units']);
