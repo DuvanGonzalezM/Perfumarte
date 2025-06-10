@@ -15,6 +15,9 @@ stop: ## [*] Stop or or all service containers
 down d: ## [*] Down one or all service container[s], network[s] and volume[s]
 	docker-compose down -v --remove-orphans
 
+down_all: ## [*] Down all service container[s], network[s] and volume[s]
+	make down && docker image prune -a -f && docker volume prune -f && docker system prune -a -f --volumes
+
 status ps s: ## [*] Show status of services
 	docker-compose ps
 
