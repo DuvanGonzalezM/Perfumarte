@@ -30,7 +30,7 @@ function checkScreenSize() {
 </script>
 <template>
     <Loader v-if="attributes.loading"/>
-    <div class="container body-login d-flex align-items-center justify-content-center" v-cloak>
+    <div class="container body-login d-flex align-items-center justify-content-center">
         <div class="card card-login align-items-center">
             <div class="over-card position-relative align-items-center d-flex flex-column">
                 <Image src="\assets\images\Logo_3.avif" class="responsive-logo" />

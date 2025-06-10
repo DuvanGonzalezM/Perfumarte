@@ -5,27 +5,34 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useReCaptcha } from 'vue-recaptcha-v3';
 
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+
 const form = useForm({
     username: '',
     password: '',
     captcha_token: '',
 });
 
-const submit = () => {
-    form.post(route('login'));
-};
-
-const props = defineProps({
-    recaptcha_site_key: { type: String },
-});
-
-const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
-const recaptcha = async () => {
+const submit = async () => {
     try {
-        await recaptchaLoaded()
-        form.captcha_token = await executeRecaptcha('login');
-        submit();
+        await recaptchaLoaded();
+        const token = await executeRecaptcha('login');
+        form.captcha_token = token;
+        
+        form.post(route('login'), {
+            onFinish: () => {
+                form.reset('password');
+                form.captcha_token = '';
+            },
+        });
     } catch (error) {
+        console.error('Error con reCAPTCHA:', error);
+        form.post(route('login'), {
+            onFinish: () => {
+                form.reset('password');
+                form.captcha_token = '';
+            },
+        });
     }
 };
 </script>
@@ -34,7 +41,7 @@ const recaptcha = async () => {
     <GuestLayout :loading="form.processing ? true : false">
 
         <Head title="Inicio de Sesión" />
-        <form @submit.prevent="recaptcha" @keydown.enter.prevent="recaptcha" class="form-container">
+        <form @submit.prevent="submit" @keydown.enter.prevent="submit" class="form-container">
             <div class="form-group">
                 <TextInput labelValue="Nombre de usuario" id="username" name="username" type="text"
                     v-model="form.username" :messageError="form.errors.username" required />
@@ -51,7 +58,7 @@ const recaptcha = async () => {
             </div>
 
             <div class="button-wrapper d-flex justify-content-center">
-                <PrimaryButton @click="recaptcha" :class="form.processing ? 'disabled' : ''">
+                <PrimaryButton @click="submit" :class="form.processing ? 'disabled' : ''">
                     Ingresar
                 </PrimaryButton>
             </div>
