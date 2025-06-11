@@ -56,6 +56,27 @@ class CashRegisterController extends Controller
         return Inertia::render('Sale/CashClose', $data);
     }
 
+    public function index()
+    {
+        $userLocation = auth()->user()->location_user()->first();
+        
+        if (!$userLocation) {
+            return redirect()->route('home')
+                ->with('error', 'No se encontró ninguna ubicación asignada al usuario');
+        }
+
+        $cashRegister = CashRegister::whereDate('created_at', Carbon::today())
+            ->where('location_id', $userLocation->location_id)
+            ->first();
+
+        return Inertia::render('Sale/SalesList', [
+            'sales' => Sale::where('location_id', $userLocation->location_id)
+                ->orderBy('created_at', 'desc')
+                ->get(),
+            'confirmationclosingcash' => $cashRegister?->confirmationclosingcash
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -15,13 +15,26 @@ class SaleController extends Controller
 {
     public function sales()
     {
+        $userLocation = auth()->user()->location_user[0]->location_id;
+        
+        // Obtener las ventas del día
         $sales = Sale::with('user')
-            ->whereHas('cashRegister', function ($query) {
-                $query->where('location_id', auth()->user()->location_user[0]->location_id)
+            ->whereHas('cashRegister', function ($query) use ($userLocation) {
+                $query->where('location_id', $userLocation)
                     ->whereDate('created_at', date('Y-m-d'));
             })
             ->get();
-        return Inertia::render('Sale/SalesList', ['sales' => $sales]);
+
+        // Obtener el estado de la caja del día
+        $cashRegister = CashRegister::where('location_id', $userLocation)
+            ->whereDate('created_at', date('Y-m-d'))
+            ->first();
+        
+
+        return Inertia::render('Sale/SalesList', [
+            'sales' => $sales,
+            'confirmationclosingcash' => $cashRegister?->confirmationclosingcash
+        ]);
     }
 
     public function createSales()
@@ -44,24 +57,86 @@ class SaleController extends Controller
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
     }
 
-    public function priceReference($quantity, $warehouse)
+    public function priceReference($quantity, $warehouse, $totalUnits = 0)
     {
+        $basePrice = 0;
         switch ($quantity) {
+            case 5:
+                $basePrice = $warehouse->price5;
+                
+                // Calcular descuentos para 5ml
+                if ($totalUnits >= 50) {
+                    // Si hay 50 o más unidades, calcular descuentos
+                    $discountedUnits = 50; // Máximo 50 unidades con descuento
+                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
+                    
+                    // Calcular precio total
+                    $discountedPrice = 105000; // Precio fijo para 50 unidades
+                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
+                    
+                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                } elseif ($totalUnits >= 25) {
+                    // Si hay 25 o más unidades, calcular descuentos
+                    $discountedUnits = 25; // Máximo 25 unidades con descuento
+                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
+                    
+                    // Calcular precio total
+                    $discountedPrice = 66000; // Precio fijo para 25 unidades
+                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
+                    
+                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                } elseif ($totalUnits >= 12) {
+                    // Si hay 12 o más unidades, calcular descuentos
+                    $discountedUnits = 12; // Máximo 12 unidades con descuento
+                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
+                    
+                    // Calcular precio total
+                    $discountedPrice = 38000; // Precio fijo para 12 unidades
+                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
+                    
+                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                }
+                
+                // Para menos de 12 unidades, usar precio base
+                return $basePrice;
+            
             case 30:
-                return $warehouse->price30;
+                $basePrice = $warehouse->price30;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 1000; // Descuento de 1000 por unidad
+                }
+                break;
             case 50:
-                return $warehouse->price50;
+                $basePrice = $warehouse->price50;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 2000; // Descuento de 2000 por unidad
+                }
+                break;
             case 100:
-                return $warehouse->price100;
+                $basePrice = $warehouse->price100;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 2000; // Descuento de 2000 por unidad
+                }
+                break;
             default:
                 return 0;
         }
+        return $basePrice;
     }
 
     public function storeSales(Request $request)
     {
         $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
+
+        // Validar cantidad total de 5ml
+        $totalUnits5ml = collect($request->references)
+            ->where('quantity', 5)
+            ->sum('units');
+
+        if ($totalUnits5ml < 12 ) {
+            return redirect()->back()->with('error', 'La cantidad total de 5ml debe ser mínimo de 12 unidades');
+        }
 
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,

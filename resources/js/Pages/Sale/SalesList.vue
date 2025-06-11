@@ -11,7 +11,14 @@ const props = defineProps({
     sales: {
         type: Array,
     },
+    confirmationclosingcash: {
+        type: Object,
+    }
 });
+
+const isCashClosed = () => {
+    return props.confirmationclosingcash == "1";
+};
 const columnsTable = [
 {
         data: "created_at",
@@ -62,14 +69,14 @@ const columnsTable = [
                 <strong>Ventas</strong>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('sales.create')" class="position-absolute" v-if="can('Crear Ventas')">
+                <PrimaryButton :href="route('sales.create')" class="position-absolute" :disabled="isCashClosed()">
                     Nueva venta
                 </PrimaryButton>
             </div>
             <Table class="size-prais-5" :data="sales" :columns="columnsTable" />
             <div class="row my-5 text-center">
                 <div class="col-12">
-                    <PrimaryButton :href="route('cash_register.close')">
+                    <PrimaryButton :href="route('cash_register.close')" :disabled="isCashClosed()">
                         Cerrar Caja
                     </PrimaryButton>
                 </div>
