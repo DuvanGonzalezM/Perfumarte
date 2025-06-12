@@ -14,28 +14,32 @@ class InventoryLocationController extends Controller
 {
     public function start()
     {
-        $user = Auth::user();
-        
-        $hasAcceptedToday = $user->inventoryValidations()
-            ->whereDate('date', Carbon::today())
-            ->exists();
-
-        if ($hasAcceptedToday) {
-            return redirect()->route('inventory.current');
+        try {
+            $user = Auth::user();
+            
+            $hasAcceptedToday = $user->inventoryValidations()
+                ->whereDate('date', Carbon::today())
+                ->exists();
+    
+            if ($hasAcceptedToday) {
+                return redirect()->route('inventory.current');
+            }
+            $userLocation = $user->with('location_user.warehouses')->where('user_id', $user->user_id)->first();
+            $location_user = $userLocation->location_user;
+            $warehouses = $location_user[0]->warehouses;
+            $inventory = null;
+            if(count($warehouses) > 0){
+                $inventory = Inventory::with('product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
+            }
+    
+            return Inertia::render('Stock/StartInventoryLocation', [
+                'initialInventory' => $inventory,
+                'location' => $location_user[0],
+                'sidebarHidden' => true
+            ]);
+        } catch (\Throwable $th) {
+            return redirect()->route('logout');
         }
-        $userLocation = $user->with('location_user.warehouses')->where('user_id', $user->user_id)->first();
-        $location_user = $userLocation->location_user;
-        $warehouses = $location_user[0]->warehouses;
-        $inventory = null;
-        if(count($warehouses) > 0){
-            $inventory = Inventory::with('product')->where('warehouse_id', $warehouses[0]->warehouse_id)->get();
-        }
-
-        return Inertia::render('Stock/StartInventoryLocation', [
-            'initialInventory' => $inventory,
-            'location' => $location_user[0],
-            'sidebarHidden' => true
-        ]);
     }
 
     public function accept(Request $request)
