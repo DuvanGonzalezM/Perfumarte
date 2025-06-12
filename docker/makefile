@@ -1,6 +1,6 @@
 up reload: recreate ?=
 up reload: ## [*] Up/Reload one or all service containers
-	docker-compose up -d --build --remove-orphans $(recreate)
+	docker-compose build --build-arg APP_ENV=${APP_ENV} && docker-compose up -d --force-recreate --remove-orphans $(recreate)
 
 start: ## [*] Start one or all service containers
 	docker-compose start

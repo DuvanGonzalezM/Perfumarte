@@ -5,7 +5,7 @@ os ?= $(shell uname -s)
 
 # Load custom setitngs
 -include .env
-include docker/php/makefile
+include docker/makefile
 
 init i: ## [*] Create and start the environment. This is the default task.
 	make up
