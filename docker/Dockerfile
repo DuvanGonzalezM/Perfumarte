@@ -38,10 +38,12 @@ COPY . .
 # Permissions
 RUN chown -R www-data:www-data .
 
+ARG APP_ENV=local
+ENV APP_ENV=${APP_ENV}
 # Configure PHP
-COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
+COPY docker/${APP_ENV}/php/php.ini /usr/local/etc/php/conf.d/app.ini
 
-COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
