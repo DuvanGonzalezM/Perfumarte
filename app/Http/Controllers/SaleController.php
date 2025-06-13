@@ -129,12 +129,7 @@ class SaleController extends Controller
         $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
 
-        // Validar que se vendan al menos 12 unidades cuando el tamaño sea de 5ml
-        foreach ($request->references as $reference) {
-            if ($reference['quantity'] == 5 && $reference['units'] < 12) {
-                return redirect()->back()->with('error', 'La cantidad mínima para el tamaño 5ml es de 12 unidades');
-            }
-        }
+
 
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
