@@ -66,9 +66,17 @@ const columnsTable = [
 
         <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
             <template #headerSection>
-                <strong>Ventas</strong>
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Ventas</strong>
+                </div>
             </template>
             <div class="container">
+                <div class="mb-4">
+                    <span class="text-muted">Estado de la caja:</span>
+                    <span :class="'badge ms-2 ' + (isCashClosed() ? 'bg-danger' : 'bg-success')">
+                        {{ isCashClosed() ? 'Cerrada' : 'Abierta' }}
+                    </span>
+                </div>
                 <PrimaryButton :href="route('sales.create')" class="position-absolute" :disabled="isCashClosed()">
                     Nueva venta
                 </PrimaryButton>

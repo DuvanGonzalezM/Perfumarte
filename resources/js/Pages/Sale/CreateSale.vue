@@ -3,7 +3,7 @@ import SectionCard from '@/Components/SectionCard.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -69,11 +69,6 @@ const openModalChange = () => {
 }
 
 const submit = () => {
-    // Validar cantidad de 5ml antes de enviar
-    if (!validate5mlQuantity()) {
-        return;
-    }
-
     form.post(route('sales.store'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -142,17 +137,22 @@ const togglePerdurable = (index, value) => {
     }
 }
 
-const validate5mlQuantity = () => {
-    const totalUnits5ml = form.references.reduce((acc, ref) => 
-        acc + (ref.quantity === 5 ? ref.units : 0), 0
-    );
+const buttonErrorMessage = ref('');
+
+// Validar si hay referencias de 5ml con menos de 12 unidades en total
+const hasValidReferences = computed(() => {
+    // Sumar todas las unidades de referencias de 5ml
+    const totalUnits5ml = form.references
+        .filter(ref => ref.quantity === 5)
+        .reduce((acc, ref) => acc + ref.units, 0);
     
-    if (totalUnits5ml < 12) {
-        alert('La cantidad total de 5ml debe ser mínimo de 12 unidades');
+    if (totalUnits5ml < 12 && totalUnits5ml > 0) {
+        buttonErrorMessage.value = 'La cantidad total de 5ml debe ser al menos 12 unidades';
         return false;
     }
+    buttonErrorMessage.value = '';
     return true;
-}
+});
 
 const addReferenceModal = () => {
     showModalReference.value = true;
@@ -251,36 +251,24 @@ const addReference = () => {
     updateTotal();
     
     showModalReference.value = false;
-    form.total = form.references.reduce((acc, reference) => {
-        const basePrice = reference.units * priceReference(reference.quantity);
-        const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
-        const discount = calculateDiscount(reference);
-        return acc + (basePrice - discount + dropsPrice);
-    }, 0);
-    referenceNew.value = { 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] };
-}
+    referenceNew.value = { 
+        'reference': '', 
+        'quantity': '', 
+        'units': 1, 
+        'perdurable': Array(1).fill(0)
+    };
+};
 
 const removeReference = (index) => {
     form.references.splice(index, 1);
 
     form.total = form.references.reduce((acc, reference) => {
-        const basePrice = reference.units * priceReference(reference.quantity);
+        const price = priceReference(reference.quantity);
         const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
-        const discount = calculateDiscount(reference);
-        return acc + (basePrice - discount + dropsPrice);
+        return acc + (reference.units * price + dropsPrice);
     }, 0);
 };
 
-function calculateDiscount(reference) {
-    if (reference.units >= 12) {
-        if (reference.quantity == 30) {
-            return 1000 * reference.units;
-        } else if (reference.quantity == 50 || reference.quantity == 100) {
-            return 2000 * reference.units;
-        }
-    }
-    return 0;
-}
 </script>
 
 <template>
@@ -292,9 +280,6 @@ function calculateDiscount(reference) {
             <!-- <Alert /> -->
             <h1>Nueva Venta</h1>
         </template>
-
-        <SectionCard :subextra="'Valor total: $' + form.total">
-            <template #headerSection>
         <SectionCard :subextra="'Valor total: $' + Math.round(form.total)">
             <template #headerSection>   
                 <strong>Nueva Venta</strong>
@@ -349,9 +334,11 @@ function calculateDiscount(reference) {
                         </div>
                         <div class="col-6 text-end">
                             <PrimaryButton @click="openModal" class="px-5"
-                                :class="form.processing || form.references.length == 0 || !form.assessor ? 'disabled' : ''">
+                                :class="form.processing || form.references.length == 0 || !form.assessor || !hasValidReferences ? 'disabled' : ''">
                                 Registrar Venta
                             </PrimaryButton>
+                            <br>
+                            <span v-if="!hasValidReferences" class="text-danger">{{ buttonErrorMessage }}</span>
                         </div>
                     </div>
 

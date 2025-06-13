@@ -129,13 +129,11 @@ class SaleController extends Controller
         $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
 
-        // Validar cantidad total de 5ml
-        $totalUnits5ml = collect($request->references)
-            ->where('quantity', 5)
-            ->sum('units');
-
-        if ($totalUnits5ml < 12 ) {
-            return redirect()->back()->with('error', 'La cantidad total de 5ml debe ser mínimo de 12 unidades');
+        // Validar que se vendan al menos 12 unidades cuando el tamaño sea de 5ml
+        foreach ($request->references as $reference) {
+            if ($reference['quantity'] == 5 && $reference['units'] < 12) {
+                return redirect()->back()->with('error', 'La cantidad mínima para el tamaño 5ml es de 12 unidades');
+            }
         }
 
         $sale = Sale::create([
@@ -178,7 +176,28 @@ class SaleController extends Controller
                 'price' => $totalPrice,
             ]);
             $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
-            $inventory->quantity -= ($reference['quantity'] * $reference['units']);
+            
+            // Si es una fragancia (código diferente a 300)
+            if ($reference['reference'] != '300') {
+                // Calcular la cantidad a retirar (50% del tamaño)
+                $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
+                
+                // Descontar de la fragancia
+                $inventory->quantity -= $quantityToSubtract;
+                
+                // Descontar del disolvente (buscar en el mismo almacén y por código del producto)
+                $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
+                    ->whereHas('product', function ($query) {
+                        $query->where('code', '300');
+                    })
+                    ->first();
+                
+                if ($disolventeInventory) {
+                    $disolventeInventory->quantity -= $quantityToSubtract;
+                    $disolventeInventory->save();
+                }
+            }
+            
             $inventory->save();
         }
 
