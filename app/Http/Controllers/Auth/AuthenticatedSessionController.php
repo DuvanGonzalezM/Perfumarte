@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
         $this->validate($request, [
             'username' => 'required',
             'password' => 'required',
-            'captcha_token'  => [new Recaptcha],
+            // 'captcha_token'  => [new Recaptcha],
         ]);
         $user = User::where('username', $request->username)->whereAnd('enabled', true)->whereAnd('default_password', true)->first();
         if ($user && $user->default_password) {
