@@ -1,3 +1,6 @@
+# Define 'local' como el entorno por defecto si no se especifica otro.
+APP_ENV ?= local
+
 COMPOSE_FILES := -f docker-compose.yml
 ifeq ($(APP_ENV),production)
 	COMPOSE_FILES += -f docker-compose.prod.yml
