@@ -64,40 +64,18 @@ class SaleController extends Controller
             case 5:
                 $basePrice = $warehouse->price5;
                 
-                // Calcular descuentos para 5ml
+                // Descuentos para 5ml
                 if ($totalUnits >= 50) {
-                    // Si hay 50 o más unidades, calcular descuentos
-                    $discountedUnits = 50; // Máximo 50 unidades con descuento
-                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
-                    
-                    // Calcular precio total
-                    $discountedPrice = 105000; // Precio fijo para 50 unidades
-                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
-                    
-                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                    // 50 unidades o más: $2.100
+                    return 2100;
                 } elseif ($totalUnits >= 25) {
-                    // Si hay 25 o más unidades, calcular descuentos
-                    $discountedUnits = 25; // Máximo 25 unidades con descuento
-                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
-                    
-                    // Calcular precio total
-                    $discountedPrice = 66000; // Precio fijo para 25 unidades
-                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
-                    
-                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                    // 25-49 unidades: $2.700
+                    return 2700;
                 } elseif ($totalUnits >= 12) {
-                    // Si hay 12 o más unidades, calcular descuentos
-                    $discountedUnits = 12; // Máximo 12 unidades con descuento
-                    $regularUnits = $totalUnits - $discountedUnits; // Unidades a precio normal
-                    
-                    // Calcular precio total
-                    $discountedPrice = 38000; // Precio fijo para 12 unidades
-                    $regularPrice = $regularUnits * $basePrice; // Precio normal para unidades adicionales
-                    
-                    return ($discountedPrice + $regularPrice) / $totalUnits;
+                    // 12-24 unidades: $3.200
+                    return 3200;
                 }
-                
-                // Para menos de 12 unidades, usar precio base
+                // Menos de 12 unidades: precio base
                 return $basePrice;
             
             case 30:
@@ -106,18 +84,21 @@ class SaleController extends Controller
                     $basePrice -= 1000; // Descuento de 1000 por unidad
                 }
                 break;
+            
             case 50:
                 $basePrice = $warehouse->price50;
                 if ($totalUnits >= 12) {
                     $basePrice -= 2000; // Descuento de 2000 por unidad
                 }
                 break;
+            
             case 100:
                 $basePrice = $warehouse->price100;
                 if ($totalUnits >= 12) {
                     $basePrice -= 2000; // Descuento de 2000 por unidad
                 }
                 break;
+            
             default:
                 return 0;
         }
