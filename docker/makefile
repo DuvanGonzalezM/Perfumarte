@@ -66,3 +66,10 @@ serve:
 
 broadcast:
 	$(COMPOSE_CMD) exec app php artisan reverb:start
+
+cache_clear:
+	$(COMPOSE_CMD) exec app php artisan cache:clear 
+	$(COMPOSE_CMD) exec app php artisan config:clear
+	$(COMPOSE_CMD) exec app php artisan route:cache
+	$(COMPOSE_CMD) exec app php artisan view:cache
+	$(COMPOSE_CMD) exec app php artisan optimize

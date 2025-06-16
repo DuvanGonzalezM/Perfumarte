@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
             Route::put('solicitudes-insumos/{requestId}/actualizar', 'update')->name('suppliesrequest.update');
         });
         Route::group(['middleware' => ['can:Crear Solicitudes Insumos']], function () {
-            Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.store');
+            Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.create');
             Route::post('solicitudes-insumos/nueva-solicitud', 'storeRequest')->name('suppliesrequest.store');
         });
         Route::group(['middleware' => ['can:Ver Solicitudes Transformacion']], function () {
