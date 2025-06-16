@@ -1,7 +1,5 @@
-ENV ?= local
-
 COMPOSE_FILES := -f docker-compose.yml
-ifeq ($(ENV),prod)
+ifeq ($(APP_ENV),production)
 	COMPOSE_FILES += -f docker-compose.prod.yml
 endif
 
@@ -11,13 +9,13 @@ COMPOSE_CMD = docker-compose $(COMPOSE_FILES)
 
 up reload: recreate ?=
 up reload:
-	$(COMPOSE_CMD) build --build-arg APP_ENV=$(ENV) && $(COMPOSE_CMD) up -d --force-recreate --remove-orphans $(recreate)
+	$(COMPOSE_CMD) build --build-arg APP_ENV=$(APP_ENV) && $(COMPOSE_CMD) up -d --force-recreate --remove-orphans $(recreate)
 
 start:
 	$(COMPOSE_CMD) start
 
 restart:
-	make up env=$(ENV) recreate="--force-recreate --renew-anon-volumes"
+	make up recreate="--force-recreate --renew-anon-volumes"
 
 stop: service ?= 
 stop:
@@ -27,7 +25,7 @@ down d:
 	$(COMPOSE_CMD) down -v --remove-orphans
 
 down_all:
-	make down env=$(ENV) && docker image prune -a -f && docker volume prune -f && docker system prune -a -f --volumes
+	make down && docker image prune -a -f && docker volume prune -f && docker system prune -a -f --volumes
 
 status ps s:
 	$(COMPOSE_CMD) ps
