@@ -32,6 +32,10 @@ RUN composer install --no-interaction --no-plugins --no-scripts --prefer-dist
 COPY package.json package-lock.json ./ 
 RUN npm install
 
+# Copiar el script de entrada y darle permisos de ejecución
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Copiar el resto de la aplicación y construir assets
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
