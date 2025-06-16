@@ -14,26 +14,12 @@ const form = useForm({
 });
 
 const submit = async () => {
-    try {
-        await recaptchaLoaded();
-        const token = await executeRecaptcha('login');
-        form.captcha_token = token;
-        
-        form.post(route('login'), {
-            onFinish: () => {
-                form.reset('password');
-                form.captcha_token = '';
-            },
-        });
-    } catch (error) {
-        console.error('Error con reCAPTCHA:', error);
-        form.post(route('login'), {
-            onFinish: () => {
-                form.reset('password');
-                form.captcha_token = '';
-            },
-        });
-    }
+    await recaptchaLoaded();
+    form.captcha_token = await executeRecaptcha('login');
+
+    form.post(route('login'), {
+        onFinish: () => form.reset('password'),
+    });
 };
 </script>
 
