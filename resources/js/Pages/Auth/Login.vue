@@ -1,6 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonSubmit from '@/Components/ButtonSubmit.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useReCaptcha } from 'vue-recaptcha-v3';
@@ -58,9 +58,9 @@ const submit = async () => {
             </div>
 
             <div class="button-wrapper d-flex justify-content-center">
-                <PrimaryButton :class="form.processing ? 'disabled' : ''">
+                <ButtonSubmit :class="form.processing ? 'disabled' : ''">
                     Ingresar
-                </PrimaryButton>
+                </ButtonSubmit>
             </div>
         </form>
     </GuestLayout>

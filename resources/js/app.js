@@ -7,7 +7,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs';
-// import { VueReCaptcha } from 'vue-recaptcha-v3';
+import { VueReCaptcha } from 'vue-recaptcha-v3';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Perfumarte';
 
@@ -19,13 +19,13 @@ createInertiaApp({
             .use(LaravelPermissionToVueJS)
             .use(plugin)
             .use(ZiggyVue)
-            // .use(VueReCaptcha, {
-            //     siteKey: props.initialPage.props.recaptcha_site_key,
-            //     loaderOptions: {
-            //         useRecaptchaNet: true,
-            //         autoHideBadge: false
-            //     }
-            // })
+            .use(VueReCaptcha, {
+                siteKey: props.initialPage.props.recaptcha_site_key,
+                loaderOptions: {
+                    useRecaptchaNet: true,
+                    autoHideBadge: false
+                }
+            })
             .mount(el);
     },
     progress: {
