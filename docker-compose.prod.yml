@@ -5,6 +5,10 @@ volumes:
 
 services:
   app:
+    build:
+        context: .
+        dockerfile: ./docker/Dockerfile
+        target: builder
     volumes:
       - public_assets:/var/www/public
     ports:
@@ -25,7 +29,6 @@ services:
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
     command: nginx -g "daemon off;"
-
     depends_on:
       - app
 
