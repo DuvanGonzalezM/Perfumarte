@@ -19,8 +19,8 @@ services:
       - "443:443"
     volumes:
       - './docker/production/nginx:/etc/nginx/conf.d'
-      - './docker/production/certbot/conf:/etc/letsencrypt'
-      - './docker/production/certbot/www:/var/www/certbot'
+      - './certbot/conf:/etc/letsencrypt'
+      - './certbot/www:/var/www/certbot'
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
     depends_on:
