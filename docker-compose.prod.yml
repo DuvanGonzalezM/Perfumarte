@@ -2,6 +2,7 @@ volumes:
   public_assets: {}
   nginx-logs: {}
   certbot-etc: {}
+  fail2ban-db: {}
 
 services:
   app:
@@ -41,7 +42,8 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - ./docker/production/fail2ban:/data
+      - ./docker/production/fail2ban/data:/data
+      - fail2ban-db:/data/db
       - nginx-logs:/var/log/nginx:ro
     depends_on:
       - webserver
