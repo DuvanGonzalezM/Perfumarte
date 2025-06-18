@@ -2,7 +2,7 @@ volumes:
   public_assets: {}
   nginx-logs: {}
   certbot-etc: {}
-  fail2ban-db: {}
+  perfumarte_fail2ban_data: {}
 
 services:
   app:
@@ -42,8 +42,13 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - ./docker/production/fail2ban/data:/data
-      - fail2ban-db:/data/db
+      - type: volume
+        source: perfumarte_fail2ban_data
+        target: /data
+      - type: bind
+        source: ./docker/production/fail2ban/data
+        target: /etc/fail2ban/custom
+        read_only: true
       - nginx-logs:/var/log/nginx:ro
     depends_on:
       - webserver
