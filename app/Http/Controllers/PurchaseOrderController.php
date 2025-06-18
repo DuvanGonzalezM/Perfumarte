@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Notifications\PurchaseOrderCreate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Pest\Plugins\Parallel\Handlers\Laravel;
 
@@ -80,7 +81,8 @@ class PurchaseOrderController extends Controller
             broadcast(new CreatePurchaseOrder(PurchaseOrder::with('productEntryOrder.product.supplier')->findOrFail($purchaseOrder->purchase_order_id)));
             return redirect()->route('orders.list', ['message' => '', 'status' => 200]);
         } catch (\ErrorException $e) {
-            dd($e);
+            \Illuminate\Support\Facades\Log::error('Error al procesar orden de compra: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString());
+            return redirect()->back()->withInput()->with('error', 'Ocurrió un error al procesar la orden. Por favor, intente de nuevo.');
         }
     }
 
