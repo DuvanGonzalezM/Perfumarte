@@ -42,6 +42,10 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'username' => 'required|string|max:255|unique:' . User::class,
+            'name' => 'required|string|max:255',
+            'boss_user' => 'nullable|integer|exists:users,user_id',
+            'enabled' => 'required|boolean',
+            'location_id' => 'required|integer|exists:locations,location_id',
             // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
