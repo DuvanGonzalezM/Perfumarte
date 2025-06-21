@@ -153,23 +153,43 @@ const submitReturnedQuantities = () => {
                     </div>
                 </div>
 
-                <div class="row my-5 text-center">
-                    <div :class="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ? 'col' : 'col-12'">
+                <div class="row my-5">
+                    <div class="col-12">
+                      <div
+                        v-if="can('Aprobar Despachos')"
+                        class="d-flex justify-content-between"
+                      >
                         <PrimaryButton :href="route('dispatch.list')" class="px-5">
-                            Volver
+                          Volver
                         </PrimaryButton>
-                    </div>
-                    <div class="col">
-                        <PrimaryButton @click="approved" class="px-5" :disabled="form.processing" v-if="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ">
-                            Aprobar
+
+                        <PrimaryButton
+                          v-if="dispatch.status === 'En aprobacion'"
+                          @click="approved"
+                          class="px-5"
+                          :disabled="form.processing"
+                        >
+                          Aprobar
                         </PrimaryButton>
-                    </div>
-                    <div class="col">
-                        <PrimaryButton  @click="submitReturnedQuantities" :disabled="form.processing" v-if="can('Aprobar Despachos') && dispatch.status=='Recibido' ">
-                             Confirmar Devolucion
+
+                        <PrimaryButton
+                          v-else-if="dispatch.status === 'Recibido'"
+                          @click="submitReturnedQuantities"
+                          :disabled="form.processing"
+                        >
+                          Confirmar Devolución
                         </PrimaryButton>
+                      </div>
+
+                      <div v-else class="d-flex justify-content-center w-100">
+                    <div class="text-center">
+                      <PrimaryButton :href="route('dispatch.list')" class="px-5">
+                        Volver
+                       </PrimaryButton>
                     </div>
+                  </div>
                 </div>
+            </div>
             </div>
         </SectionCard> 
     </BaseLayout>
