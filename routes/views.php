@@ -6,6 +6,7 @@ use App\Http\Controllers\LabTransformationController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
+use App\Http\Controllers\returnedDispatch;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
@@ -58,6 +59,12 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
             Route::put('detalle-despachos/{dispatchId}', 'approvedDispatch')->name('dispatch.approved');
+        });
+    });
+    Route::controller(returnedDispatch::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Despachos']], function () {
+            Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
+            Route::post('despachos/detalle despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
         });
     });
     Route::controller(RequestPraisController::class)->group(function () {

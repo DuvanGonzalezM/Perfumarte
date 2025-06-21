@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->foreignId('warehouse_id')->constrained('warehouses', 'warehouse_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('dispatched_quantity');
             $table->boolean('received');
+            $table->integer('returned_quantity');
             $table->string('observations');
             $table->timestamps();
         });
