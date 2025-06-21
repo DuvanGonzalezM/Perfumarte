@@ -3,8 +3,33 @@ import SectionCard from '@/Components/SectionCard.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { ref, computed, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import ModalPrais from '@/Components/ModalPrais.vue';
+
+// Estado para los modales
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const shouldRedirect = ref(false);
+
+// Método para mostrar el modal de confirmación
+const confirmClose = () => {
+    showConfirmModal.value = true;
+};
+
+// Método para manejar la confirmación del cierre
+const handleConfirmClose = () => {
+    showConfirmModal.value = false;
+    submit();
+};
+
+// Método para manejar el cierre exitoso
+const handleSuccess = () => {
+    showSuccessModal.value = true;
+    shouldRedirect.value = true;
+};
+
+// Actualizar el método submit para manejar el éxito
 
 
 const props = defineProps({
@@ -30,7 +55,7 @@ const props = defineProps({
 });
 
 // Calcular el total de billetes y monedas
-const calculatedCash = computed(() => {
+const calculatedCash = () => {
     return (
         form.count_100_bill * 100000 +
         form.count_50_bill * 50000 +
@@ -40,20 +65,22 @@ const calculatedCash = computed(() => {
         form.count_2_bill * 2000 +
         Number(form.total_coins)
     );
-});
+};
 
 // Verificar si los totales coinciden (comparando en miles)
-const isValidCashCount = computed(() => {
-    const totalCounted = Number(calculatedCash.value);
-    const expectedTotal = Number(props.totalCash);
+
+
+const isValidCashCount = () => {
+    const counted = Number(calculatedCash());
+    const expected = Number(props.totalCash);
     // Usamos una pequeña tolerancia para evitar problemas con decimales
-    return Math.abs(totalCounted - expectedTotal) < 1;
-});
+    return Math.abs(counted - expected) < 1;
+};
 
 // Verificar si hay diferencia (en miles)
-const cashDifference = computed(() => {
-    return Number(calculatedCash.value) - Number(props.totalCash);
-});
+const cashDifference = () => {
+    return Number(calculatedCash()) - Number(props.totalCash);
+};
 
 const form = useForm({
     cashRegisterId: props.cashRegisterId,
@@ -69,9 +96,9 @@ const form = useForm({
     observations: ''
 });
 
-const calculatedTotal = computed(() => {
+const calculatedTotal = () => {
     return Number(props.totalCash) + Number(props.totalDigital);
-});
+};
 
 const calculateTotal = () => {
     form.total_digital = props.totalDigital;
@@ -81,17 +108,15 @@ onMounted(() => {
     calculateTotal();
 });
 
-// Verificar si podemos enviar el formulario
-const canSubmit = computed(() => {
-    return isValidCashCount.value && props.cashRegisterId !== null;
-});
+const canSubmit = () => {
+    return isValidCashCount() && props.cashRegisterId !== null;
+};
 
 const submit = () => {
-    if (!canSubmit.value) {
+    if (!canSubmit()) {
         return;
     }
     
-    // Asegurarnos de que los valores estén correctos antes de enviar
     const formData = {
         ...form,
         cashRegisterId: props.cashRegisterId,
@@ -106,7 +131,23 @@ const submit = () => {
         total_digital: Number(form.total_digital)
     };
     
-    form.post(route('cash.close'), formData);
+    form.post(route('cash.close'), {
+        ...formData,
+        onSuccess: () => {
+            handleSuccess();
+        },
+        onError: () => {
+            // Manejar error si es necesario
+        }
+    });
+
+    // Verificar y redirigir si es necesario
+    watch(showSuccessModal, (newVal) => {
+        if (newVal === false && shouldRedirect.value) {
+            window.location.href = route('sales.list');
+            shouldRedirect.value = false;
+        }
+    });
 };
 </script>
 
@@ -141,7 +182,7 @@ const submit = () => {
                                         </div>
                                         <div class="col-md-4">
                                             <div class="alert alert-success">
-                                                <strong>Total Ventas: $ {{ Number(calculatedTotal).toLocaleString() }}</strong>
+                                                <strong>Total Ventas: $ {{ Number(calculatedTotal()).toLocaleString() }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -197,7 +238,7 @@ const submit = () => {
                             <div class="alert" :class="{'alert-success': isValidCashCount, 'alert-danger': !isValidCashCount}">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <strong>Total en Efectivo Contado: ${{ calculatedCash.toLocaleString() }}</strong>
+                                        <strong>Total en Efectivo Contado: ${{ calculatedCash().toLocaleString() }}</strong>
                                     </div>
                                     <div class="col-md-6">
                                         <strong>Total en Efectivo Ventas: ${{ Number(props.totalCash).toLocaleString() }}</strong>
@@ -205,8 +246,8 @@ const submit = () => {
                                 </div>
                                 <div v-if="!isValidCashCount" class="mt-2">
                                     <strong>
-                                        Diferencia: ${{ Math.abs(cashDifference).toLocaleString() }}
-                                        ({{ cashDifference > 0 ? 'Sobrante' : 'Faltante' }})
+                                        Diferencia: ${{ Math.abs(cashDifference()).toLocaleString() }}
+                                        ({{ cashDifference() > 0 ? 'Sobrante' : 'Faltante' }})
                                     </strong>
                                 </div>
                             </div>
@@ -228,7 +269,7 @@ const submit = () => {
                             <div class="col-6 text-end">
                                 <PrimaryButton 
                                     type="button"
-                                    @click="submit"
+                                    @click="confirmClose"
                                     :disabled="!canSubmit"
                                     :class="{ 'opacity-50 cursor-not-allowed': !canSubmit }"
                                 >
@@ -241,6 +282,36 @@ const submit = () => {
                     </div>
                 </div>
             </form>
+
+            <!-- Modal de Confirmación -->
+            <ModalPrais v-model="showConfirmModal">
+                <template #header>
+                    Confirmar Cierre
+                </template>
+                <template #body>
+                    ¿Está seguro que desea cerrar la caja?
+                </template>
+                <template #footer>
+                    <PrimaryButton @click="showConfirmModal = false" class="me-2">
+                        Cancelar
+                    </PrimaryButton>
+                    <PrimaryButton @click="handleConfirmClose">
+                        Confirmar
+                    </PrimaryButton>
+                </template>
+            </ModalPrais>
+
+            <!-- Modal de Éxito -->
+            <ModalPrais v-model="showSuccessModal">
+                <template #header>
+                    ¡Éxito!
+                </template>
+                <template #body>
+                    <div class="alert alert-success">
+                        Cierre de caja realizado exitosamente
+                    </div>
+                </template>
+            </ModalPrais>
         </SectionCard>
     </BaseLayout>
 </template>

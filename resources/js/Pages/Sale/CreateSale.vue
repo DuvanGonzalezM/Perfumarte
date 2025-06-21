@@ -3,7 +3,7 @@ import SectionCard from '@/Components/SectionCard.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -46,9 +46,10 @@ const form = useForm({
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
 const optionProducts = ref(props.inventory.map((reference) => [{ 'title': `${reference.product.commercial_reference} - ${reference.product.category}`, 'value': reference.inventory_id }][0]));
 const optionPayMethod = ref([{ 'title': 'Efectivo', 'value': 'Efectivo' }, { 'title': 'Transferencia', 'value': 'Transferencia' }]);
-const showModal = ref(false);
 const showModalReference = ref(false);
+const showModal = ref(false);
 const showModalChange = ref(false);
+
 const referenceNew = ref({ 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] });
 const devolver = ref(0);
 const questionPerdurable = ref(false);
@@ -68,8 +69,15 @@ const openModalChange = () => {
 }
 
 const submit = () => {
-    form.post(route('sales.store'), form);
-    showModal.value = false;
+    form.post(route('sales.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        },
+        onError: (errors) => {
+            console.log('Error en la validación');
+        },
+    });
 };
 
 const validateChange = async () => {
@@ -116,65 +124,151 @@ const changePayMethod = () => {
 }
 
 const changePerdurable = () => {
-    referenceNew.value.perdurable = [];
+    // Inicializar el array de perdurables con 0 para cada unidad
+    referenceNew.value.perdurable = Array(referenceNew.value.units).fill(0);
 }
+
+const togglePerdurable = (index, value) => {
+    // Si ya está seleccionado, lo deseleccionamos
+    if (referenceNew.value.perdurable[index] === value) {
+        referenceNew.value.perdurable[index] = 0;
+    } else {
+        referenceNew.value.perdurable[index] = value;
+    }
+}
+
+const buttonErrorMessage = ref('');
+
+// Validar si hay referencias de 5ml con menos de 12 unidades en total
+const hasValidReferences = computed(() => {
+    // Sumar todas las unidades de referencias de 5ml
+    const totalUnits5ml = form.references
+        .filter(ref => ref.quantity === 5)
+        .reduce((acc, ref) => acc + ref.units, 0);
+    
+    if (totalUnits5ml < 12 && totalUnits5ml > 0) {
+        buttonErrorMessage.value = 'La cantidad total de 5ml debe ser al menos 12 unidades';
+        return false;
+    }
+    buttonErrorMessage.value = '';
+    return true;
+});
 
 const addReferenceModal = () => {
     showModalReference.value = true;
-    referenceNew.value = { 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] };
+    referenceNew.value = { 
+        'reference': '', 
+        'quantity': '', 
+        'units': 1, 
+        'perdurable': Array(1).fill(0) // Inicializar con 0 para permitir deselección
+    };
 }
 
 const priceReference = (value) => {
-    if (value == 30) {
+    const totalUnitsBySize = {
+        30: form.references.filter(ref => ref.quantity == 30).reduce((acc, ref) => acc + ref.units, 0),
+        50: form.references.filter(ref => ref.quantity == 50).reduce((acc, ref) => acc + ref.units, 0),
+        100: form.references.filter(ref => ref.quantity == 100).reduce((acc, ref) => acc + ref.units, 0)
+    };
+    
+    if (value == 30 && totalUnitsBySize[30] >= 12) {
+        return props.warehouse.price30 - 1000;
+    } else if (value == 30) {
         return props.warehouse.price30;
+    } else if (value == 50 && totalUnitsBySize[50] >= 12) {
+        return props.warehouse.price50 - 2000;
     } else if (value == 50) {
         return props.warehouse.price50;
+    } else if (value == 100 && totalUnitsBySize[100] >= 12) {
+        return props.warehouse.price100 - 2000;
     } else if (value == 100) {
         return props.warehouse.price100;
+    } else if (value == 5) {
+        const totalUnits5ml = form.references.filter(ref => ref.quantity == 5).reduce((acc, ref) => acc + ref.units, 0);
+        
+        // Calcular precio para 5ml
+        if (totalUnits5ml >= 50) {
+            // Si hay 50 o más unidades, calcular descuentos
+            const discountedUnits = 50; // Máximo 50 unidades con descuento
+            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
+            
+            // Precio total: 105000 para las 50 primeras + precio normal para las demás
+            const totalDiscountedPrice = 105000;
+            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            
+            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
+        } else if (totalUnits5ml >= 25) {
+            // Si hay 25 o más unidades, calcular descuentos
+            const discountedUnits = 25; // Máximo 25 unidades con descuento
+            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
+            
+            // Precio total: 66000 para las 25 primeras + precio normal para las demás
+            const totalDiscountedPrice = 66000;
+            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            
+            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
+        } else if (totalUnits5ml >= 12) {
+            // Si hay 12 o más unidades, calcular descuentos
+            const discountedUnits = 12; // Máximo 12 unidades con descuento
+            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
+            
+            // Precio total: 38000 para las 12 primeras + precio normal para las demás
+            const totalDiscountedPrice = 38000;
+            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            
+            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
+        }
+        
+        // Para menos de 12 unidades, usar precio base
+        return props.warehouse.price5;
     } else {
         return 0;
     }
 }
+
+const updateTotal = () => {
+    form.total = form.references.reduce((acc, reference) => {
+        const price = priceReference(reference.quantity);
+        const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
+        return acc + (reference.units * price + dropsPrice);
+    }, 0);
+}
+
 const addReference = () => {
+    // Convertir quantity a número si es string
+    const quantity = typeof referenceNew.value.quantity === 'string' ? parseInt(referenceNew.value.quantity) : referenceNew.value.quantity;
+    
     form.references.push(
         {
             'reference': referenceNew.value.reference,
-            'quantity': referenceNew.value.quantity,
+            'quantity': quantity,
             'units': referenceNew.value.units,
             'perdurable': referenceNew.value.perdurable,
         }
     );
+    
+    // Actualizar el total
+    updateTotal();
+    
     showModalReference.value = false;
-    form.total = form.references.reduce((acc, reference) => {
-        const basePrice = reference.units * priceReference(reference.quantity);
-        const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
-        const discount = calculateDiscount(reference);
-        return acc + (basePrice - discount + dropsPrice);
-    }, 0);
-    referenceNew.value = { 'reference': '', 'quantity': '', 'units': 1, 'perdurable': [] };
-}
+    referenceNew.value = { 
+        'reference': '', 
+        'quantity': '', 
+        'units': 1, 
+        'perdurable': Array(1).fill(0)
+    };
+};
 
 const removeReference = (index) => {
     form.references.splice(index, 1);
 
     form.total = form.references.reduce((acc, reference) => {
-        const basePrice = reference.units * priceReference(reference.quantity);
+        const price = priceReference(reference.quantity);
         const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
-        const discount = calculateDiscount(reference);
-        return acc + (basePrice - discount + dropsPrice);
+        return acc + (reference.units * price + dropsPrice);
     }, 0);
 };
 
-function calculateDiscount(reference) {
-    if (reference.units >= 12) {
-        if (reference.quantity == 30) {
-            return 1000 * reference.units;
-        } else if (reference.quantity == 50 || reference.quantity == 100) {
-            return 2000 * reference.units;
-        }
-    }
-    return 0;
-}
 </script>
 
 <template>
@@ -186,9 +280,8 @@ function calculateDiscount(reference) {
             <!-- <Alert /> -->
             <h1>Nueva Venta</h1>
         </template>
-
-        <SectionCard :subextra="'Valor total: $' + form.total">
-            <template #headerSection>
+        <SectionCard :subextra="'Valor total: $' + Math.round(form.total)">
+            <template #headerSection>   
                 <strong>Nueva Venta</strong>
             </template>
             <div class="container">
@@ -218,13 +311,10 @@ function calculateDiscount(reference) {
                                     reference.reference)?.product.category}}</td>
                                 <td>{{ reference.quantity }} ml</td>
                                 <td>{{ reference.units }}</td>
-                                <td>{{reference.perdurable.reduce((a, b) => a + Number(b), 0)}}</td>
-                                <td>
-                                    {{reference.units * priceReference(reference.quantity) -
-                                        calculateDiscount(reference) +
-                                        reference.perdurable.reduce((a, b) => a + Number(b), 0) *
-                                        props.warehouse.price_drops}}
-                                </td>
+                                <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
+                                <td>$ {{ Math.round(reference.units * priceReference(reference.quantity) +
+                                    reference.perdurable.reduce((a,
+                                        b) => a + Number(b), 0) * props.warehouse.price_drops) }}</td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
@@ -244,9 +334,11 @@ function calculateDiscount(reference) {
                         </div>
                         <div class="col-6 text-end">
                             <PrimaryButton @click="openModal" class="px-5"
-                                :class="form.processing || form.references.length == 0 || !form.assessor ? 'disabled' : ''">
+                                :class="form.processing || form.references.length == 0 || !form.assessor || !hasValidReferences ? 'disabled' : ''">
                                 Registrar Venta
                             </PrimaryButton>
+                            <br>
+                            <span v-if="!hasValidReferences" class="text-danger">{{ buttonErrorMessage }}</span>
                         </div>
                     </div>
 
@@ -264,27 +356,35 @@ function calculateDiscount(reference) {
                                 <div class="col-md-12 row mt-3 justify-content-center" v-if="referenceNew['reference']">
                                     <label
                                         class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
-                                        :for="'quantity'">
+                                        :for="'quantity5'">
+                                        <i class="fa-solid fa-flask d-flex justify-content-center fs-9"></i>5 ml
+                                        <input class="form-check-input d-none" type="radio"
+                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity5'"
+                                            :value="5">
+                                    </label>
+                                    <label
+                                        class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
+                                        :for="'quantity30'">
                                         <i class="fa-solid fa-flask d-flex justify-content-center"></i>30 ml
                                         <input class="form-check-input d-none" type="radio"
-                                            v-model="referenceNew['quantity']" :name="'quantity'" :id="'quantity'"
-                                            value="30">
+                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity30'"
+                                            :value="30">
                                     </label>
                                     <label
                                         class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
-                                        :for="'quantity1'">
+                                        :for="'quantity50'">
                                         <i class="fa-solid fa-flask d-flex justify-content-center fs-4"></i>50 ml
                                         <input class="form-check-input d-none" type="radio"
-                                            v-model="referenceNew['quantity']" :name="'quantity1'" :id="'quantity1'"
-                                            value="50">
+                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity50'"
+                                            :value="50">
                                     </label>
                                     <label
                                         class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
-                                        :for="'quantity2'">
+                                        :for="'quantity100'">
                                         <i class="fa-solid fa-flask d-flex justify-content-center fs-2"></i>100 ml
                                         <input class="form-check-input d-none" type="radio"
-                                            v-model="referenceNew['quantity']" :name="'quantity2'" :id="'quantity2'"
-                                            value="100">
+                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity100'"
+                                            :value="100">
                                     </label>
                                     <div class="col-md-12 mt-2 row">
                                         <div class="col-md-6">
@@ -302,38 +402,39 @@ function calculateDiscount(reference) {
                                             Unidad {{ unidad }}
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index + 'perdurable'">
+                                                :for="index + 'perdurable5'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>5
                                                 <input class="form-check-input d-none" type="radio"
                                                     v-model="referenceNew['perdurable'][index]"
-                                                    :name="index + 'perdurable'" :id="index + 'perdurable'" value="5">
+                                                    :name="index + 'perdurable5'" :id="index + 'perdurable5'" :value="5"
+                                                    @click="togglePerdurable(index, 5)">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index + 'perdurable1'">
+                                                :for="index + 'perdurable10'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>10
                                                 <input class="form-check-input d-none" type="radio"
                                                     v-model="referenceNew['perdurable'][index]"
-                                                    :name="index + 'perdurable1'" :id="index + 'perdurable1'"
-                                                    value="10">
+                                                    :name="index + 'perdurable10'" :id="index + 'perdurable10'" :value="10"
+                                                    @click="togglePerdurable(index, 10)">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index + 'perdurable2'">
+                                                :for="index + 'perdurable15'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>15
                                                 <input class="form-check-input d-none" type="radio"
                                                     v-model="referenceNew['perdurable'][index]"
-                                                    :name="index + 'perdurable2'" :id="index + 'perdurable2'"
-                                                    value="15">
+                                                    :name="index + 'perdurable15'" :id="index + 'perdurable15'" :value="15"
+                                                    @click="togglePerdurable(index, 15)">
                                             </label>
                                             <label
                                                 class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
-                                                :for="index + 'perdurable3'">
+                                                :for="index + 'perdurable20'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>20
                                                 <input class="form-check-input d-none" type="radio"
                                                     v-model="referenceNew['perdurable'][index]"
-                                                    :name="index + 'perdurable3'" :id="index + 'perdurable3'"
-                                                    value="20">
+                                                    :name="index + 'perdurable20'" :id="index + 'perdurable20'" :value="20"
+                                                    @click="togglePerdurable(index, 20)">
                                             </label>
                                         </div>
                                     </div>
@@ -351,9 +452,11 @@ function calculateDiscount(reference) {
                         </template>
                     </ModalPrais>
 
+
+
                     <ModalPrais v-model="showModal" @close="showModal = false">
                         <template #header>
-                            Valor a pagar: ${{ form.total }}
+                            Valor a pagar: ${{ + Math.round(form.total) }}
                         </template>
                         <template #body>
                             <div class="row">
@@ -393,7 +496,7 @@ function calculateDiscount(reference) {
                                             v-model="form.total_coins" :focus="form.total_coins != null ? true : false"
                                             labelValue="Cantidad total de monedas" :minimo="0" :required="true" />
                                     </div>
-                                    <div class="col-md-12 my-4 d-flex justify-content-center ">
+                                    <div class="col-md-12 my-4 d-flex justify-content-center">
                                         <PrimaryButton @click="openModalChange" class="px-5">
                                             Cobrar
                                         </PrimaryButton>
@@ -406,7 +509,7 @@ function calculateDiscount(reference) {
                                             :focus="form.transaction_code != null ? true : false"
                                             labelValue="Codigo de transaccion" :minimo="0" :required="true" />
                                     </div>
-                                    <div class="col-md-12 my-4 d-flex justify-content-center ">
+                                    <div class="col-md-12 my-4 d-flex justify-content-center">
                                         <PrimaryButton @click="submit" class="px-5">
                                             Pagar
                                         </PrimaryButton>
@@ -416,6 +519,51 @@ function calculateDiscount(reference) {
                         </template>
                         <template #footer>
                             <div></div>
+                        </template>
+                    </ModalPrais>
+
+                    <ModalPrais v-model="showModalChange" @close="showModalChange = false">
+                        <template #header>
+                            <h3>Cantidad a devolver: ${{ devolver }}</h3>
+                        </template>
+                        <template #body>
+                            <div class="row">
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_100_bill" :min="0" title="Billetes de $100,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_50_bill" :min="0" title="Billetes de $50,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_20_bill" :min="0" title="Billetes de $20,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_10_bill" :min="0" title="Billetes de $10,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_5_bill" :min="0" title="Billetes de $5,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_count_2_bill" :min="0" title="Billetes de $2,000" />
+                                </div>
+                                <div class="col-6">
+                                    <CountControl v-model="form.rest_total_coins" :min="0" title="Monedas de $100" />
+                                </div>
+                            </div>
+                        </template>
+                        <template #footer>
+                            <div class="row">
+                                <div class="col-6">
+                                    <PrimaryButton @click="openModal">
+                                        Volver
+                                    </PrimaryButton>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <PrimaryButton @click="submit">
+                                        Registrar Venta
+                                    </PrimaryButton>
+                                </div>
+                            </div>
                         </template>
                     </ModalPrais>
 
