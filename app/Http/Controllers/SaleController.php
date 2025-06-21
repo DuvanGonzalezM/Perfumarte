@@ -153,8 +153,7 @@ class SaleController extends Controller
             ]);
             $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
             
-            // Si es una fragancia (código diferente a 300)
-            if ($reference['reference'] != '300') {
+
                 // Calcular la cantidad a retirar (50% del tamaño)
                 $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
                 
@@ -164,15 +163,14 @@ class SaleController extends Controller
                 // Descontar del disolvente (buscar en el mismo almacén y por código del producto)
                 $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                     ->whereHas('product', function ($query) {
-                        $query->where('code', '300');
+                        $query->where('product_id', '2');
                     })
                     ->first();
                 
                 if ($disolventeInventory) {
                     $disolventeInventory->quantity -= $quantityToSubtract;
                     $disolventeInventory->save();
-                }
-            }
+                }   
             
             $inventory->save();
         }
