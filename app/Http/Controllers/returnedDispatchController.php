@@ -10,7 +10,7 @@ use App\Models\Inventory;
 use Inertia\Inertia;
 use App\Models\DispatchDetail;
 
-class returnedDispatch extends Controller
+class returnedDispatchController extends Controller
 {
 
     public function getReturnedDispatch($id)
@@ -28,7 +28,6 @@ class returnedDispatch extends Controller
             ]);
         }
 
-        // Para todos los demás casos, solo mostrar el detalle
         return Inertia::render('Dispatch/Dispatchdetail', [
             'dispatch' => $dispatch
         ]);
@@ -46,11 +45,9 @@ class returnedDispatch extends Controller
         foreach ($request->details as $detailData) {
             $detail = DispatchDetail::with('inventory')->find($detailData['id']);
 
-            // Actualizar la cantidad devuelta
             $detail->returned_quantity = $detailData['returned_quantity'];
             $detail->save();
 
-            // Sumar al inventario de bodega 2
             $inventory = Inventory::where('product_id', $detail->inventory->product_id)
                 ->where('warehouse_id', 2)
                 ->first();
