@@ -186,7 +186,6 @@ const priceReference = (value) => {
     } else if (value == 5) {
         const totalUnits5ml = form.references.filter(ref => ref.quantity == 5).reduce((acc, ref) => acc + ref.units, 0);
         
-        // Calcular precio para 5ml
         if (totalUnits5ml >= 50) {
             // Si hay 50 o más unidades, calcular descuentos
             const discountedUnits = 50; // Máximo 50 unidades con descuento
@@ -194,7 +193,7 @@ const priceReference = (value) => {
             
             // Precio total: 105000 para las 50 primeras + precio normal para las demás
             const totalDiscountedPrice = 105000;
-            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            const totalRegularPrice = regularUnits * 2100; // Precio normal para 50+ unidades
             
             return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
         } else if (totalUnits5ml >= 25) {
@@ -204,7 +203,7 @@ const priceReference = (value) => {
             
             // Precio total: 66000 para las 25 primeras + precio normal para las demás
             const totalDiscountedPrice = 66000;
-            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            const totalRegularPrice = regularUnits * 2700; // Precio normal para 25-49 unidades
             
             return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
         } else if (totalUnits5ml >= 12) {
@@ -214,7 +213,7 @@ const priceReference = (value) => {
             
             // Precio total: 38000 para las 12 primeras + precio normal para las demás
             const totalDiscountedPrice = 38000;
-            const totalRegularPrice = regularUnits * props.warehouse.price5;
+            const totalRegularPrice = regularUnits * 3200; // Precio normal para 12-24 unidades
             
             return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
         }

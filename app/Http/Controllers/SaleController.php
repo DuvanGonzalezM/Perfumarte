@@ -76,7 +76,7 @@ class SaleController extends Controller
                     return 3200;
                 }
                 // Menos de 12 unidades: precio base
-                return $basePrice;
+                // return $basePrice;
             
             case 30:
                 $basePrice = $warehouse->price30;
