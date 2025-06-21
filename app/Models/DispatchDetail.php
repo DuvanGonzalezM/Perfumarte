@@ -19,6 +19,7 @@ class DispatchDetail extends Model
         'warehouse_id',
         'dispatched_quantity',
         'received',
+        'returned_quantity',
         'observations'
     ];
     protected $casts = [
