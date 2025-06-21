@@ -77,14 +77,14 @@ const columnsTable = [
                         {{ isCashClosed() ? 'Cerrada' : 'Abierta' }}
                     </span>
                 </div>
-                <PrimaryButton :href="route('sales.create')" class="position-absolute" :disabled="isCashClosed()">
+                <PrimaryButton :href="route('sales.create')" :class="isCashClosed() ? 'disabled' : ''" class="position-absolute">
                     Nueva venta
                 </PrimaryButton>
             </div>
             <Table class="size-prais-5" :data="sales" :columns="columnsTable" />
             <div class="row my-5 text-center">
                 <div class="col-12">
-                    <PrimaryButton :href="route('cash_register.close')" :disabled="isCashClosed()">
+                    <PrimaryButton :href="route('cash_register.close')" :class="isCashClosed() ? 'disabled' : ''">
                         Cerrar Caja
                     </PrimaryButton>
                 </div>
