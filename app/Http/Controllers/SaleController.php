@@ -9,6 +9,7 @@ use App\Models\SaleDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SaleController extends Controller
@@ -288,7 +289,8 @@ class SaleController extends Controller
             $result = $this->calculateChange($precio, $pago, $cashRegister);
             return $result;
         } catch (\Exception $e) {
-            dd($e);
+            \Illuminate\Support\Facades\Log::error('Error en SaleController@test: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString());
+            return response()->json(['error' => 'Ocurrió un error durante el test: ' . $e->getMessage()], 500);
         }
     }
 }

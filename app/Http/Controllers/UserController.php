@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -36,7 +37,7 @@ class UserController extends Controller
         $user = User::create([
             'username' => (string) $request->username,
             'name' => (string) $request->name,
-            'password' => Hash::make('PraisSecret'),
+            'password' => Hash::make(Str::password(16, true, true, true, false)),
             'boss_user' => (int) $request->boss_user,
             'enabled' => (bool) $request->enabled,
             'location_id' => (int) $request->location_id,
@@ -133,7 +134,7 @@ class UserController extends Controller
         $user = User::findOrFail($user_id);
         $user->update([
             'default_password' => true,
-            'password' => Hash::make('PraisSecret'),
+            'password' => Hash::make(Str::password(16, true, true, true, false)),
         ]);
 
         return redirect()->route('users.detail', $user_id)->with('success', 'Contraseña restablecida exitosamente');
