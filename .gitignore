@@ -21,3 +21,4 @@ yarn-error.log
 /.config
 /.cache
 /.atmp
+/docker/production/nginx/default.conf
