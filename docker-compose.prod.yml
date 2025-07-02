@@ -80,16 +80,16 @@ services:
       - F2B_LOG_LEVEL=DEBUG
     volumes:
       - type: volume
-        source: perfumarte_fail2ban_data # Este volumen persistirá los datos de fail2ban
+        source: perfumarte_fail2ban_data
         target: /data
       - type: bind
-        source: ./docker/production/fail2ban/data/jail.d # Su configuración de jail personalizada
+        source: ./docker/production/fail2ban/data/jail.d
         target: /data/jail.d
         read_only: true
       - type: bind
-        source: ./docker/production/fail2ban/data/filter.d # Sus filtros personalizados
+        source: ./docker/production/fail2ban/data/filter.d
         target: /data/filter.d
         read_only: true
-      - nginx-logs:/var/log/nginx:ro # Acceso a los logs de Nginx
+      - nginx-logs:/var/log/nginx:ro
     depends_on:
       - webserver
