@@ -17,20 +17,22 @@ services:
     restart: always
 
   webserver:
-    image: nginx:1.25.4-alpine
+    build:
+      context: .
+      dockerfile: ./docker/production/nginx/Dockerfile
     container_name: perfumarte-nginx
     restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - './docker/production/nginx:/etc/nginx/conf.d'
-      - './certbot/conf:/etc/letsencrypt'
-      - './certbot/www:/var/www/certbot'
+      - './docker/production/nginx/app.conf:/etc/nginx/conf.d/default.conf:ro' # Montamos el app.conf directamente
+      - './docker/production/nginx/security.inc:/etc/nginx/conf.d/security.inc:ro' # Montamos security.inc
+      - './certbot/conf:/etc/letsencrypt:ro'
+      - './certbot/www:/var/www/certbot:ro'
       - public_assets:/var/www/public:ro
-      - nginx-logs:/var/log/nginx
-      - ./docker/production/nginx/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
-    command: /bin/sh -c "chmod +x /usr/local/bin/nginx-entrypoint.sh && /usr/local/bin/nginx-entrypoint.sh"
+      - nginx-logs:/var/log/nginx # Nginx escribirá aquí gracias al entrypoint
+    # Ya no se necesita entrypoint aquí, se define en el Dockerfile
     depends_on:
       - app
 
