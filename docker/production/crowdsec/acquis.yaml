@@ -1,5 +1,7 @@
+# This is the acquis.yaml file for CrowdSec.
+# It configures how CrowdSec acquires logs.
+
 filenames:
   - /var/log/nginx/access.log
-  - /var/log/nginx/error.log
 labels:
   type: nginx

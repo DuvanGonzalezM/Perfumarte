@@ -2,7 +2,7 @@ volumes:
   public_assets: {}
   nginx-logs: {}
   certbot-etc: {}
-  perfumarte_fail2ban_data: {}
+  crowdsec_db: {}
 
 services:
   app:
@@ -37,63 +37,28 @@ services:
     depends_on:
       - app
 
-  volumes:
-  public_assets: {}
-  nginx-logs: {}
-  certbot-etc: {}
-  perfumarte_fail2ban_data: {}
-
-services:
-  app:
-    build:
-        context: .
-        dockerfile: ./docker/Dockerfile
-        target: builder
-    volumes:
-      - public_assets:/var/www/public
-    ports:
-      - '8088:8088'
-    restart: always
-
-  webserver:
-    image: nginx:1.25.4-alpine
-    container_name: perfumarte-nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - './docker/production/nginx:/etc/nginx/conf.d'
-      - './certbot/conf:/etc/letsencrypt'
-      - './certbot/www:/var/www/certbot'
-      - public_assets:/var/www/public:ro
-      - nginx-logs:/var/log/nginx
-    command: nginx -g "daemon off;"
-    depends_on:
-      - app
-
-  fail2ban:
-    image: crazymax/fail2ban:latest
-    container_name: perfumarte-fail2ban
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: perfumarte-crowdsec
     restart: unless-stopped
-    network_mode: "host"
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
     environment:
-      - F2B_LOG_LEVEL=DEBUG
+      COLLECTIONS: "crowdsecurity/nginx"
     volumes:
-      - type: volume
-        source: perfumarte_fail2ban_data
-        target: /data
-      - type: bind
-        source: ./docker/production/fail2ban/data/jail.d
-        target: /data/jail.d
-        read_only: true
-      - type: bind
-        source: ./docker/production/fail2ban/data/filter.d
-        target: /data/filter.d
-        read_only: true
+      - ./docker/production/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - crowdsec_db:/var/lib/crowdsec/data/
       - nginx-logs:/var/log/nginx:ro
     depends_on:
+      - webserver
+
+  nginx-bouncer:
+    image: crowdsecurity/nginx-bouncer:latest
+    container_name: perfumarte-nginx-bouncer
+    restart: unless-stopped
+    environment:
+      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY:-YOUR_API_KEY} # Replace with actual API key or set in .env
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+    volumes:
+      - ./docker/production/nginx/app.conf:/etc/nginx/conf.d/default.conf # Ensure this path is correct
+    depends_on:
+      - crowdsec
       - webserver
