@@ -20,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/nginx/Dockerfile
+    image: perfumarte-nginx-custom:latest
     container_name: perfumarte-nginx
     restart: always
     ports:
