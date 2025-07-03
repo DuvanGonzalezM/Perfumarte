@@ -15,6 +15,17 @@ location ~* /(?:wp-admin|wp-login\.php|xmlrpc\.php) {
 }
 
 # Bloquea user-agents de bots de spam y scrapers conocidos.
-if ($http_user_agent ~* (SemrushBot|AhrefsBot|MJ12bot|DotBot|PetalBot|python-requests)) {
-    return 403;
-}
+# Se recomienda que CrowdSec maneje esto para una gestión más dinámica,
+# pero se mantiene como una capa adicional si se desea.
+# if ($http_user_agent ~* (SemrushBot|AhrefsBot|MJ12bot|DotBot|PetalBot|python-requests)) {
+#     return 403;
+# }
+
+# Content Security Policy (CSP) - Ejemplo básico, ajustar según necesidades
+# add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; frame-ancestors 'self';" always;
+
+# Rate Limiting (ejemplo, ajustar según sea necesario)
+# limit_req_zone $binary_remote_addr zone=mylimit:10m rate=5r/s; # 5 requests per second
+# limit_req zone=mylimit burst=10 nodelay;
+# limit_conn_zone $binary_remote_addr zone=myconnlimit:10m;
+# limit_conn myconnlimit 10; # 10 concurrent connections per IP
