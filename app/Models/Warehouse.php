@@ -16,6 +16,7 @@ class Warehouse extends Model
     protected $fillable = [
         'location_id',
         'name',
+        'price5',
         'price30',
         'price50',
         'price100',

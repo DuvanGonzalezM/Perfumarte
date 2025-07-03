@@ -11,7 +11,14 @@ const props = defineProps({
     sales: {
         type: Array,
     },
+    confirmationclosingcash: {
+        type: Object,
+    }
 });
+
+const isCashClosed = () => {
+    return props.confirmationclosingcash == "1";
+};
 const columnsTable = [
 {
         data: "created_at",
@@ -59,17 +66,25 @@ const columnsTable = [
 
         <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
             <template #headerSection>
-                <strong>Ventas</strong>
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Ventas</strong>
+                </div>
             </template>
             <div class="container">
-                <PrimaryButton :href="route('sales.create')" class="position-absolute" v-if="can('Crear Ventas')">
+                <div class="mb-4">
+                    <span class="text-muted">Estado de la caja:</span>
+                    <span :class="'badge ms-2 ' + (isCashClosed() ? 'bg-danger' : 'bg-success')">
+                        {{ isCashClosed() ? 'Cerrada' : 'Abierta' }}
+                    </span>
+                </div>
+                <PrimaryButton :href="route('sales.create')" :class="isCashClosed() ? 'disabled' : ''" class="position-absolute">
                     Nueva venta
                 </PrimaryButton>
             </div>
             <Table class="size-prais-5" :data="sales" :columns="columnsTable" />
             <div class="row my-5 text-center">
                 <div class="col-12">
-                    <PrimaryButton :href="route('cash_register.close')">
+                    <PrimaryButton :href="route('cash_register.close')" :class="isCashClosed() ? 'disabled' : ''">
                         Cerrar Caja
                     </PrimaryButton>
                 </div>

@@ -7,8 +7,8 @@ import { computed } from 'vue';
 import moment from 'moment';
 import { useForm } from '@inertiajs/vue3';
 import ModalPrais from '@/Components/ModalPrais.vue';
+import TextInput from '@/Components/TextInput.vue';
 import { ref } from 'vue';
-
 
 
 
@@ -18,6 +18,7 @@ const props = defineProps({
         required: true,
     },
 });
+
 
 const groupedDispatches = computed(() => {
     const dispatches = {};
@@ -33,9 +34,18 @@ const groupedDispatches = computed(() => {
 const showModalSuccess = ref(false);
 const showModalError = ref(false);
 const form = useForm({
-    dispatch_id: props.dispatch.dispatch_id,
-    status: props.dispatch.status,
+  dispatch_id: props.dispatch.dispatch_id,
+  status: props.dispatch.status,
+  details: props.dispatch.dispatchdetail.map(detail => ({
+    id: detail.id,
+    returned_quantity: detail.returned_quantity ?? 0,
+    dispatched_quantity: detail.dispatched_quantity,
+    observations: detail.observations,
+    received: detail.received,
+    inventory: detail.inventory, 
+  }))
 });
+
 console.log(props.dispatch.status);
 const approved = () => {
     form.put(route('dispatch.approved', props.dispatch.dispatch_id), {
@@ -48,6 +58,39 @@ const approved = () => {
         }
     });
 };
+
+const submitReturnedQuantities = () => {
+  
+  form.details = [];
+
+  Object.values(groupedDispatches.value).forEach(items => {
+  if (Array.isArray(items)) {
+    items.forEach(item => {
+        console.log('item:', item);
+        form.details.push({
+        id: item.dispatchs_detail_id,
+        returned_quantity: item.returned_quantity
+      });
+    });
+  } else {
+    console.warn('Valor inesperado en groupedDispatches:', items);
+  }
+});
+
+  form.dispatch_id = props.dispatch.dispatch_id; 
+
+  form.post(route('dispatchReturn.store', form.dispatch_id), {
+    onSuccess: () => {
+      showModalSuccess.value = true;
+    },
+    onError: () => {
+      console.log(form.errors); 
+      showModalError.value = true;
+    }
+  });
+};
+
+
 
 
 </script>
@@ -81,6 +124,7 @@ const approved = () => {
                                     <th>Referencia</th>
                                     <th>Cantidad Despachada</th>
                                     <th>Recibido</th>
+                                    <th>Cantidad Devuelta</th>
                                     <th>Observaciones</th>
                              
                                 </tr>
@@ -94,6 +138,14 @@ const approved = () => {
                                     <th><i v-if="item.received === 1" class="fa-solid fa-circle-check"></i>
                                         <i v-else class="fa-regular fa-circle"></i>
                                     </th>
+                                    <td>
+                                    <template v-if="can('Aprobar Despachos')">
+                                    <TextInput :id="`returned_quantity_${index}`" type="number" name="returned_quantity[]"v-model="item.returned_quantity":placeholder="item.inventory.product.measurement_unit.replace('KG', 'ml')" />
+                                    </template>
+                                    <template v-else>
+                                    <span>{{ item.returned_quantity }}</span>
+                                    </template>
+                                    </td>
                                     <th>{{ item.observations }}</th>
                                 </tr>
                             </tbody>
@@ -101,20 +153,45 @@ const approved = () => {
                     </div>
                 </div>
 
-                <div class="row my-5 text-center">
-                    <div :class="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ? 'col' : 'col-12'">
+                <div class="row my-5">
+                    <div class="col-12">
+                      <div
+                        v-if="can('Aprobar Despachos')"
+                        class="d-flex justify-content-between"
+                      >
                         <PrimaryButton :href="route('dispatch.list')" class="px-5">
-                            Volver
+                          Volver
                         </PrimaryButton>
-                    </div>
-                    <div class="col">
-                        <PrimaryButton @click="approved" class="px-5" :disabled="form.processing" v-if="can('Aprobar Despachos') && dispatch.status=='En aprobacion' ">
-                            Aprobar
+
+                        <PrimaryButton
+                          v-if="dispatch.status === 'En aprobacion'"
+                          @click="approved"
+                          class="px-5"
+                          :disabled="form.processing"
+                        >
+                          Aprobar
                         </PrimaryButton>
+
+                        <PrimaryButton
+                          v-else-if="dispatch.status === 'Recibido'"
+                          @click="submitReturnedQuantities"
+                          :disabled="form.processing"
+                        >
+                          Confirmar Devolución
+                        </PrimaryButton>
+                      </div>
+
+                      <div v-else class="d-flex justify-content-center w-100">
+                    <div class="text-center">
+                      <PrimaryButton :href="route('dispatch.list')" class="px-5">
+                        Volver
+                       </PrimaryButton>
                     </div>
+                  </div>
                 </div>
             </div>
-        </SectionCard>
+            </div>
+        </SectionCard> 
     </BaseLayout>
     <ModalPrais v-model="showModalSuccess" @close="showModalSuccess = false">
         <template #header>

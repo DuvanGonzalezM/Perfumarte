@@ -6,6 +6,8 @@ use App\Http\Controllers\LabTransformationController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RepackageController;
 use App\Http\Controllers\RequestPraisController;
+use App\Http\Controllers\returnedDispatch;
+use App\Http\Controllers\returnedDispatchController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
@@ -60,6 +62,12 @@ Route::middleware('auth')->group(function () {
             Route::put('detalle-despachos/{dispatchId}', 'approvedDispatch')->name('dispatch.approved');
         });
     });
+    Route::controller(returnedDispatchController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Despachos']], function () {
+            Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
+            Route::post('despachos/detalle despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
+        });
+    });
     Route::controller(RequestPraisController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Solicitudes Insumos']], function () {
             Route::get('solicitudes-insumos', 'getAllRequest')->name('suppliesrequest.list');
@@ -70,7 +78,7 @@ Route::middleware('auth')->group(function () {
             Route::put('solicitudes-insumos/{requestId}/actualizar', 'update')->name('suppliesrequest.update');
         });
         Route::group(['middleware' => ['can:Crear Solicitudes Insumos']], function () {
-            Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.store');
+            Route::get('solicitudes-insumos/nueva-solicitud', 'createRequst')->name('suppliesrequest.create');
             Route::post('solicitudes-insumos/nueva-solicitud', 'storeRequest')->name('suppliesrequest.store');
         });
         Route::group(['middleware' => ['can:Ver Solicitudes Transformacion']], function () {

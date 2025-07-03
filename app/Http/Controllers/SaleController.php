@@ -9,19 +9,33 @@ use App\Models\SaleDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SaleController extends Controller
 {
     public function sales()
     {
+        $userLocation = auth()->user()->location_user[0]->location_id;
+        
+        // Obtener las ventas del día
         $sales = Sale::with('user')
-            ->whereHas('cashRegister', function ($query) {
-                $query->where('location_id', auth()->user()->location_user[0]->location_id)
+            ->whereHas('cashRegister', function ($query) use ($userLocation) {
+                $query->where('location_id', $userLocation)
                     ->whereDate('created_at', date('Y-m-d'));
             })
             ->get();
-        return Inertia::render('Sale/SalesList', ['sales' => $sales]);
+
+        // Obtener el estado de la caja del día
+        $cashRegister = CashRegister::where('location_id', $userLocation)
+            ->whereDate('created_at', date('Y-m-d'))
+            ->first();
+        
+
+        return Inertia::render('Sale/SalesList', [
+            'sales' => $sales,
+            'confirmationclosingcash' => $cashRegister?->confirmationclosingcash
+        ]);
     }
 
     public function createSales()
@@ -44,24 +58,60 @@ class SaleController extends Controller
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
     }
 
-    public function priceReference($quantity, $warehouse)
+    public function priceReference($quantity, $warehouse, $totalUnits = 0)
     {
+        $basePrice = 0;
         switch ($quantity) {
+            case 5:
+                $basePrice = $warehouse->price5;
+                
+                // Descuentos para 5ml
+                if ($totalUnits >= 50) {
+                    // 50 unidades o más: $2.100
+                    return 2100;
+                } elseif ($totalUnits >= 25) {
+                    // 25-49 unidades: $2.700
+                    return 2700;
+                } elseif ($totalUnits >= 12) {
+                    // 12-24 unidades: $3.200
+                    return 3200;
+                }
+                // Menos de 12 unidades: precio base
+                // return $basePrice;
+            
             case 30:
-                return $warehouse->price30;
+                $basePrice = $warehouse->price30;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 1000; // Descuento de 1000 por unidad
+                }
+                break;
+            
             case 50:
-                return $warehouse->price50;
+                $basePrice = $warehouse->price50;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 2000; // Descuento de 2000 por unidad
+                }
+                break;
+            
             case 100:
-                return $warehouse->price100;
+                $basePrice = $warehouse->price100;
+                if ($totalUnits >= 12) {
+                    $basePrice -= 2000; // Descuento de 2000 por unidad
+                }
+                break;
+            
             default:
                 return 0;
         }
+        return $basePrice;
     }
 
     public function storeSales(Request $request)
     {
         $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
+
+
 
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
@@ -103,7 +153,26 @@ class SaleController extends Controller
                 'price' => $totalPrice,
             ]);
             $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->where('inventory_id', $reference['reference'])->first();
-            $inventory->quantity -= ($reference['quantity'] * $reference['units']);
+            
+
+                // Calcular la cantidad a retirar (50% del tamaño)
+                $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
+                
+                // Descontar de la fragancia
+                $inventory->quantity -= $quantityToSubtract;
+                
+                // Descontar del disolvente (buscar en el mismo almacén y por código del producto)
+                $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
+                    ->whereHas('product', function ($query) {
+                        $query->where('product_id', '2');
+                    })
+                    ->first();
+                
+                if ($disolventeInventory) {
+                    $disolventeInventory->quantity -= $quantityToSubtract;
+                    $disolventeInventory->save();
+                }   
+            
             $inventory->save();
         }
 
@@ -220,7 +289,8 @@ class SaleController extends Controller
             $result = $this->calculateChange($precio, $pago, $cashRegister);
             return $result;
         } catch (\Exception $e) {
-            dd($e);
+            \Illuminate\Support\Facades\Log::error('Error en SaleController@test: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString());
+            return response()->json(['error' => 'Ocurrió un error durante el test: ' . $e->getMessage()], 500);
         }
     }
 }

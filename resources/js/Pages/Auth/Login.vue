@@ -1,6 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonSubmit from '@/Components/ButtonSubmit.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useReCaptcha } from 'vue-recaptcha-v3';
@@ -14,26 +14,12 @@ const form = useForm({
 });
 
 const submit = async () => {
-    try {
-        await recaptchaLoaded();
-        const token = await executeRecaptcha('login');
-        form.captcha_token = token;
-        
-        form.post(route('login'), {
-            onFinish: () => {
-                form.reset('password');
-                form.captcha_token = '';
-            },
-        });
-    } catch (error) {
-        console.error('Error con reCAPTCHA:', error);
-        form.post(route('login'), {
-            onFinish: () => {
-                form.reset('password');
-                form.captcha_token = '';
-            },
-        });
-    }
+    await recaptchaLoaded();
+    form.captcha_token = await executeRecaptcha('login');
+
+    form.post(route('login'), {
+        onFinish: () => form.reset('password'),
+    });
 };
 </script>
 
@@ -58,9 +44,9 @@ const submit = async () => {
             </div>
 
             <div class="button-wrapper d-flex justify-content-center">
-                <PrimaryButton @click="submit" :class="form.processing ? 'disabled' : ''">
+                <ButtonSubmit :class="form.processing ? 'disabled' : ''">
                     Ingresar
-                </PrimaryButton>
+                </ButtonSubmit>
             </div>
         </form>
     </GuestLayout>

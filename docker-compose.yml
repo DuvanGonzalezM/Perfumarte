@@ -17,6 +17,8 @@ services:
         build:
             context: .
             dockerfile: ./docker/Dockerfile
+            target: builder
+        entrypoint: /usr/local/bin/entrypoint.sh
         ports:
             - '5173:5173'
             - '9000:9000'
