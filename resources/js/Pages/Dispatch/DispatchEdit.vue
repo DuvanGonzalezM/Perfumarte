@@ -107,7 +107,6 @@ const addDispatch = () => {
         warehouse: warehouse,
         references: references,
     })
-    console.log(form);
     
     ;
     
@@ -118,7 +117,6 @@ const removeDispatch = (index) => {
 };
 
 const submit = () => {
-    console.log(form);
     form.put(route('dispatch.update', props.dispatch.dispatch_id));
 };
 
