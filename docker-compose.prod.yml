@@ -11,8 +11,8 @@ services:
         target: builder
     volumes:
       - public_assets:/var/www/public
-    ports:
-      - '8088:8088'
+    networks:
+        - prais-network
     restart: always
 
   webserver:
@@ -29,5 +29,26 @@ services:
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
     command: nginx -g "daemon off;"
+    networks:
+        - prais-network
     depends_on:
       - app
+
+  reverb:
+    build:
+        context: .
+        dockerfile: ./docker/Dockerfile
+        target: builder
+    entrypoint: ["/usr/local/bin/php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8088"]
+    ports:
+        - "${REVERB_PORT_EXT:-8088}:${REVERB_PORT:-8088}"
+    volumes:
+        - '.:/var/www'
+    networks:
+        - prais-network
+    depends_on:
+        - app
+
+networks:
+    prais-network:
+        driver: bridge
