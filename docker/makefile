@@ -13,7 +13,6 @@ COMPOSE_CMD = docker-compose $(COMPOSE_FILES)
 up reload: recreate ?=
 up reload:
 	$(COMPOSE_CMD) build --build-arg APP_ENV=$(APP_ENV) && $(COMPOSE_CMD) up -d --force-recreate --remove-orphans $(recreate)
-	docker restart perfumarte-fail2ban
 
 start:
 	$(COMPOSE_CMD) start
