@@ -9,8 +9,5 @@ composer install --no-interaction --no-progress
 npm install
 npm run build
 
-# Iniciar el servidor Reverb en segundo plano
-php artisan reverb:start &
-
 # Ejecutar el comando principal
 exec "$@"
