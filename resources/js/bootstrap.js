@@ -38,17 +38,4 @@ const reverbConfig = {
 // Solo inicializar Echo si estamos en el cliente
 if (typeof window !== 'undefined') {
     window.Echo = new Echo(reverbConfig);
-    
-    // Manejar eventos de conexión/desconexión
-    window.Echo.connector.pusher.connection.bind('connected', () => {
-        console.log('Conexión WebSocket establecida correctamente');
-    });
-
-    window.Echo.connector.pusher.connection.bind('disconnected', () => {
-        console.warn('Desconectado del servidor WebSocket');
-    });
-
-    window.Echo.connector.pusher.connection.bind('error', (error) => {
-        console.error('Error en la conexión WebSocket:', error);
-    });
 }
