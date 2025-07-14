@@ -12,7 +12,7 @@
     <script type="text/javascript">
         window.Laravel = {
             csrfToken: "{{ csrf_token() }}",
-            jsPermissions: {!! auth()->check() ? auth()->user()->jsPermissions() : 0 !!}
+            jsPermissions: {{ auth()->check() ? auth()->user()->jsPermissions() : 0 }}
         };
     </script>
     @routes
