@@ -2,7 +2,6 @@ volumes:
   public_assets: {}
   nginx-logs: {}
   certbot-etc: {}
-  perfumarte_fail2ban_data: {}
 
 services:
   app:
@@ -12,8 +11,8 @@ services:
         target: builder
     volumes:
       - public_assets:/var/www/public
-    ports:
-      - '8088:8088'
+    networks:
+        - prais-network
     restart: always
 
   webserver:
@@ -30,29 +29,26 @@ services:
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
     command: nginx -g "daemon off;"
+    networks:
+        - prais-network
     depends_on:
       - app
 
-  fail2ban:
-    image: crazymax/fail2ban:latest
-    container_name: perfumarte-fail2ban
-    restart: unless-stopped
-    network_mode: "host"
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
+  reverb:
+    build:
+        context: .
+        dockerfile: ./docker/Dockerfile
+        target: builder
+    entrypoint: ["/usr/local/bin/php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8088"]
+    ports:
+        - "${REVERB_PORT_EXT:-8088}:${REVERB_PORT:-8088}"
     volumes:
-      - type: volume
-        source: perfumarte_fail2ban_data
-        target: /data
-      - type: bind
-        source: ./docker/production/fail2ban/data/jail.d
-        target: /data/jail.d
-        read_only: true
-      - type: bind
-        source: ./docker/production/fail2ban/data/filter.d
-        target: /data/filter.d
-        read_only: true
-      - nginx-logs:/var/log/nginx:ro
+        - '.:/var/www'
+    networks:
+        - prais-network
     depends_on:
-      - webserver
+        - app
+
+networks:
+    prais-network:
+        driver: bridge

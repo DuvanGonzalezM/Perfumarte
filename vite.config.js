@@ -7,6 +7,9 @@ import vue from '@vitejs/plugin-vue';
 dotenvExpand.expand(dotenv.config());
 
 export default defineConfig({
+    build: {
+        chunkSizeWarningLimit: 1600,
+    },
     plugins: [
         laravel({
             input: 'resources/js/app.js',
