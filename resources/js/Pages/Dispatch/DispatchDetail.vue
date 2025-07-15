@@ -46,7 +46,6 @@ const form = useForm({
   }))
 });
 
-console.log(props.dispatch.status);
 const approved = () => {
     form.put(route('dispatch.approved', props.dispatch.dispatch_id), {
         status: 'En ruta',
@@ -66,7 +65,6 @@ const submitReturnedQuantities = () => {
   Object.values(groupedDispatches.value).forEach(items => {
   if (Array.isArray(items)) {
     items.forEach(item => {
-        console.log('item:', item);
         form.details.push({
         id: item.dispatchs_detail_id,
         returned_quantity: item.returned_quantity
@@ -79,12 +77,11 @@ const submitReturnedQuantities = () => {
 
   form.dispatch_id = props.dispatch.dispatch_id; 
 
-  form.post(route('dispatchReturn.store', form.dispatch_id), {
+  form.put(route('dispatchReturn.store', form.dispatch_id), {
     onSuccess: () => {
       showModalSuccess.value = true;
     },
     onError: () => {
-      console.log(form.errors); 
       showModalError.value = true;
     }
   });
