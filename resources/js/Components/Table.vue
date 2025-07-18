@@ -13,6 +13,10 @@ const props = defineProps({
     data: {
         type: Array,
         required: true
+    },
+    order: {
+        type: Array,
+        default: () => [[0, 'desc']]
     }
 });
 
@@ -24,7 +28,7 @@ const options = computed(() => ({
     },
     lengthChange: false,
     info: paginVisibility.value,
-    order: [[0, 'desc']],
+    order: props.order,
     paging: paginVisibility.value,
     pagingType: 'simple_numbers',
     responsive: true,

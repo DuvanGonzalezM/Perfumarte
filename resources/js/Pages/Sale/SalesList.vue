@@ -82,7 +82,7 @@ const columnsTable = [
                 </PrimaryButton>
             </div>
             <Table class="size-prais-5" :data="sales" :columns="columnsTable" />
-            <div class="row my-5 text-center">
+            <div class="row my-5 text-center" v-if="moment().isBetween('19:00', '22:00', 'hour')">
                 <div class="col-12">
                     <PrimaryButton :href="route('cash_register.close')" :class="isCashClosed() ? 'disabled' : ''">
                         Cerrar Caja

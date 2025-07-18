@@ -10,8 +10,19 @@ const props = defineProps({
 
 const columnsTable = [
     {
+        data: 'position',
+        title: 'POSICIÓN',
+        render: function (data, type, row) {
+            return data ? data.toString().padStart(3, '0') : 'N/A';
+        }
+    },
+    {
         data: 'product.commercial_reference',
         title: 'REFERENCIAS'
+    },
+    {
+        data: 'product.category',
+        title: 'GENERO'
     },
     {
         data: 'null',
@@ -19,10 +30,6 @@ const columnsTable = [
         render: function (data, type, row) {
             return row.quantity + ' ' + row.product.measurement_unit.replace('KG', 'ml');
         }
-    },
-    {
-        data: 'product.category',
-        title: 'GENERO'
     },
 ];
 </script>
@@ -36,7 +43,7 @@ const columnsTable = [
             </template>
             
             <div class="container">
-                <Table :data="props.currentInventory" :columns="columnsTable" />
+                <Table :data="props.currentInventory" :columns="columnsTable" :order="[[0, 'asc']]" />
             </div>
         </SectionCard>
     </BaseLayout>
