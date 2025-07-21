@@ -40,32 +40,18 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    networks:
-      - prais-network
-    depends_on:
-      - webserver
-
-  init-letsencrypt:
-    image: certbot/certbot:v2.10.0
-    container_name: init-letsencrypt
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
     entrypoint: ""
     command: >
       /bin/sh -c "
-        echo 'Waiting for Nginx...' &&
-        while ! nc -z webserver 80; do
-          sleep 1;
-        done;
-        echo 'Nginx is up, requesting certificate...' &&
-        certbot certonly --webroot --webroot-path=/var/www/certbot \
-          --email jjorozco@unimonserrate.edu.co \
-          -d www.prais.perfum-arte.com \
-          --rsa-key-size 4096 \
-          --agree-tos \
-          --non-interactive \
-          --staging
+        while :; do
+          certbot renew --webroot --webroot-path=/var/www/certbot \
+            --email jjorozco@unimonserrate.edu.co \
+            -d www.prais.perfum-arte.com \
+            --rsa-key-size 4096 \
+            --agree-tos \
+            --non-interactive;
+          sleep 12h;
+        done
       "
     networks:
       - prais-network
