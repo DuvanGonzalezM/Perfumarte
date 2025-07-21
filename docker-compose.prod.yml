@@ -28,7 +28,11 @@ services:
       - './certbot/www:/var/www/certbot'
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
-    command: nginx -g "daemon off;"
+    command: >
+      /bin/sh -c "
+        ./generate-dummy-certificate.sh &&
+        nginx -g 'daemon off;'
+      "
     networks:
         - prais-network
     depends_on:

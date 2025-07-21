@@ -4,33 +4,15 @@
 #
 # Uso: ./init-letsencrypt.sh
 
-# Verifica si el certificado ya existe
-if [ -f "/etc/letsencrypt/live/www.prais.perfum-arte.com/fullchain.pem" ]; then
-  echo "### El certificado para www.prais.perfum-arte.com ya existe."
-  exit 0
-fi
+# Espera a que Nginx esté en funcionamiento
+echo "### Esperando a que Nginx esté en funcionamiento..."
+while ! docker-compose exec webserver nginx -t; do
+  sleep 5
+done
 
-echo "### Solicitando certificado SSL para www.prais.perfum-arte.com..."
+echo "### Nginx está en funcionamiento, solicitando certificado SSL..."
 
-# Inicia el proceso de solicitud del certificado en modo de prueba (staging)
-docker-compose run --rm --entrypoint "\
-  certbot certonly --webroot --webroot-path=/var/www/certbot \
-    --email jjorozco@unimonserrate.edu.co \
-    -d www.prais.perfum-arte.com \
-    --rsa-key-size 4096 \
-    --agree-tos \
-    --non-interactive \
-    --staging" certbot
-
-# Verifica si el certificado se obtuvo correctamente
-if [ $? -ne 0 ]; then
-  echo "ERROR: No se pudo obtener el certificado de prueba de Let's Encrypt."
-  exit 1
-fi
-
-echo "### Certificado de prueba obtenido, procediendo con el certificado de producción..."
-
-# Solicita el certificado de producción
+# Solicita el certificado de Let's Encrypt
 docker-compose run --rm --entrypoint "\
   certbot certonly --webroot --webroot-path=/var/www/certbot \
     --email jjorozco@unimonserrate.edu.co \
