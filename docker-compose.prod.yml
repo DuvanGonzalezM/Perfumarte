@@ -27,11 +27,7 @@ services:
       - './docker/production/ssl:/etc/ssl_aws'
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
-    command: >
-      /bin/sh -c "
-        ./generate-dummy-certificate.sh &&
-        nginx -g 'daemon off;'
-      "
+    command: nginx -g "daemon off;"
     networks:
         - prais-network
     depends_on:
