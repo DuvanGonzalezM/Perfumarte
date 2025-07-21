@@ -13,8 +13,6 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nodejs \
-    certbot \
-    python3-certbot-nginx \
     npm
 
 # Instalar extensiones de PHP
