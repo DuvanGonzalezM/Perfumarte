@@ -27,11 +27,39 @@ services:
       - './docker/production/ssl:/etc/ssl_aws'
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
-    command: nginx -g "daemon off;"
+    command: >
+      /bin/sh -c "
+        ./generate-dummy-certificate.sh &&
+        nginx -g 'daemon off;'
+      "
     networks:
         - prais-network
     depends_on:
       - app
+
+  certbot:
+    image: certbot/certbot:v2.10.0
+    container_name: prais-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: ""
+    command: >
+      /bin/sh -c "
+        while :; do
+          certbot renew --webroot --webroot-path=/var/www/certbot \
+            --email jjorozco@unimonserrate.edu.co \
+            -d www.prais.perfum-arte.com \
+            --rsa-key-size 4096 \
+            --agree-tos \
+            --non-interactive;
+          sleep 12h;
+        done
+      "
+    networks:
+      - prais-network
+    depends_on:
+      - webserver
 
   reverb:
     build:
