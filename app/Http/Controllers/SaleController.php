@@ -110,9 +110,7 @@ class SaleController extends Controller
     {
         $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)->whereDate('created_at', date('Y-m-d'))->first();
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
-
-
-
+        
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
             'total' => $request->total,
@@ -120,8 +118,11 @@ class SaleController extends Controller
             'payment_method' => $request->pay_method,
             'transaction_code' => $request->pay_method == 'Transferencia' ? $request->transaction_code : '',
         ]);
-
+        
         foreach ($request->references as $reference) {
+            $giftBagId = Inventory::with('product')->whereHas('product', function ($query) {
+                $query->where('reference', 'Bolsa de regalo');
+            })->where('warehouse_id', $warehouse->warehouse_id)->first()->inventory_id;
             $drops = 0;
             array_map(function ($i) use (&$drops) {
                 $drops += $i;
@@ -130,7 +131,11 @@ class SaleController extends Controller
             $price = $drops * $warehouse->price_drops;
 
             // Precio base por unidad
-            $unitPrice = $this->priceReference($reference['quantity'], $warehouse);
+            if($reference['reference'] == $giftBagId){
+                $unitPrice = 2000;
+            }else{
+                $unitPrice = $this->priceReference($reference['quantity'], $warehouse);
+            }
             
             // Descuento por cantidad y unidades
             if ($reference['units'] >= 12) {
@@ -143,7 +148,7 @@ class SaleController extends Controller
             
             // Calcular precio total
             $totalPrice = ($unitPrice * $reference['units']) + $price;
-            
+
             SaleDetail::create([
                 'inventory_id' => $reference['reference'],
                 'sale_id' => $sale->sale_id,
@@ -156,8 +161,11 @@ class SaleController extends Controller
             
 
                 // Calcular la cantidad a retirar (50% del tamaño)
-                $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
-                
+                if($reference['reference'] == $giftBagId){
+                    $quantityToSubtract = $reference['units'];
+                }else{
+                    $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
+                }
                 // Descontar de la fragancia
                 $inventory->quantity -= $quantityToSubtract;
                 
@@ -167,12 +175,33 @@ class SaleController extends Controller
                         $query->where('product_id', '2');
                     })
                     ->first();
-                
+
                 if ($disolventeInventory) {
                     $disolventeInventory->quantity -= $quantityToSubtract;
                     $disolventeInventory->save();
                 }   
-            
+
+                if($reference['container']){
+                    $containerInventory = Inventory::with('product')->where('warehouse_id', $warehouse->warehouse_id)
+                        ->where('product_id', $reference['container'])
+                        ->first();
+
+                    if ($containerInventory) {
+                        $containerInventory->quantity -= $reference['units'];
+                        foreach (explode(',', $containerInventory->product->dependents) as $dependent) {
+                            $dependentInventory = Inventory::with('product')->where('warehouse_id', $warehouse->warehouse_id)
+                            ->whereHas('product', function ($query) use ($dependent) {
+                                $query->where('code', $dependent);
+                            })
+                            ->first();
+                            if ($dependentInventory) {
+                                $dependentInventory->quantity -= $reference['units'];
+                                $dependentInventory->save();
+                            }
+                        }
+                        $containerInventory->save();
+                    }   
+                }
             $inventory->save();
         }
 

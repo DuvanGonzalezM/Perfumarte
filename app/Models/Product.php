@@ -19,6 +19,7 @@ class Product extends Model
         'supplier_id',
         'commercial_reference',
         'category',
+        'dependents',
         'status',
     ];
     protected $casts = [

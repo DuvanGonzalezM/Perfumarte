@@ -26,6 +26,7 @@ const form = useForm({
     assessor: '',
     total: 0,
     pay_method: '',
+    container: null,
     transaction_code: null,
     references: [],
     count_100_bill: 0,
@@ -43,8 +44,15 @@ const form = useForm({
     rest_count_2_bill: 0,
     rest_total_coins: null,
 });
+
+const containerNames = {
+    '30': props.inventory.filter((reference) => (reference.product_id == 385 || reference.product_id == 386) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
+    '50': props.inventory.filter((reference) => (reference.product_id == 388 || reference.product_id == 389 || reference.product_id == 390 || reference.product_id == 391) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
+    '100': props.inventory.filter((reference) => (reference.product_id == 392 || reference.product_id == 393 || reference.product_id == 394) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
+};
+const giftBag = 372;
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
-const optionProducts = ref(props.inventory.map((reference) => [{ 'title': `${reference.product.commercial_reference} - ${reference.product.category}`, 'value': reference.inventory_id }][0]));
+const optionProducts = ref(props.inventory.filter((reference) => (reference.product.category != 'Insumo' && reference.quantity > 0) || reference.product_id == giftBag).map((reference) => [{ 'title': `${reference.product.commercial_reference} - ${reference.product.category}`, 'value': reference.inventory_id }][0]));
 const optionPayMethod = ref([{ 'title': 'Efectivo', 'value': 'Efectivo' }, { 'title': 'Transferencia', 'value': 'Transferencia' }]);
 const showModalReference = ref(false);
 const showModal = ref(false);
@@ -160,11 +168,12 @@ const addReferenceModal = () => {
         'reference': '', 
         'quantity': '', 
         'units': 1, 
+        'container': null,
         'perdurable': Array(1).fill(0) // Inicializar con 0 para permitir deselección
     };
 }
 
-const priceReference = (value) => {
+const priceReference = (value, productId=null) => {
     const totalUnitsBySize = {
         30: form.references.filter(ref => ref.quantity == 30).reduce((acc, ref) => acc + ref.units, 0),
         50: form.references.filter(ref => ref.quantity == 50).reduce((acc, ref) => acc + ref.units, 0),
@@ -221,13 +230,20 @@ const priceReference = (value) => {
         // Para menos de 12 unidades, usar precio base
         return props.warehouse.price5;
     } else {
+        if (productId == giftBag){
+            return 2000;
+        }
         return 0;
     }
 }
 
 const updateTotal = () => {
     form.total = form.references.reduce((acc, reference) => {
-        const price = priceReference(reference.quantity);
+        let product_id = null;
+        if(props.inventory.find(item => item.inventory_id === reference.reference)?.product_id == giftBag){
+            product_id = giftBag;
+        }
+        const price = priceReference(reference.quantity, product_id);
         const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
         return acc + (reference.units * price + dropsPrice);
     }, 0);
@@ -235,13 +251,14 @@ const updateTotal = () => {
 
 const addReference = () => {
     // Convertir quantity a número si es string
-    const quantity = typeof referenceNew.value.quantity === 'string' ? parseInt(referenceNew.value.quantity) : referenceNew.value.quantity;
+    let quantity = typeof referenceNew.value.quantity === 'string' ? parseInt(referenceNew.value.quantity) : referenceNew.value.quantity;
     
     form.references.push(
         {
             'reference': referenceNew.value.reference,
             'quantity': quantity,
             'units': referenceNew.value.units,
+            'container': referenceNew.value.container,
             'perdurable': referenceNew.value.perdurable,
         }
     );
@@ -254,6 +271,7 @@ const addReference = () => {
         'reference': '', 
         'quantity': '', 
         'units': 1, 
+        'container': null,
         'perdurable': Array(1).fill(0)
     };
 };
@@ -262,12 +280,19 @@ const removeReference = (index) => {
     form.references.splice(index, 1);
 
     form.total = form.references.reduce((acc, reference) => {
-        const price = priceReference(reference.quantity);
+        let product_id = null;
+        if(props.inventory.find(item => item.inventory_id === reference.reference)?.product_id == giftBag){
+            product_id = giftBag;
+        }
+        const price = priceReference(reference.quantity, product_id);
         const dropsPrice = reference.perdurable.reduce((a, b) => a + Number(b), 0) * props.warehouse.price_drops;
         return acc + (reference.units * price + dropsPrice);
     }, 0);
 };
 
+const changeQuantity = (reference) => {
+    reference.container = null;
+}
 </script>
 
 <template>
@@ -308,12 +333,14 @@ const removeReference = (index) => {
                                     reference.reference)?.product.commercial_reference}}</td>
                                 <td>{{props.inventory.find(item => item.inventory_id ===
                                     reference.reference)?.product.category}}</td>
-                                <td>{{ reference.quantity }} ml</td>
+                                <td>{{ !reference.quantity ? 'N/A' : reference.quantity }}</td>
                                 <td>{{ reference.units }}</td>
-                                <td>{{ reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
-                                <td>$ {{ Math.round(reference.units * priceReference(reference.quantity) +
-                                    reference.perdurable.reduce((a,
-                                        b) => a + Number(b), 0) * props.warehouse.price_drops) }}</td>
+                                <td>{{ !reference.perdurable.reduce((a, b) => a + Number(b), 0) ? 'N/A' : reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
+                                <td>
+                                    $ {{ Math.round(reference.units * priceReference(reference.quantity, props.inventory.find(item => item.inventory_id === reference.reference)?.product_id == giftBag ? giftBag : null) +
+                                        reference.perdurable.reduce((a,
+                                            b) => a + Number(b), 0) * props.warehouse.price_drops) }}
+                                </td>
                                 <div class="removeItem" @click="removeReference(index)">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
@@ -352,45 +379,54 @@ const removeReference = (index) => {
                                         :options="optionProducts" :changeFunction="changeReference"
                                         :messageError="Object.keys(form.errors).length ? form.errors['references.' + '.reference'] : null" />
                                 </div>
-                                <div class="col-md-12 row mt-3 justify-content-center" v-if="referenceNew['reference']">
-                                    <label
-                                        class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
-                                        :for="'quantity5'">
-                                        <i class="fa-solid fa-flask d-flex justify-content-center fs-9"></i>5 ml
-                                        <input class="form-check-input d-none" type="radio"
-                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity5'"
-                                            :value="5">
-                                    </label>
-                                    <label
-                                        class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
-                                        :for="'quantity30'">
-                                        <i class="fa-solid fa-flask d-flex justify-content-center"></i>30 ml
-                                        <input class="form-check-input d-none" type="radio"
-                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity30'"
-                                            :value="30">
-                                    </label>
-                                    <label
-                                        class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
-                                        :for="'quantity50'">
-                                        <i class="fa-solid fa-flask d-flex justify-content-center fs-4"></i>50 ml
-                                        <input class="form-check-input d-none" type="radio"
-                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity50'"
-                                            :value="50">
-                                    </label>
-                                    <label
-                                        class="form-check prais-radio row col-md-2 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
-                                        :for="'quantity100'">
-                                        <i class="fa-solid fa-flask d-flex justify-content-center fs-2"></i>100 ml
-                                        <input class="form-check-input d-none" type="radio"
-                                            v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity100'"
-                                            :value="100">
-                                    </label>
-                                    <div class="col-md-12 mt-2 row">
+                                <div class="col-md-12" v-if="referenceNew['reference']">
+                                    <div class="col-md-12 row mt-3 justify-content-center" v-if="props.inventory.find(item => item.inventory_id === referenceNew['reference'])?.product_id != giftBag">
+                                        <label
+                                            class="form-check prais-radio row col-md-3 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
+                                            :for="'quantity5'">
+                                            <i class="fa-solid fa-flask d-flex justify-content-center fs-9"></i>5 ml
+                                            <input class="form-check-input d-none" type="radio"
+                                                v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity5'" @change="changeQuantity(referenceNew)"
+                                                :value="5">
+                                        </label>
+                                        <label
+                                            class="form-check prais-radio row col-md-3 m-4 d-flex justify-content-center form-check-label p-2 pt-3"
+                                            :for="'quantity30'">
+                                            <i class="fa-solid fa-flask d-flex justify-content-center"></i>30 ml
+                                            <input class="form-check-input d-none" type="radio"
+                                                v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity30'"
+                                                @change="changeQuantity(referenceNew)"
+                                                :value="30">
+                                        </label>
+                                        <label
+                                            class="form-check prais-radio row col-md-3 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
+                                            :for="'quantity50'">
+                                            <i class="fa-solid fa-flask d-flex justify-content-center fs-4"></i>50 ml
+                                            <input class="form-check-input d-none" type="radio"
+                                                v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity50'"
+                                                @change="changeQuantity(referenceNew)"
+                                                :value="50">
+                                        </label>
+                                        <label
+                                            class="form-check prais-radio row col-md-3 m-4 d-flex justify-content-center form-check-label p-1 pt-3"
+                                            :for="'quantity100'">
+                                            <i class="fa-solid fa-flask d-flex justify-content-center fs-2"></i>100 ml
+                                            <input class="form-check-input d-none" type="radio"
+                                                v-model.number="referenceNew['quantity']" :name="'quantity'" :id="'quantity100'"
+                                                @change="changeQuantity(referenceNew)"
+                                                :value="100">
+                                        </label>
+                                        <div class="col-md-8" v-if="containerNames[referenceNew['quantity']]">
+                                            <SelectSearch v-model="referenceNew['container']" labelValue="Envase"
+                                                :options="containerNames[referenceNew['quantity']]"
+                                                :messageError="Object.keys(form.errors).length ? form.errors['references.' + '.container'] : null" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-4 row justify-content-center">
                                         <div class="col-md-6">
                                             <CountControl v-model="referenceNew['units']" :min="1" title="Unidad(es)" />
                                         </div>
-                                        <div
-                                            class="col-md-6 row form-check prais-switch form-switch d-flex justify-content-center">
+                                        <div class="col-md-6 row form-check prais-switch form-switch d-flex justify-content-center" v-if="props.inventory.find(item => item.inventory_id === referenceNew['reference'])?.product_id != giftBag">
                                             <label class="form-check-label ms-2" for="questionPerdurable">¿Agregar gotas
                                                 de perduración?</label>
                                             <input class="form-check-input fs-4" type="checkbox" id="questionPerdurable"
@@ -399,8 +435,7 @@ const removeReference = (index) => {
                                         <div class="row d-flex justify-content-center mt-3" v-if="questionPerdurable"
                                             v-for="(unidad, index) in Array.from({ length: referenceNew['units'] }, (v, k) => k + 1)">
                                             Unidad {{ unidad }}
-                                            <label
-                                                class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
+                                            <label class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
                                                 :for="index + 'perdurable5'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>5
                                                 <input class="form-check-input d-none" type="radio"
@@ -408,8 +443,7 @@ const removeReference = (index) => {
                                                     :name="index + 'perdurable5'" :id="index + 'perdurable5'" :value="5"
                                                     @click="togglePerdurable(index, 5)">
                                             </label>
-                                            <label
-                                                class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
+                                            <label class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
                                                 :for="index + 'perdurable10'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>10
                                                 <input class="form-check-input d-none" type="radio"
@@ -417,8 +451,7 @@ const removeReference = (index) => {
                                                     :name="index + 'perdurable10'" :id="index + 'perdurable10'" :value="10"
                                                     @click="togglePerdurable(index, 10)">
                                             </label>
-                                            <label
-                                                class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
+                                            <label class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
                                                 :for="index + 'perdurable15'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>15
                                                 <input class="form-check-input d-none" type="radio"
@@ -426,8 +459,7 @@ const removeReference = (index) => {
                                                     :name="index + 'perdurable15'" :id="index + 'perdurable15'" :value="15"
                                                     @click="togglePerdurable(index, 15)">
                                             </label>
-                                            <label
-                                                class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
+                                            <label class="form-check prais-radio row col-md-1 mx-4 d-flex justify-content-center form-check-label p-1 pt-1"
                                                 :for="index + 'perdurable20'">
                                                 <i class="fa-solid fa-droplet d-flex justify-content-center"></i>20
                                                 <input class="form-check-input d-none" type="radio"
@@ -439,7 +471,7 @@ const removeReference = (index) => {
                                     </div>
                                     <div class="col-md-12 mt-4 d-flex justify-content-center">
                                         <PrimaryButton @click="addReference"
-                                            :class="referenceNew['quantity'] ? '' : 'disabled'" class="px-5">
+                                            :class="referenceNew['quantity'] && (referenceNew['quantity'] != 5 ? referenceNew['container'] != null : true) || props.inventory.find(item => item.inventory_id === referenceNew['reference'])?.product_id == giftBag ? '' : 'disabled'" class="px-5">
                                             Agregar Referencia
                                         </PrimaryButton>
                                     </div>

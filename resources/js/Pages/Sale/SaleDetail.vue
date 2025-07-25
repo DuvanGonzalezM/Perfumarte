@@ -40,9 +40,9 @@ const props = defineProps({
                     <tbody id="productsList">
                         <tr v-for="(reference, index) in props.sale.sale_details">
                             <td>{{ reference.inventory.product.commercial_reference }}</td>
-                            <td>{{ reference.quantity }} ml</td>
+                            <td>{{ !reference.quantity ? 'N/A' : reference.quantity }}</td>
                             <td>{{ reference.units }}</td>
-                            <td>{{ reference.drops }}</td>
+                            <td>{{ !reference.drops ? 'N/A' : reference.drops }}</td>
                             <td>$ {{ reference.price }}</td>
                         </tr>
                     </tbody>
