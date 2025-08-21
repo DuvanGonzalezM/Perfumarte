@@ -159,7 +159,7 @@ const submit = () => {
                         <div class="col-12">
                             <PrimaryButton v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
                                 @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
-                                type="submit" :disabled="!allProductsReceived">
+                                type="submit" >
                                 Confirmar Recepción
                             </PrimaryButton>
                         </div>
