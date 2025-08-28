@@ -43,7 +43,7 @@ const props = defineProps({
                             <td>{{ !reference.quantity ? 'N/A' : reference.quantity }}</td>
                             <td>{{ reference.units }}</td>
                             <td>{{ !reference.drops ? 'N/A' : reference.drops }}</td>
-                            <td>$ {{ reference.price }}</td>
+                            <td>{{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(reference.price) }}</td>
                         </tr>
                     </tbody>
                 </table>

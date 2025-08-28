@@ -1,11 +1,10 @@
 <script setup>
-import CardButton from '@/Components/CardButton.vue';
-import InformationCard from '@/Components/informationCard.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
+
 
 const props = defineProps({
     inventory: {
@@ -27,7 +26,7 @@ const columnsTable = [
         title: 'CATEGORIA'
     },
     {
-        data: 'null',
+        data: null,
         title: 'CANTIDAD',
         render: function (data, type, row) {
             return row.quantity + ' ' + row.product.measurement_unit.replace('KG', 'ml');
