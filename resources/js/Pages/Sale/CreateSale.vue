@@ -496,38 +496,32 @@ const changeQuantity = (reference) => {
                                         labelValue="Metodo de pago" :options="optionPayMethod" />
                                 </div>
                                 <div class="row" v-if="form.pay_method == 'Efectivo'">
-    <h4 class="mt-3 d-flex justify-content-center">$ {{ ((form.count_50_bill * 50000) +
-        (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill
-            * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) +
-        (form.total_coins * 1)) }}</h4>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_100_bill" :min="0"
-            title="N° Billetes 100.000" />
-    </div>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_50_bill" :min="0"
-            title="N° Billetes 50.000" />
-    </div>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_20_bill" :min="0"
-            title="N° Billetes 20.000" />
-    </div>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_10_bill" :min="0"
-            title="N° Billetes 10.000" />
-    </div>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_5_bill" :min="0" title="N° Billetes 5.000" />
-    </div>
-    <div class="col-md-4 my-3">
-        <CountControl v-model="form.count_2_bill" :min="0" title="N° Billetes 2.000" />
-    </div>
-    <div class="col-md-12 my-3">
-        <TextInput type="number" name="total_coins" id="total_coins"
-            v-model="form.total_coins" :focus="form.total_coins != null ? true : false"
-            labelValue="Cantidad total de monedas" :minimo="0" :required="true" />
-    </div>
-
+                                    <h4 class="mt-3 d-flex justify-content-center">{{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(parseInt((form.count_50_bill * 50000) +
+                                        (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill
+                                            * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) +
+                                        (form.total_coins * 1))) }}</h4>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_100_bill" :min="0"
+                                            title="N° Billetes 100 mil" />
+                                    </div>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_50_bill" :min="0"
+                                            title="N° Billetes 50 mil" />
+                                    </div>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_20_bill" :min="0"
+                                            title="N° Billetes 20 mil" />
+                                    </div>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_10_bill" :min="0"
+                                            title="N° Billetes 10 mil" />
+                                    </div>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_5_bill" :min="0" title="N° Billetes 5 mil" />
+                                    </div>
+                                    <div class="col-md-4 my-3">
+                                        <CountControl v-model="form.count_2_bill" :min="0" title="N° Billetes 2 mil" />
+                                    </div>
                                     <div class="col-md-12 my-3">
                                         <TextInput type="number" name="total_coins" id="total_coins"
                                             v-model="form.total_coins" :focus="form.total_coins != null ? true : false"
@@ -561,7 +555,7 @@ const changeQuantity = (reference) => {
 
                     <ModalPrais v-model="showModalChange" @close="showModalChange = false">
                         <template #header>
-                            <h3>Cantidad a devolver: ${{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
+                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
                         </template>
                         <template #body>
                             <div class="row">
@@ -606,7 +600,7 @@ const changeQuantity = (reference) => {
 
                     <ModalPrais v-model="showModalChange" @close="showModalChange = false">
                         <template #header>
-                            <h3>Cantidad a devolver: ${{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
+                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
                         </template>
                         <template #body>
                             <div class="row">
