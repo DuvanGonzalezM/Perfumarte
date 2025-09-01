@@ -176,4 +176,12 @@ class RequestPraisController extends Controller
             'status' => 200
         ]);
     }
+
+    public function getAllDamagedReturn()
+    {
+        $damagedReturn = RequestPrais::where('request_type', '3')->get();
+        return Inertia::render('DamagedReturn/DamagedReturnList', [
+            'damagedReturn' => $damagedReturn
+        ]);
+    }
 }

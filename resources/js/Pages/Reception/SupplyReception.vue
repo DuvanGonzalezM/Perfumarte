@@ -10,8 +10,8 @@ import ModalPrais from '@/Components/ModalPrais.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 
 const props = defineProps({
-    dispatchDetails: {
-        type: Array,
+    dispatch: {
+        type: Object,
         required: true,
     },
     showProduct: {
@@ -20,16 +20,16 @@ const props = defineProps({
     }
 });
 
-
+console.log(props.dispatch);
 const form = useForm({
-    products: props.dispatchDetails.map(detail => ({
+    products: props.dispatch.dispatch_detail != null ? props.dispatch.dispatch_detail?.map(detail => ({
         dispatchs_detail_id: detail.dispatchs_detail_id || '',
         dispatch_id: detail.dispatch_id || '',
         name: detail.inventory?.product?.commercial_reference || '',
         quantity: detail.dispatched_quantity || 0,
         received: detail.received || false,
         observation: detail.observations || ''
-    }))
+    })) : []
 });
 const showConfirmModal = ref(false);
 const allProductsReceived = computed(() => {
@@ -37,11 +37,13 @@ const allProductsReceived = computed(() => {
 });
 
 const submit = () => {
+    showConfirmModal.value = false;
     form.post(route('dispatch.receive'), {
         onSuccess: () => {
         },
     });
 };
+
 </script>
 
 <template>
@@ -49,9 +51,9 @@ const submit = () => {
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
         </template>
-        <SectionCard :idSection="props.dispatchDetails[0].dispatch_id"
-            :subtitle="props.dispatchDetails[0].dispatch.status + (props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
-            :subextra="moment(props.dispatchDetails[0].dispatch.created_at).format('DD/MM/Y')" v-if="props.dispatchDetails.length > 0">
+        <SectionCard :idSection="props.dispatch.dispatch_id"
+            :subtitle="props.dispatch.status + (props.dispatch.status.trim().toLowerCase() === 'pendiente' ? ' por despachar' : '')"
+            :subextra="moment(props.dispatch.created_at).format('DD/MM/Y')" v-if="props.dispatch != null && props.dispatch.dispatch_detail?.length > 0">
             <template #headerSection>
                 <strong>Detalles del Despacho</strong>
             </template>
@@ -71,7 +73,7 @@ const submit = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
+                                            <template v-if="props.dispatch.status.trim().toLowerCase() === 'en ruta'">
                                                 <td>{{ product.name }}</td>
                                                 <td>{{ product.quantity }}</td>
                                                 <td>
@@ -108,7 +110,7 @@ const submit = () => {
                                     </thead>
                                     <tbody>
                                         <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'">
+                                            <template v-if="props.dispatch.status.trim().toLowerCase() === 'en ruta'">
                                                 <td>
                                                     <SelectSearch v-model="form.products[index].product_id"
                                                         :options="optionProducts" placeholder="Selecciona un producto" />
@@ -157,7 +159,7 @@ const submit = () => {
                     </div>
                     <div class="row my-5 text-center">
                         <div class="col-12">
-                            <PrimaryButton v-if="props.dispatchDetails[0].dispatch.status.trim().toLowerCase() === 'en ruta'"
+                            <PrimaryButton v-if="props.dispatch.status.trim().toLowerCase() === 'en ruta'"
                                 @click="showConfirmModal = true" class="px-5" @close="showConfirmModal = false"
                                 type="submit" >
                                 Confirmar Recepción
@@ -167,7 +169,7 @@ const submit = () => {
                 </form>
             </div>
         </SectionCard>
-        <SectionCard v-if="props.dispatchDetails.length == 0">
+        <SectionCard v-else>
             <template #headerSection>
                 <strong>Detalles del Despacho</strong>
             </template>
