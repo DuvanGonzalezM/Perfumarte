@@ -148,6 +148,10 @@ const columnsTable = [
     {
         data: 'cash_base',
         title: 'Base de Caja',
+        render: function (data) {
+            return new Intl.NumberFormat('es-CO', { style:'currency',currency:'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data);
+        }
+        ,
     },
     {
         data: 'zone.zone_name',
@@ -167,7 +171,7 @@ const columnsTable = [
         createdCell: function (td, cellData, rowData) {
             td.innerHTML = "";
             const icon = document.createElement("i");
-            icon.className = "fa-solid fa-pen-to-square text-primary cursor-pointer";
+            icon.className = "fa-solid fa-pen-to-square  cursor-pointer";
             icon.style.cursor = "pointer";
             icon.addEventListener("click", () => openEditModal(rowData));
             td.appendChild(icon);
@@ -180,7 +184,7 @@ const columnsTable = [
         createdCell: function (td, cellData, rowData) {
             td.innerHTML = "";
             const icon = document.createElement("i");
-            icon.className = "fa-solid fa-trash text-danger cursor-pointer";
+            icon.className = "fa-solid fa-trash cursor-pointer";
             icon.style.cursor = "pointer";
             icon.addEventListener("click", () => {
                 userToDelete.value = rowData.location_id;

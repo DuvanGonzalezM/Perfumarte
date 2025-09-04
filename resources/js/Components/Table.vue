@@ -27,9 +27,9 @@ const options = computed(() => ({
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-CO.json'
     },
     lengthChange: false,
-    info: paginVisibility.value,
+    info: true, // siempre mostrar info
     order: props.order,
-    paging: paginVisibility.value,
+    paging: true, // siempre activar paginación
     pagingType: 'simple_numbers',
     responsive: true,
     pageLength: 10,
@@ -39,6 +39,7 @@ const options = computed(() => ({
         sPageButtonDisabled: 'paginate_button page-item disabled'
     }
 }));
+
 </script>
 
 <template>
