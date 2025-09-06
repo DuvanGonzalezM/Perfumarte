@@ -17,9 +17,10 @@ class InventoryLocationController extends Controller
         try {
             $user = Auth::user();
             
-            $hasAcceptedToday = $user->inventoryValidations()
+            $hasAcceptedToday = InventoryValidation::where('location_id', $user->location_user[0]->location_id)
                 ->whereDate('date', Carbon::today())
                 ->exists();
+                dd(Carbon::today());
     
             if ($hasAcceptedToday) {
                 return redirect()->route('inventory.current');

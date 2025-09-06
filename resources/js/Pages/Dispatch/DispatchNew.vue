@@ -86,7 +86,20 @@ const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
 
+// Agregar método para validar referencias
+const hasValidReferences = (dispatches) => {
+    return dispatches.some(dispatch => 
+        dispatch.references.some(ref => 
+            ref.reference && ref.dispatched_quantity && ref.dispatched_quantity > 0
+        )
+    );
+};
+
 const submit = () => {
+    if (!hasValidReferences(form.dispatches)) {
+        alert('Por favor, asegúrese de agregar al menos una referencia con cantidad válida');
+        return;
+    }
     form.post(route('dispatch.store'));
 };
 </script>
@@ -188,7 +201,11 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                            <PrimaryButton 
+                                @click="submit" 
+                                class="px-5" 
+                                :class="{ 'disabled': form.processing || form.dispatches.length === 0 || !hasValidReferences(form.dispatches) }"
+                                :disabled="form.processing || form.dispatches.length === 0 || !hasValidReferences(form.dispatches)">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

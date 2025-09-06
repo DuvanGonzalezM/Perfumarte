@@ -171,6 +171,7 @@ const columnsTable = [
         createdCell: function (td, cellData, rowData) {
             td.innerHTML = "";
             const icon = document.createElement("i");
+            icon.className = "fa-solid fa-pen-to-square cursor-pointer";
             icon.className = "fa-solid fa-pen-to-square  cursor-pointer";
             icon.style.cursor = "pointer";
             icon.addEventListener("click", () => openEditModal(rowData));
