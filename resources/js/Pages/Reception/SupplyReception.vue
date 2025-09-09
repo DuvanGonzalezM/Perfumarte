@@ -20,9 +20,8 @@ const props = defineProps({
     }
 });
 
-console.log(props.dispatch);
 const form = useForm({
-    products: props.dispatch.dispatch_detail != null ? props.dispatch.dispatch_detail?.map(detail => ({
+    products: props.dispatch != null && props.dispatch.dispatch_detail != null ? props.dispatch.dispatch_detail?.map(detail => ({
         dispatchs_detail_id: detail.dispatchs_detail_id || '',
         dispatch_id: detail.dispatch_id || '',
         name: detail.inventory?.product?.commercial_reference || '',
