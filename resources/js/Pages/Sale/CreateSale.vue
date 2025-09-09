@@ -304,7 +304,7 @@ const changeQuantity = (reference) => {
             <!-- <Alert /> -->
             <h1>Nueva Venta</h1>
         </template>
-        <SectionCard :subextra="'Valor total: $' + Math.round(form.total)">
+        <SectionCard :subextra="'Valor total: ' + Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(form.total)">
             <template #headerSection>   
                 <strong>Nueva Venta</strong>
             </template>
@@ -333,11 +333,11 @@ const changeQuantity = (reference) => {
                                     reference.reference)?.product.commercial_reference}}</td>
                                 <td>{{props.inventory.find(item => item.inventory_id ===
                                     reference.reference)?.product.category}}</td>
-                                <td>{{ !reference.quantity ? 'N/A' : reference.quantity }}</td>
+                                <td>{{ !reference.quantity ? 'N/A' : reference.quantity + ' ML' }}</td>
                                 <td>{{ reference.units }}</td>
                                 <td>{{ !reference.perdurable.reduce((a, b) => a + Number(b), 0) ? 'N/A' : reference.perdurable.reduce((a, b) => a + Number(b), 0) }}</td>
                                 <td>
-                                    $ {{ Math.round(reference.units * priceReference(reference.quantity, props.inventory.find(item => item.inventory_id === reference.reference)?.product_id == giftBag ? giftBag : null) +
+                                    {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(reference.units * priceReference(reference.quantity, props.inventory.find(item => item.inventory_id === reference.reference)?.product_id == giftBag ? giftBag : null) +
                                         reference.perdurable.reduce((a,
                                             b) => a + Number(b), 0) * props.warehouse.price_drops) }}
                                 </td>
@@ -487,7 +487,7 @@ const changeQuantity = (reference) => {
 
                     <ModalPrais v-model="showModal" @close="showModal = false">
                         <template #header>
-                            Valor a pagar: ${{ + Math.round(form.total) }}
+                            Valor a pagar: {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(Math.round(form.total)) }}
                         </template>
                         <template #body>
                             <div class="row">
@@ -496,10 +496,10 @@ const changeQuantity = (reference) => {
                                         labelValue="Metodo de pago" :options="optionPayMethod" />
                                 </div>
                                 <div class="row" v-if="form.pay_method == 'Efectivo'">
-                                    <h4 class="mt-3 d-flex justify-content-center">$ {{ ((form.count_50_bill * 50000) +
+                                    <h4 class="mt-3 d-flex justify-content-center">{{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(parseInt((form.count_50_bill * 50000) +
                                         (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill
                                             * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) +
-                                        (form.total_coins * 1)) }}</h4>
+                                        (form.total_coins * 1))) }}</h4>
                                     <div class="col-md-4 my-3">
                                         <CountControl v-model="form.count_100_bill" :min="0"
                                             title="N° Billetes 100 mil" />
@@ -555,7 +555,7 @@ const changeQuantity = (reference) => {
 
                     <ModalPrais v-model="showModalChange" @close="showModalChange = false">
                         <template #header>
-                            <h3>Cantidad a devolver: ${{ devolver }}</h3>
+                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
                         </template>
                         <template #body>
                             <div class="row">
@@ -600,7 +600,7 @@ const changeQuantity = (reference) => {
 
                     <ModalPrais v-model="showModalChange" @close="showModalChange = false">
                         <template #header>
-                            <h3>Cantidad a devolver: ${{ devolver }}</h3>
+                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
                         </template>
                         <template #body>
                             <div class="row">

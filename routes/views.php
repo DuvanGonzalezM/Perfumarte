@@ -221,8 +221,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(ReportController::class)->group(function () {
         Route::get('reportes', 'getReports')->name('reports');
-        Route::post('reportes', 'storeReports')->name('store.report');
-        Route::get('reportes/download', 'downloadFile')->name('download.report');
+        Route::get('reportes/generate/{typeReport}/{range_date}/{warehouseIds}', 'generateReport')->name('generate.report');
     });
     Route::controller(SupplierController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Proveedores']], function () {

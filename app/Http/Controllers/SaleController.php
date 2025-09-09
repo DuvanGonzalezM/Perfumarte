@@ -58,52 +58,72 @@ class SaleController extends Controller
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
     }
 
-    public function priceReference($quantity, $warehouse, $totalUnits = 0)
+    public function priceReference($quantity, $warehouse, $totalUnits = 0, $allReferences = [])
     {
-        $basePrice = 0;
+        $totalUnitsBySize = [
+            5 => 0,
+            30 => 0,
+            50 => 0,
+            100 => 0
+        ];
+        
+        // Calcular total de unidades por tamaño
+        foreach ($allReferences as $ref) {
+            if (isset($ref['quantity']) && isset($ref['units']) && isset($totalUnitsBySize[$ref['quantity']])) {
+                $totalUnitsBySize[$ref['quantity']] += $ref['units'];
+            }
+        }
+    
         switch ($quantity) {
             case 5:
-                $basePrice = $warehouse->price5;
+                $totalUnits5ml = $totalUnitsBySize[5] ?? 0;
                 
-                // Descuentos para 5ml
-                if ($totalUnits >= 50) {
-                    // 50 unidades o más: $2.100
-                    return 2100;
-                } elseif ($totalUnits >= 25) {
-                    // 25-49 unidades: $2.700
-                    return 2700;
-                } elseif ($totalUnits >= 12) {
-                    // 12-24 unidades: $3.200
-                    return 3200;
+                if ($totalUnits5ml >= 50) {
+                    // 50+ units: first 50 at 2100, rest at 105000/50 = 2100
+                    $discountedUnits = 50;
+                    $regularUnits = $totalUnits5ml - $discountedUnits;
+                    $totalDiscountedPrice = 105000;
+                    $totalRegularPrice = $regularUnits * 2100;
+                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
+                } 
+                elseif ($totalUnits5ml >= 25) {
+                    // 25-49 units: first 25 at 2700, rest at 66000/25 = 2640
+                    $discountedUnits = 25;
+                    $regularUnits = $totalUnits5ml - $discountedUnits;
+                    $totalDiscountedPrice = 66000;
+                    $totalRegularPrice = $regularUnits * 2700;
+                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
+                } 
+                elseif ($totalUnits5ml >= 12) {
+                    // 12-24 units: first 12 at 3166.67, rest at 38000/12 ≈ 3166.67
+                    $discountedUnits = 12;
+                    $regularUnits = $totalUnits5ml - $discountedUnits;
+                    $totalDiscountedPrice = 38000;
+                    $totalRegularPrice = $regularUnits * 3200;
+                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
                 }
-                // Menos de 12 unidades: precio base
-                // return $basePrice;
-            
+                
+                // Less than 12 units: base price
+                return $warehouse->price5;
+                
             case 30:
-                $basePrice = $warehouse->price30;
-                if ($totalUnits >= 12) {
-                    $basePrice -= 1000; // Descuento de 1000 por unidad
-                }
-                break;
-            
+                return ($totalUnitsBySize[30] ?? 0) >= 12 
+                    ? $warehouse->price30 - 1000 
+                    : $warehouse->price30;
+                    
             case 50:
-                $basePrice = $warehouse->price50;
-                if ($totalUnits >= 12) {
-                    $basePrice -= 2000; // Descuento de 2000 por unidad
-                }
-                break;
-            
+                return ($totalUnitsBySize[50] ?? 0) >= 12
+                    ? $warehouse->price50 - 2000
+                    : $warehouse->price50;
+                    
             case 100:
-                $basePrice = $warehouse->price100;
-                if ($totalUnits >= 12) {
-                    $basePrice -= 2000; // Descuento de 2000 por unidad
-                }
-                break;
-            
+                return ($totalUnitsBySize[100] ?? 0) >= 12
+                    ? $warehouse->price100 - 2000
+                    : $warehouse->price100;
+                    
             default:
                 return 0;
         }
-        return $basePrice;
     }
 
     public function storeSales(Request $request)
@@ -134,16 +154,7 @@ class SaleController extends Controller
             if($reference['reference'] == $giftBagId){
                 $unitPrice = 2000;
             }else{
-                $unitPrice = $this->priceReference($reference['quantity'], $warehouse);
-            }
-            
-            // Descuento por cantidad y unidades
-            if ($reference['units'] >= 12) {
-                if ($reference['quantity'] == 30) {
-                    $unitPrice -= 1000;
-                } elseif ($reference['quantity'] == 50 || $reference['quantity'] == 100) {
-                    $unitPrice -= 2000;
-                }
+                $unitPrice = $this->priceReference($reference['quantity'], $warehouse, $reference['units'], $request->references);
             }
             
             // Calcular precio total
@@ -225,6 +236,7 @@ class SaleController extends Controller
         $cashRegister->save();
 
         return redirect()->route('sales.detail', $sale->sale_id);
+        
     }
 
     public function salesDetail($sale_id){
