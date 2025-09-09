@@ -18,11 +18,11 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\NoveltyController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\DamageReturnController;
 
 Route::middleware('auth')->group(function () {
     Route::get('change-password', [PasswordController::class, 'show'])->name('change-password');
@@ -260,4 +260,27 @@ Route::middleware('auth')->group(function () {
         Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
         Route::post('cerrar-caja', 'store')->name('cash.close');
     });
+
+    Route::controller(DamageReturnController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Devoluciones']], function () {
+            Route::get('devoluciones',  'getAllDamageReturn')->name('damageReturn.list');
+            Route::get('detalle-devolucion/{damageReturnId}',  'detailDamageReturn')->name('damageReturn.detail');
+
+        });
+        Route::group(['middleware' => ['can:Crear Devoluciones']], function () {
+            Route::get('devoluciones/nueva-devolucion', 'createDamageReturn')->name('damageReturn.create');
+            Route::post('devoluciones/nueva-devolucion', 'storeDamageReturn')->name('damageReturn.store');
+        });
+        Route::group(['middleware' => ['can:Editar Despachos']], function () {
+            Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
+            Route::put('despachos/editar despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
+            Route::put('despachos/detalle despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
+
+        });
+
+        Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
+            Route::put('detalle-despachos/{dispatchId}', 'approvedDispatch')->name('dispatch.approved');
+        });
+    });
+
 });
