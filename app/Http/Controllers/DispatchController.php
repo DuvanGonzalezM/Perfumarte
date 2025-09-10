@@ -215,7 +215,7 @@ class DispatchController extends Controller
             $detail->save();
 
             $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-                ->where('warehouse_id', 2)
+                ->whereIn('warehouse_id', [2, 3])
                 ->first();
 
             if ($inventory) {
