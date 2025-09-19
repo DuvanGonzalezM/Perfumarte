@@ -20,7 +20,8 @@ class DispatchDetail extends Model
         'dispatched_quantity',
         'received',
         'returned_quantity',
-        'observations'
+        'observations',
+        'request_id'
     ];
     protected $casts = [
         'created_at' => 'datetime',

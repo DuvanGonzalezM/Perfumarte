@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->boolean('received');
             $table->integer('returned_quantity');
             $table->string('observations');
+            $table->integer('request_id')->nullable();
             $table->timestamps();
         });
     }
