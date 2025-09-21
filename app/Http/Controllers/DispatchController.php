@@ -76,6 +76,7 @@ class DispatchController extends Controller
                         'dispatch_id' => $dispatchId,
                         'warehouse_id' => $location['warehouse'],
                         'inventory_id' => $reference['reference'],
+                        'request_id' => $location['request_id'],
                         'dispatched_quantity' => $reference['dispatched_quantity'],
                         'received' => 0
                     ]);
@@ -96,7 +97,7 @@ class DispatchController extends Controller
     public function approvedDispatch($id)
     {
         $dispatch = Dispatch::with('dispatchdetail')->findOrFail($id);
-
+        $requestList = [];
         foreach ($dispatch->dispatchdetail as $detail) {
 
             $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
@@ -113,10 +114,22 @@ class DispatchController extends Controller
 
             $inventoryOrigin->quantity -= $detail->dispatched_quantity;
             $inventoryOrigin->save();
+
+            if ($detail->request_id) {
+                if (!in_array($detail->request_id, $requestList)) {
+                    $requestList[] = $detail->request_id;
+                }
+            }
         }
 
         $dispatch->status = 'En ruta';
         $dispatch->save();
+
+        $requests = RequestPrais::whereIn('request_id', $requestList)->where('status', 'Pendiente')->get();
+        foreach ($requests as $request) {
+            $request->status = 'Despachado';
+            $request->save();
+        }
 
         return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado');
     }
@@ -154,7 +167,6 @@ class DispatchController extends Controller
 
             foreach ($request->dispatches as $location) {
                 foreach ($location['references'] as $reference) {
-
                     $inventory = Inventory::where('inventory_id', $reference['reference'])
                         ->whereIn('warehouse_id', [2, 3])
                         ->firstOrFail();
@@ -163,6 +175,7 @@ class DispatchController extends Controller
                     $detail->warehouse_id = $location['warehouse'];
                     $detail->dispatch_id = $dispatch->dispatch_id;
                     $detail->inventory_id = $inventory->inventory_id;
+                    $detail->request_id = $location['request_id'];
                     $detail->dispatched_quantity = $reference['dispatched_quantity'];
                     $detail->received = 0;
                     $detail->save();
@@ -215,7 +228,7 @@ class DispatchController extends Controller
             $detail->save();
 
             $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-                ->where('warehouse_id', 2)
+                ->whereIn('warehouse_id', [2, 3])
                 ->first();
 
             if ($inventory) {

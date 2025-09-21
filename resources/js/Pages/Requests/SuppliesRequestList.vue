@@ -14,16 +14,16 @@ const props = defineProps({
 });
 const columnsTable = [
     {
+        data: 'request_id',
+        title: 'CODIGO SOLICITUD'
+    },
+    {
         data: "created_at",
         title: 'FECHA DE SOLICITUD',
         render: function (data) {
             const formattedDate = moment(data).format('DD/MM/Y');
             return formattedDate;
         }
-    },
-    {
-        data: 'request_id',
-        title: 'CODIGO SOLICITUD'
     },
     {
         data: 'user.name',

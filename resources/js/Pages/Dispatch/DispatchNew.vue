@@ -28,7 +28,7 @@ const form = useForm({
 });
 const showModal = ref(false);
 const optionWarehouse = ref(props.warehouses.map(warehouse => ({ 'title': warehouse.location.name, 'value': warehouse.warehouse_id })));
-const optionRequests = ref(props.requests.map(request => ({ 'title': (request.user.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
+const optionRequests = ref(props.requests.map(request => ({ 'title': (request.request_id + ' - ' + request.user.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
 const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
 
 const addReference = (dispatch) => {
@@ -52,6 +52,7 @@ const openModal = () => {
 
 const addDispatch = () => {
     let locationRequest = null;
+    let requestId = null;
     let warehouse = null;
     let references = [
         {
@@ -61,7 +62,8 @@ const addDispatch = () => {
     ];
     showModal.value = false;
     if (requestSeleted.value) {
-        locationRequest = props.requests.find(requestI => requestI.request_id == requestSeleted.value);
+        requestId = requestSeleted.value;
+        locationRequest = props.requests.find(requestI => requestI.request_id == requestId);
         warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.user.location_id).warehouse_id;
         if (locationRequest.detail_request.length > 0) {
             references = [];
@@ -75,12 +77,13 @@ const addDispatch = () => {
     } else if (locationSeleted.value) {
         warehouse = locationSeleted.value;
     }
-    requestSeleted.value = null;
-    locationSeleted.value = null;
     form.dispatches.push({
         warehouse: warehouse,
+        request_id: requestId,
         references: references,
     });
+    requestSeleted.value = null;
+    locationSeleted.value = null;
 };
 const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
