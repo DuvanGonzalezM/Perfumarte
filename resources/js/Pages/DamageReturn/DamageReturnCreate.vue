@@ -41,7 +41,6 @@ const isFormValid = computed(() => {
     })
 });
 
-const showModal = ref(false);
 const showErrorsModal = ref(false);
 const optionInventory = ref(props.inventoryReturn.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
 
@@ -70,23 +69,7 @@ const confirmCreate = () => {
         }
     });
 }
-const addDamageReturn = () => {
-    let references = [
-        {
-            reference: '',
-            damage_quantity: '',
-            observations: '',
-        }
-    ];
-    showModal.value = false;
-    form.damageReturn.push({
-        warehouse_id: props.warehouseReturn.warehouse_id,
-        references: references,
-    });
-};
-const removeDamageReturn = (index) => {
-    form.damageReturn.splice(index, 1);
-};
+
 
 
 
