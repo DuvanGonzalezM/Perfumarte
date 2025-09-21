@@ -11,7 +11,7 @@ use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
-use App\Http\Controllers\AuditController;   
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
@@ -44,8 +44,8 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(DispatchController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
-            Route::get('despachos',  'getAllDispatch')->name('dispatch.list');
-            Route::get('detalle-despachos/{dispatchId}',  'detailDispatch')->name('dispatch.detail');
+            Route::get('despachos', 'getAllDispatch')->name('dispatch.list');
+            Route::get('detalle-despachos/{dispatchId}', 'detailDispatch')->name('dispatch.detail');
             Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
 
         });
@@ -257,23 +257,21 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(DamageReturnController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Devoluciones']], function () {
-            Route::get('devoluciones',  'getAllDamageReturn')->name('damageReturn.list');
-            Route::get('detalle-devolucion/{damageReturnId}',  'detailDamageReturn')->name('damageReturn.detail');
+            Route::get('devoluciones', 'getAllDamageReturn')->name('damageReturn.list');
+            Route::get('detalle-devolucion-de-averias/{id}', 'editDamageReturn')->name('damageReturn.detail');
 
         });
         Route::group(['middleware' => ['can:Crear Devoluciones']], function () {
             Route::get('devoluciones/nueva-devolucion', 'createDamageReturn')->name('damageReturn.create');
             Route::post('devoluciones/nueva-devolucion', 'storeDamageReturn')->name('damageReturn.store');
         });
-        Route::group(['middleware' => ['can:Editar Despachos']], function () {
-            Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
-            Route::put('despachos/editar despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
-            Route::put('despachos/detalle despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
 
+        Route::group(['middleware' => ['can:Confirmar Despachos']], function () {
+            Route::post('detalle-devolucion-de-averias/{id}', 'approvedDamageReturn')->name('damageReturn.approved');
         });
 
-        Route::group(['middleware' => ['can:Aprobar Despachos']], function () {
-            Route::put('detalle-despachos/{dispatchId}', 'approvedDispatch')->name('dispatch.approved');
+        Route::group(['middleware' => ['can:Aprobar Devoluciones']], function () {
+            Route::put('aprobar-devolucion-de-averias/{id}', 'approveReturnFinal')->name('returnFinal.approved');
         });
     });
 

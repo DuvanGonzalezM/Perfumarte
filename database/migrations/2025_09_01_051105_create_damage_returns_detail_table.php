@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('inventory_id')->constrained('inventories', 'inventory_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('warehouse_id')->constrained('warehouses', 'warehouse_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('damage_quantity');
+            $table->boolean('received');
             $table->string('observations');
             $table->timestamps();
         });

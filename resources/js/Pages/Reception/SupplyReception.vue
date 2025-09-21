@@ -20,9 +20,8 @@ const props = defineProps({
     }
 });
 
-console.log(props.dispatch);
 const form = useForm({
-    products: props.dispatch.dispatch_detail != null ? props.dispatch.dispatch_detail?.map(detail => ({
+    products: props.dispatch != null && props.dispatch.dispatch_detail != null ? props.dispatch.dispatch_detail?.map(detail => ({
         dispatchs_detail_id: detail.dispatchs_detail_id || '',
         dispatch_id: detail.dispatch_id || '',
         name: detail.inventory?.product?.commercial_reference || '',
@@ -98,44 +97,6 @@ const submit = () => {
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <!-- Tabla de devoluciones -->
-                                <!-- <table class="table">
-                                    <thead>
-                                        <tr><strong>Devoluciones</strong></tr>
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>Cantidad</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="props.dispatch.status.trim().toLowerCase() === 'en ruta'">
-                                                <td>
-                                                    <SelectSearch v-model="form.products[index].product_id"
-                                                        :options="optionProducts" placeholder="Selecciona un producto" />
-                                                </td>
-                                                <td>
-                                                    <TextInput v-model="form.products[index].quantity"
-                                                        placeholder="Agregar cantidad" />
-                                                </td>
-                                            </template>
-                                            <template v-else>
-                                                <td>{{ product.name }}</td>
-                                                <td>{{ product.quantity }}</td>
-                                                <td>
-                                                    <input type="checkbox" v-model="form.products[index].received"
-                                                        disabled>
-                                                </td>
-                                                <td>
-                                                    {{ form.products[index].observation }}
-                                                </td>
-                                            </template>
-                                        </tr>
-                                    </tbody>
-                                </table> -->
-
-
 
                             </div>
                         </div>

@@ -188,7 +188,7 @@ class DispatchController extends Controller
             'dispatchdetail.warehouse.location'
         ])->findOrFail($id);
 
-        if ($dispatch->status == 'Recibido' && $user->hasRole('Monitoreo')) {
+        if ($dispatch->status == 'Recibido' && $user->hasRole('Control Gerencia')) {
             return Inertia::render('Dispatch/DispatchDetail', [
                 'dispatch' => $dispatch
             ]);
