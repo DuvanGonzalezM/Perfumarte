@@ -18,7 +18,9 @@ class DamageReturnDetail extends Model
         'inventory_id',
         'warehouse_id',
         'damage_quantity',
-        'observations'
+        'observations',
+        'received',
+        'discarded',
     ];
     protected $casts = [
         'created_at' => 'datetime',

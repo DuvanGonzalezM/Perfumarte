@@ -272,7 +272,7 @@ Route::middleware('auth')->group(function () {
             Route::post('devoluciones/nueva-devolucion', 'storeDamageReturn')->name('damageReturn.store');
         });
 
-        Route::group(['middleware' => ['can:Confirmar Despachos']], function () {
+        Route::group(['middleware' => ['can:Confirmar Devoluciones']], function () {
             Route::post('detalle-devolucion-de-averias/{id}', 'approvedDamageReturn')->name('damageReturn.approved');
         });
 
