@@ -158,6 +158,15 @@ const buttons = [
         active: page.component.startsWith('Novelty'),
         can: 'Ver Novedades',
     },
+    {
+        name: 'Devoluciones',              
+        href: route('damageReturn.list'),
+        icon: 'fa-solid fa-recycle',   
+        active: page.component.startsWith('DamageReturn'),
+        can: 'Ver Devoluciones',
+    },
+
+
 ];
 </script>
 

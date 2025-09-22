@@ -98,44 +98,6 @@ const submit = () => {
                                     </tbody>
                                 </table>
 
-                                <!-- Tabla de devoluciones -->
-                                <!-- <table class="table">
-                                    <thead>
-                                        <tr><strong>Devoluciones</strong></tr>
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>Cantidad</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(product, index) in form.products" :key="index">
-                                            <template v-if="props.dispatch.status.trim().toLowerCase() === 'en ruta'">
-                                                <td>
-                                                    <SelectSearch v-model="form.products[index].product_id"
-                                                        :options="optionProducts" placeholder="Selecciona un producto" />
-                                                </td>
-                                                <td>
-                                                    <TextInput v-model="form.products[index].quantity"
-                                                        placeholder="Agregar cantidad" />
-                                                </td>
-                                            </template>
-                                            <template v-else>
-                                                <td>{{ product.name }}</td>
-                                                <td>{{ product.quantity }}</td>
-                                                <td>
-                                                    <input type="checkbox" v-model="form.products[index].received"
-                                                        disabled>
-                                                </td>
-                                                <td>
-                                                    {{ form.products[index].observation }}
-                                                </td>
-                                            </template>
-                                        </tr>
-                                    </tbody>
-                                </table> -->
-
-
-
                             </div>
                         </div>
                     </div>
