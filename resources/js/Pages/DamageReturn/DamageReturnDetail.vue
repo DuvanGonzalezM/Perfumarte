@@ -24,7 +24,7 @@ const form = useForm({
         quantity: damageReturnDetail.damage_quantity,
         received: Boolean(damageReturnDetail.received),
         observations: damageReturnDetail.observations,
-        discarded: false,
+        discarded: Boolean(damageReturnDetail.discarded),
     })),
 });
 
@@ -112,7 +112,8 @@ const approveReturnFinal = () => {
                             </td>
 
                             <td v-if="can('Aprobar Devoluciones')">
-                                <input type="checkbox" v-model="item.discarded" />
+                                <input type="checkbox" v-model="item.discarded"
+                                    :disabled="!item.received || props.damageReturn.status.trim().toLowerCase() !== 'en aprobacion' || !can('Aprobar Devoluciones')" />
                             </td>
                         </tr>
                     </tbody>
@@ -124,19 +125,16 @@ const approveReturnFinal = () => {
                         ? 'justify-content-between'
                         : 'justify-content-center'
                 ]">
-                    <!-- Botón Volver -->
                     <PrimaryButton :href="route('damageReturn.list')" class="px-5">
                         Volver
                     </PrimaryButton>
 
-                    <!-- Botón Confirmar (solo en estado Confirmar) -->
                     <template v-if="props.damageReturn.status === 'Confirmar' && can('Confirmar Devoluciones')">
                         <PrimaryButton class="px-5" @click="showConfirmModal = true">
                             Confirmar Devolución
                         </PrimaryButton>
                     </template>
 
-                    <!-- Botón Aprobar (solo en estado En aprobación) -->
                     <template v-else-if="props.damageReturn.status === 'En aprobacion' && can('Aprobar Devoluciones')">
                         <PrimaryButton class="px-5" @click="showApproveModal = true">
                             Aprobar Devolución

@@ -106,10 +106,8 @@ class DamageReturnController extends Controller
                     $damageReturnDetail->damage_quantity = $reference['damage_quantity'];
                     $damageReturnDetail->observations = $reference['observations'];
                     $damageReturnDetail->received = false;
+                    $damageReturnDetail->discarded = false;
                     $damageReturnDetail->save();
-
-                    // $inventory->quantity -= $reference['damage_quantity'];
-                    // $inventory->save();
                 }
             }
 
@@ -146,7 +144,6 @@ class DamageReturnController extends Controller
     public function approvedDamageReturn(Request $request, $id)
     {
 
-        dd($request->all());
         $damageReturn = DamageReturn::findOrFail($id);
 
         if ($damageReturn->status !== 'Confirmar') {
@@ -215,96 +212,49 @@ class DamageReturnController extends Controller
         return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada');
     }
 
+
     public function approveReturnFinal(Request $request, $id)
-{
-    $damageReturn = DamageReturn::with('damageReturnDetail.inventory')->findOrFail($id);
+    {
+        $damageReturn = DamageReturn::with('damageReturnDetail.inventory.product')->findOrFail($id);
 
-    if ($damageReturn->status !== 'En aprobacion') {
-        return redirect()->back()->withErrors(['error' => 'Esta devolución no está en estado En aprobación.']);
-    }
+        if ($damageReturn->status !== 'En aprobacion') {
+            return redirect()->back()->withErrors(['error' => 'Esta devolución no está en estado En aprobación.']);
+        }
 
-    foreach ($request->details as $detailData) {
-        $detail = $damageReturn->damageReturnDetail
-            ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
-            ->first();
-
-        if (!$detail) continue;
-
-        // si está marcado como "dar de baja"
-        if (!empty($detailData['discarded']) && $detailData['discarded'] == true) {
-            $inventory = Inventory::where('inventory_id', $detail->inventory_id)
-                ->where('warehouse_id', $detail->warehouse_id)
+        foreach ($request->details as $detailData) {
+            $detail = $damageReturn->damageReturnDetail
+                ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
                 ->first();
 
-            if ($inventory && $inventory->quantity >= $detail->damage_quantity) {
-                $inventory->quantity -= $detail->damage_quantity;
-                $inventory->save();
+            if (!$detail) {
+                continue;
+            }
+
+            if (!$detail->received && !empty($detailData['discarded'])) {
+                continue;
+            }
+
+            $detail->discarded = !empty($detailData['discarded']) && $detailData['discarded'] == true;
+            $detail->save();
+
+            if ($detail->discarded) {
+                $productCategory = $detail->inventory->product->category ?? '';
+                $targetWarehouseId = ($productCategory === 'Insumo') ? 3 : 2;
+
+                $inventory = Inventory::where('product_id', $detail->inventory->product_id)
+                    ->where('warehouse_id', $targetWarehouseId)
+                    ->first();
+
+                if ($inventory && $inventory->quantity >= $detail->damage_quantity) {
+                    $inventory->quantity -= $detail->damage_quantity;
+                    $inventory->save();
+                }
             }
         }
+
+        $damageReturn->status = 'Aprobado';
+        $damageReturn->save();
+
+        return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada y cantidades dadas de baja.');
     }
-
-    $damageReturn->status = 'Aprobado';
-    $damageReturn->save();
-
-    return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada y cantidades dadas de baja.');
-}
-
-    // public function getReturnedDispatch($id)
-    // {
-    //     $user = auth()->user();
-
-    //     $dispatch = Dispatch::with([
-    //         'dispatchdetail.inventory.product',
-    //         'dispatchdetail.warehouse.location'
-    //     ])->findOrFail($id);
-
-    //     if ($dispatch->status == 'Recibido' && $user->hasRole('Monitoreo')) {
-    //         return Inertia::render('Dispatch/DispatchDetail', [
-    //             'dispatch' => $dispatch
-    //         ]);
-    //     }
-
-    //     return Inertia::render('Dispatch/Dispatchdetail', [
-    //         'dispatch' => $dispatch
-    //     ]);
-    // }
-
-    // public function storeReturnedQuantities(Request $request)
-    // {
-    //     $request->validate([
-    //         'dispatch_id' => 'required|exists:dispatches,dispatch_id',
-    //         'details' => 'required|array',
-    //         'details.*.id' => 'required|exists:dispatches_detail,dispatchs_detail_id',
-    //         'details.*.returned_quantity' => 'required|numeric',
-    //     ]);
-
-    //     foreach ($request->details as $detailData) {
-    //         $detail = DispatchDetail::with('inventory')->find($detailData['id']);
-
-    //         $detail->returned_quantity = $detailData['returned_quantity'];
-    //         $detail->save();
-
-    //         $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-    //             ->where('warehouse_id', 2)
-    //             ->first();
-
-    //         if ($inventory) {
-    //             $inventory->quantity += $detailData['returned_quantity'];
-    //             $inventory->save();
-    //         } else {
-    //             Inventory::create([
-    //                 'product_id' => $detail->inventory->product_id,
-    //                 'warehouse_id' => 2,
-    //                 'quantity' => $detailData['returned_quantity'],
-    //             ]);
-    //         }
-    //     }
-
-    //     $dispatch = Dispatch::findOrFail($request->dispatch_id);
-    //     $dispatch->status = 'Devuelto';
-    //     $dispatch->save();
-
-
-    //     return redirect()->route('dispatch.list')->with('success', 'Cantidades devueltas registradas en inventario.');
-    // }
 }

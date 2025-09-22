@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->integer('damage_quantity');
             $table->boolean('received');
             $table->string('observations');
+            $table->boolean('discarded');
             $table->timestamps();
         });
     }
