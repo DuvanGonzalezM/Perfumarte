@@ -33,6 +33,7 @@ const form = useForm({
     price30: null,
     price50: null,
     price100: null,
+    price_drops: null,
 });
 
 const formEdit = useForm({
@@ -44,6 +45,8 @@ const formEdit = useForm({
     price30: '',
     price50: '',
     price100: '',
+    price_drops: '',
+
 });
 console.log(formEdit);
 
@@ -95,6 +98,7 @@ const openEditModal = (location) => {
     formEdit.price30 = warehouse?.price30 ?? null;
     formEdit.price50 = warehouse?.price50 ?? null;
     formEdit.price100 = warehouse?.price100 ?? null;
+    formEdit.price_drops = warehouse?.price_drops ?? null;
 
     showEditModal.value = true;
 };
@@ -257,6 +261,10 @@ const columnsTable = [
                         v-model="form.price100" required autocomplete="price100" />
                 </div>
                 <div class="mt-4">
+                    <TextInput labelValue="Precio Gotas" id="price_drops" name="price_drops" type="number"
+                        v-model="form.price_drops" required autocomplete="price_drops" />
+                </div>
+                <div class="mt-4">
                     <SelectSearch v-model="form.zone_id" :options="optionsZones" labelValue="Zona" required />
                     <InputError class="mt-2" :message="form.errors.zone_id" />
                 </div>
@@ -308,6 +316,11 @@ const columnsTable = [
                     <TextInput labelValue="Precio 100 ml" id="edit-price100" type="number"
                         v-model="formEdit.price100" required autocomplete="price100" />
                     <InputError class="mt-2" :message="formEdit.errors.price100" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio Gotas" id="edit-price_drops" type="number"
+                        v-model="formEdit.price_drops" required autocomplete="price_drops" />
+                    <InputError class="mt-2" :message="formEdit.errors.price_drops" />
                 </div>
 
                 <div class="mt-4">

@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
             Route::get('despachos',  'getAllDispatch')->name('dispatch.list');
             Route::get('detalle-despachos/{dispatchId}',  'detailDispatch')->name('dispatch.detail');
-            Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
+            Route::get('despachos/detalle-despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
 
         });
         Route::group(['middleware' => ['can:Crear Despachos']], function () {
@@ -54,9 +54,9 @@ Route::middleware('auth')->group(function () {
             Route::post('despachos/nuevo-despacho', 'storeDispatch')->name('dispatch.store');
         });
         Route::group(['middleware' => ['can:Editar Despachos']], function () {
-            Route::get('despachos/editar despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
-            Route::put('despachos/editar despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
-            Route::put('despachos/detalle despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
+            Route::get('despachos/editar-despacho/{dispatch_id}', 'editDispatch')->name('dispatch.edit');
+            Route::put('despachos/editar-despacho/{dispatch_id}', 'updateDispatch')->name('dispatch.update');
+            Route::put('despachos/detalle-despacho-devolucion/{dispatch_id}', 'storeReturnedQuantities')->name('dispatchReturn.store');
 
         });
 
@@ -168,10 +168,16 @@ Route::middleware('auth')->group(function () {
         });
     });
     Route::controller(InventoryLocationController::class)->group(function () {
-        Route::get('inventario inicial', 'start')->name('inventory.start');
+        Route::get('inventario inicial', function () {
+            return redirect()->route('inventory.start');
+        });
+        Route::get('inventario actual', function () {
+            return redirect()->route('inventory.current');
+        });
+        Route::get('inventario-inicial', 'start')->name('inventory.start');
         Route::post('inventory/accept', 'accept')->name('inventory.accept');
         Route::group(['middleware' => ['role:Asesor comercial', 'inventory.check']], function () {
-            Route::get('inventario actual', 'current')->name('inventory.current');
+            Route::get('inventario-actual', 'current')->name('inventory.current');
         });
     });
     Route::group(['middleware' => ['inventory.check']], function () {
@@ -187,9 +193,9 @@ Route::middleware('auth')->group(function () {
                 Route::get('ventas/detalle/{sale_id}', 'salesDetail')->name('sales.detail');
             });
             Route::group(['middleware' => ['can:Crear Ventas']], routes: function () {
-                Route::get('ventas/nueva venta', 'createSales')->name('sales.create');
-                Route::post('ventas/nueva venta', 'storeSales')->name('sales.store');
-                Route::get('ventas/nueva venta/{precio}/{pago}', 'test')->name('sales.validate');
+                Route::get('ventas/nueva-venta', 'createSales')->name('sales.create');
+                Route::post('ventas/nueva-venta', 'storeSales')->name('sales.store');
+                Route::get('ventas/nueva-venta/{precio}/{pago}', 'test')->name('sales.validate');
             });
         });
     });
@@ -198,8 +204,8 @@ Route::middleware('auth')->group(function () {
             Route::get('auditorias', 'showAudits')->name('audits');
             Route::get('auditoria/inventario', 'getAllProducts')->name('audit.inventory');
             Route::get('auditoria/caja/{locationId}', 'getCashAuditByLocation')->name('audit.cash');
-            Route::get('auditorias/detalle auditoria inventario/{id}', 'auditInventoryDetail')->name('detailInventory');
-            Route::get('auditorias/detalle auditoria caja/{id_audits}', 'showDetailAuditCash')->name('detailCash');
+            Route::get('auditorias/detalle-auditoria-inventario/{id}', 'auditInventoryDetail')->name('detailInventory');
+            Route::get('auditorias/detalle-auditoria-caja/{id_audits}', 'showDetailAuditCash')->name('detailCash');
             Route::post('auditoria/caja/{locationId}', 'confirmCashAudit')->name('audit.cash.confirm');
             Route::post('auditoria/inventario', 'storeAuditInventory')->name('audit.storeInventory');
         });
@@ -209,11 +215,11 @@ Route::middleware('auth')->group(function () {
             Route::get('productos', 'getAllProducts')->name('products.list');
         });
         Route::group(['middleware' => ['can:Crear Productos']], function () {
-            Route::get('productos/nuevo producto', 'createProduct')->name('product.create');
-            Route::post('productos/nuevo producto', 'storeProduct')->name('product.store');
+            Route::get('productos/nuevo-producto', 'createProduct')->name('product.create');
+            Route::post('productos/nuevo-producto', 'storeProduct')->name('product.store');
         });
         Route::group(['middleware' => ['can:Editar Productos']], function () {
-            Route::put('productos/editar producto/{product_id}', 'editProduct')->name('products.update');
+            Route::put('productos/editar-producto/{product_id}', 'editProduct')->name('products.update');
         });
         Route::group(['middleware' => ['can:Desactivar Productos']], function () {
             Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
@@ -228,11 +234,11 @@ Route::middleware('auth')->group(function () {
             Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
         });
         Route::group(['middleware' => ['can:Crear Proveedores']], function () {
-            Route::get('proveedores/nuevo proveedor', 'createSupplier')->name('supplier.create');
-            Route::post('proveedores/nuevo proveedor', 'storeSupplier')->name('supplier.store');
+            Route::get('proveedores/nuevo-proveedor', 'createSupplier')->name('supplier.create');
+            Route::post('proveedores/nuevo-proveedor', 'storeSupplier')->name('supplier.store');
         });
         Route::group(['middleware' => ['can:Editar Proveedores']], function () {
-            Route::put('proveedores/editar proveedor/{supplier_id}', 'editSupplier')->name('supplier.update');
+            Route::put('proveedores/editar-proveedor/{supplier_id}', 'editSupplier')->name('supplier.update');
         });
         Route::group(['middleware' => ['can:Desactivar Proveedores']], function () {
             Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
@@ -243,15 +249,15 @@ Route::middleware('auth')->group(function () {
             Route::get('novedades', 'getAllNovelties')->name('novelties.list');
         });
         Route::group(['middleware' => ['can:Crear Novedades']], function () {
-            Route::get('novedades/nueva novedad', 'createNovelty')->name('novelty.create');
-            Route::post('novedades/nueva novedad', 'storeNovelty')->name('novelty.store');
+            Route::get('novedades/nueva-novedad', 'createNovelty')->name('novelty.create');
+            Route::post('novedades/nueva-novedad', 'storeNovelty')->name('novelty.store');
         });
     });
     Route::controller(NotificationController::class)->group(function () {
         Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
     });
     Route::controller(CashRegisterController::class)->group(function () {
-        Route::get('Ver caja', 'closeCashRegister')->name('cash_register.close');
-        Route::post('Cerrar caja', 'store')->name('cash.close');
+        Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
+        Route::post('cerrar-caja', 'store')->name('cash.close');
     });
 });
