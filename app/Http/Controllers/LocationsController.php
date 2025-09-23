@@ -39,6 +39,7 @@ class LocationsController extends Controller
             'price30' => 'required',
             'price50' => 'required',
             'price100' => 'required',
+              'price_drops' => 'required',
         ]);
 
         $location = Location::create([
@@ -54,6 +55,7 @@ class LocationsController extends Controller
             'price30' => $request->price30,
             'price50' => $request->price50,
             'price100' => $request->price100,
+            'price_drops' => $request->price_drops,
         ]);
         
         return redirect()->route('locations.list');
@@ -76,6 +78,7 @@ class LocationsController extends Controller
             'price30' => 'required',
             'price50' => 'required',
             'price100' => 'required',
+            'price_drops' => 'required',
         ]);
        
         
@@ -87,6 +90,7 @@ class LocationsController extends Controller
             'price30' => $request->price30,
             'price50' => $request->price50,
             'price100' => $request->price100,
+            'price_drops' => $request->price_drops,
         ]);
 
         return redirect()->route('locations.list');
