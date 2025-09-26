@@ -43,11 +43,16 @@ class Location extends Model
 
     public function zone(): BelongsTo
     {
-        return $this->belongsTo(Zone::class, foreignKey: 'zone_id');
+        return $this->belongsTo(Zone::class, 'zone_id');
     }
 
     public function users_location(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
+    }
+
+    public function requests(): HasMany
+    {
+        return $this->hasMany(RequestPrais::class, 'location_id');
     }
 }

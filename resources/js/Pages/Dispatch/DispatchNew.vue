@@ -28,7 +28,7 @@ const form = useForm({
 });
 const showModal = ref(false);
 const optionWarehouse = ref(props.warehouses.map(warehouse => ({ 'title': warehouse.location.name, 'value': warehouse.warehouse_id })));
-const optionRequests = ref(props.requests.map(request => ({ 'title': (request.request_id + ' - ' + request.user.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
+const optionRequests = ref(props.requests.map(request => ({ 'title': (request.request_id + ' - ' + request.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
 const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
 
 const addReference = (dispatch) => {
@@ -64,7 +64,7 @@ const addDispatch = () => {
     if (requestSeleted.value) {
         requestId = requestSeleted.value;
         locationRequest = props.requests.find(requestI => requestI.request_id == requestId);
-        warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.user.location_id).warehouse_id;
+        warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.location_id).warehouse_id;
         if (locationRequest.detail_request.length > 0) {
             references = [];
             locationRequest.detail_request.forEach(detail => {
