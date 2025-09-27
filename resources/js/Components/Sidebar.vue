@@ -165,6 +165,13 @@ const buttons = [
         active: page.component.startsWith('DamageReturn'),
         can: 'Ver Devoluciones',
     },
+    {
+        name: 'Consumibles',              
+        href: route('consumable.list'),
+        icon: 'fa-solid fa-trash-can',   
+        active: page.component.startsWith('Consumable'),
+        can: 'Ver Consumibles',
+    },
 
 
 ];

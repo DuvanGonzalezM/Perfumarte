@@ -23,6 +23,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\DamageReturnController;
+use App\Http\Controllers\ConsumableController;
 
 Route::middleware('auth')->group(function () {
     Route::get('change-password', [PasswordController::class, 'show'])->name('change-password');
@@ -280,5 +281,25 @@ Route::middleware('auth')->group(function () {
             Route::put('aprobar-devolucion-de-averias/{id}', 'approveReturnFinal')->name('returnFinal.approved');
         });
     });
+
+    Route::controller(ConsumableController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Consumibles']], function () {
+            Route::get('consumibles', 'getAllConsumable')->name('consumable.list');
+
+        });
+        Route::group(['middleware' => ['can:Crear Consumibles']], function () {
+            Route::get('consumibles/nuevo-registro-consumible', 'createConsumable')->name('consumable.create');
+            Route::post('consumibles/nuevo-registro-consumible', 'storeConsumable')->name('consumable.store');
+        });
+
+        Route::group(['middleware' => ['can:Confirmar Devoluciones']], function () {
+            Route::post('detalle-devolucion-de-averias/{id}', 'approvedDamageReturn')->name('damageReturn.approved');
+        });
+
+        Route::group(['middleware' => ['can:Aprobar Devoluciones']], function () {
+            Route::put('aprobar-devolucion-de-averias/{id}', 'approveReturnFinal')->name('returnFinal.approved');
+        });
+    });
+
 
 });
