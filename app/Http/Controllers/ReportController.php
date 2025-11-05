@@ -17,7 +17,7 @@ class ReportController extends Controller
 {
     public function getReports()
     {
-        $reports = Report::all();
+        $reports = Report::limit(100)->orderBy('report_id', 'desc')->get();
         $warehouses = Warehouse::whereNotIn('warehouse_id', [1,2,3])->get();
         return Inertia::render('Reports/ReportsList', ['reports' => $reports, 'warehouses' => $warehouses]);
     }

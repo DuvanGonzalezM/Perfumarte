@@ -21,11 +21,13 @@ class RequestPraisController extends Controller
             $locationIds = $user->location_user->pluck('location_id')->toArray();
             $request->whereIn('location_id', $locationIds);
         }
-        $suppliesRequest = $request->get();
+        $suppliesRequest = $request->limit(100)->orderBy('request_id', 'desc')->get();
         if ($user->hasRole('Jefe de Operaciones')) {
             $suppliesRequest = RequestPrais::with('user', 'location')
                 ->where('request_type', '1')
                 ->where('status', 'Pendiente')
+                ->limit(100)
+                ->orderBy('request_id', 'desc')
                 ->get();
         }
 
