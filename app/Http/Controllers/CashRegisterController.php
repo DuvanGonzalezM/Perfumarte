@@ -72,6 +72,7 @@ class CashRegisterController extends Controller
         return Inertia::render('Sale/SalesList', [
             'sales' => Sale::where('location_id', $userLocation->location_id)
                 ->orderBy('created_at', 'desc')
+                ->limit(100)
                 ->get(),
             'confirmationclosingcash' => $cashRegister?->confirmationclosingcash
         ]);
