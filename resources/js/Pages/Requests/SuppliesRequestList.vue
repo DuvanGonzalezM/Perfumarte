@@ -4,7 +4,7 @@ import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import moment from 'moment';
-import { can } from 'laravel-permission-to-vuejs';
+import { can, is } from 'laravel-permission-to-vuejs';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
@@ -29,11 +29,11 @@ const columnsTable = [
         data: 'user.name',
         title: 'SOLICITADO POR'
     },
-    // {
-    //     data: 'user.location.name',
-    //     title: 'SEDE'
-    // },
-
+    {
+        data: 'location.name',
+        title: 'SEDE',
+        visible: is('Asesor comercial') ? false : true,
+    },
     {
         data: "status",
         title: 'ESTADO',
@@ -53,8 +53,8 @@ const columnsTable = [
     {
         data: "request_id",
         title: 'DETALLE',
-        render: function (data) {
-            return '<a href="' + (can('Editar Solicitudes Insumos') ? route("requests.detail", data) : route("suppliesrequest.detail", data)) + '"><i class="fa-solid fa-eye"></i></a>';
+        render: function (data, type, row) {
+            return '<a href="' + (can('Editar Solicitudes Insumos') && row.status != 'Despachado' ? route("requests.detail", data) : route("suppliesrequest.detail", data)) + '"><i class="fa-solid fa-eye"></i></a>';
         }
     },
 ];

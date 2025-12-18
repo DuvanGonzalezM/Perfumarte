@@ -17,6 +17,7 @@ class RequestPrais extends Model
     protected $fillable = [
         'request_type',
         'user_id',
+        'location_id',
         'status',
     ];
     protected $casts = [
@@ -27,6 +28,11 @@ class RequestPrais extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function detailRequest(): HasMany
