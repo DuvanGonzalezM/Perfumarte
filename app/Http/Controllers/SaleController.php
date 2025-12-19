@@ -58,7 +58,7 @@ class SaleController extends Controller
         return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
     }
 
-    public function priceReference($quantity, $warehouse, $totalUnits = 0, $allReferences = [])
+    public function priceReference(  $quantity, $warehouse, $totalUnits = 0, $allReferences = [])
     {
         $totalUnitsBySize = [
             5 => 0,
@@ -76,36 +76,8 @@ class SaleController extends Controller
     
         switch ($quantity) {
             case 5:
-                $totalUnits5ml = $totalUnitsBySize[5] ?? 0;
-                
-                if ($totalUnits5ml >= 50) {
-                    // 50+ units: first 50 at 2100, rest at 105000/50 = 2100
-                    $discountedUnits = 50;
-                    $regularUnits = $totalUnits5ml - $discountedUnits;
-                    $totalDiscountedPrice = 105000;
-                    $totalRegularPrice = $regularUnits * 2100;
-                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
-                } 
-                elseif ($totalUnits5ml >= 25) {
-                    // 25-49 units: first 25 at 2700, rest at 66000/25 = 2640
-                    $discountedUnits = 25;
-                    $regularUnits = $totalUnits5ml - $discountedUnits;
-                    $totalDiscountedPrice = 66000;
-                    $totalRegularPrice = $regularUnits * 2700;
-                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
-                } 
-                elseif ($totalUnits5ml >= 12) {
-                    // 12-24 units: first 12 at 3166.67, rest at 38000/12 ≈ 3166.67
-                    $discountedUnits = 12;
-                    $regularUnits = $totalUnits5ml - $discountedUnits;
-                    $totalDiscountedPrice = 38000;
-                    $totalRegularPrice = $regularUnits * 3200;
-                    return ($totalDiscountedPrice + $totalRegularPrice) / $totalUnits5ml;
-                }
-                
-                // Less than 12 units: base price
                 return $warehouse->price5;
-                
+              
             case 30:
                 return ($totalUnitsBySize[30] ?? 0) >= 12 
                     ? $warehouse->price30 - 1000 

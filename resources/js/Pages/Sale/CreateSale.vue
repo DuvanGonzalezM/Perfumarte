@@ -192,42 +192,8 @@ const priceReference = (value, productId=null) => {
         return props.warehouse.price100 - 2000;
     } else if (value == 100) {
         return props.warehouse.price100;
-    } else if (value == 5) {
-        const totalUnits5ml = form.references.filter(ref => ref.quantity == 5).reduce((acc, ref) => acc + ref.units, 0);
-        
-        if (totalUnits5ml >= 50) {
-            // Si hay 50 o más unidades, calcular descuentos
-            const discountedUnits = 50; // Máximo 50 unidades con descuento
-            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
-            
-            // Precio total: 105000 para las 50 primeras + precio normal para las demás
-            const totalDiscountedPrice = 105000;
-            const totalRegularPrice = regularUnits * 2100; // Precio normal para 50+ unidades
-            
-            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
-        } else if (totalUnits5ml >= 25) {
-            // Si hay 25 o más unidades, calcular descuentos
-            const discountedUnits = 25; // Máximo 25 unidades con descuento
-            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
-            
-            // Precio total: 66000 para las 25 primeras + precio normal para las demás
-            const totalDiscountedPrice = 66000;
-            const totalRegularPrice = regularUnits * 2700; // Precio normal para 25-49 unidades
-            
-            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
-        } else if (totalUnits5ml >= 12) {
-            // Si hay 12 o más unidades, calcular descuentos
-            const discountedUnits = 12; // Máximo 12 unidades con descuento
-            const regularUnits = totalUnits5ml - discountedUnits; // Unidades a precio normal
-            
-            // Precio total: 38000 para las 12 primeras + precio normal para las demás
-            const totalDiscountedPrice = 38000;
-            const totalRegularPrice = regularUnits * 3200; // Precio normal para 12-24 unidades
-            
-            return (totalDiscountedPrice + totalRegularPrice) / totalUnits5ml;
-        }
-        
-        // Para menos de 12 unidades, usar precio base
+    } 
+    else if (value == 5) {
         return props.warehouse.price5;
     } else {
         if (productId == giftBag){

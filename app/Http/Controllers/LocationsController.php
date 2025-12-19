@@ -36,6 +36,7 @@ class LocationsController extends Controller
             'address' => 'required',
             'zone_id' => 'required',
             'cash_base' => 'required',
+            'price5' => 'required',
             'price30' => 'required',
             'price50' => 'required',
             'price100' => 'required',
@@ -52,6 +53,7 @@ class LocationsController extends Controller
         $warehouse = Warehouse::create([
             'location_id' => $location->location_id,
             'name' => $request->name,
+            'price5' => $request->price5,
             'price30' => $request->price30,
             'price50' => $request->price50,
             'price100' => $request->price100,
@@ -75,6 +77,7 @@ class LocationsController extends Controller
             'address' => 'required',
             'zone_id' => 'required',
             'cash_base' => 'required',
+            'price5' => 'required',
             'price30' => 'required',
             'price50' => 'required',
             'price100' => 'required',
@@ -87,6 +90,7 @@ class LocationsController extends Controller
         $location->update($request->all());
         $warehouse = Warehouse::where('location_id', $id)->first();
         $warehouse->update([
+            'price5' => $request->price5,
             'price30' => $request->price30,
             'price50' => $request->price50,
             'price100' => $request->price100,

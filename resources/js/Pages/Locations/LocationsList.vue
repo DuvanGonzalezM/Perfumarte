@@ -30,6 +30,7 @@ const form = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price5: null,
     price30: null,
     price50: null,
     price100: null,
@@ -42,6 +43,7 @@ const formEdit = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price5: '',
     price30: '',
     price50: '',
     price100: '',
@@ -95,6 +97,7 @@ const openEditModal = (location) => {
     formEdit.address = location.address;
     formEdit.zone_id = location.zone_id;
     formEdit.cash_base = location.cash_base;
+    formEdit.price5 = warehouse?.price5 ?? null;
     formEdit.price30 = warehouse?.price30 ?? null;
     formEdit.price50 = warehouse?.price50 ?? null;
     formEdit.price100 = warehouse?.price100 ?? null;
@@ -249,6 +252,10 @@ const columnsTable = [
                         v-model="form.cash_base" required autocomplete="cash_base" />
                 </div>
                 <div class="mt-4">
+                    <TextInput labelValue="Precio 5 ml" id="price5" name="price5" type="number"
+                        v-model="form.price5" required autocomplete="price5" />
+                </div>
+                <div class="mt-4">
                     <TextInput labelValue="Precio 30 ml" id="price30" name="price30" type="number"
                         v-model="form.price30" required autocomplete="price30" />
                 </div>
@@ -301,6 +308,11 @@ const columnsTable = [
                     <TextInput labelValue="Base de Caja" id="edit-cash_base" type="number"
                         v-model="formEdit.cash_base" required autocomplete="cash_base" />
                     <InputError class="mt-2" :message="formEdit.errors.cash_base" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio 5 ml" id="edit-price5" type="number"
+                        v-model="formEdit.price5" required autocomplete="price5" />
+                    <InputError class="mt-2" :message="formEdit.errors.price5" />
                 </div>
                 <div class="mt-4">
                     <TextInput labelValue="Precio 30 ml" id="edit-price30" type="number"
