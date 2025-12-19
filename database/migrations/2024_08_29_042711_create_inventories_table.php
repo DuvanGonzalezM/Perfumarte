@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('warehouse_id')->constrained('warehouses', 'warehouse_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products', 'product_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('quantity');
-            $table->integer('price')->default(0);
+            $table->string('position');
             $table->timestamps();
         });
     }

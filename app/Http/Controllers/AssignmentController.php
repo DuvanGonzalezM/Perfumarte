@@ -10,34 +10,57 @@ use Illuminate\Support\Facades\Auth;
 
 class AssignmentController extends Controller
 {
+    /**
+     * Obtiene todos los supervisores y sus ubicaciones asignadas
+     * - Los administradores ven todos los supervisores de todas las sedes
+     * - Los subdirectores ven solo los supervisores de su zona
+     * - Otros roles ven todos los supervisores excepto los de la ubicación 1
+     *
+     * @return \Inertia\Response
+     */
     public function getAllSupervisor()
     {
         $user = Auth::user();
-        if ($user->hasRole('Subdirector')) {
-            $locations = Location::where('locations.zone_id', '=', $user->zone_id)
-                ->with([
-                    'users_location' => function ($query) {
-                        $query->whereHas('roles', function ($q) {
-                            $q->where('name', 'Supervisor');
-                        });
-                    }
-                ])->get();
+        
+        // Consulta base para ubicaciones con sus supervisores
+        $locationsQuery = Location::query();
+        
+        // Filtros según el rol del usuario
+        if ($user->hasRole('Administrador')) {
+            // Administradores ven todas las ubicaciones excepto la 1
+            $locationsQuery->whereNotIn('locations.location_id', ['1']);
+        } elseif ($user->hasRole('Subdirector')) {
+            // Subdirectores ven solo su zona
+            $locationsQuery->where('locations.zone_id', '=', $user->zone_id);
         } else {
-            $locations = Location::whereNotIn('locations.location_id', ['1'])
-                ->with([
-                    'users_location' => function ($query) {
-                        $query->whereHas('roles', function ($q) {
-                            $q->where('name', 'Supervisor');
-                        });
-                    }
-                ])->get();
+            // Otros roles ven todas excepto ubicación 1
+            $locationsQuery->whereNotIn('locations.location_id', ['1']);
         }
+        
+        // Cargar la relación con los supervisores
+        $locations = $locationsQuery->with([
+            'users_location' => function ($query) {
+                $query->whereHas('roles', function ($q) {
+                    $q->where('name', 'Supervisor');
+                });
+            }
+        ])->get();
 
-        $supervisors = User::select('user_id', 'name')->where('boss_user', '=', $user->user_id)->whereHas('roles', function ($query) {
-            $query->where('name', 'Supervisor');
-        })->get();
+        // Obtener supervisores disponibles para asignar
+        $supervisorsQuery = User::role('Supervisor');
+        
+        // Si no es administrador, solo puede ver los supervisores que le pertenecen
+        if (!$user->hasRole('Administrador')) {
+            $supervisorsQuery->where('boss_user', $user->user_id);
+        }
+        
+        $supervisors = $supervisorsQuery->select('user_id', 'name')->get();
 
-        return Inertia::render('Assignment/AssignmentSupervisor', ['locations' => $locations, 'supervisors' => $supervisors]);
+        return Inertia::render('Assignment/AssignmentSupervisor', [
+            'locations' => $locations,
+            'supervisors' => $supervisors,
+            'isAdmin' => $user->hasRole('Administrador')
+        ]);
     }
 
     public function updateAssignment(Request $request)

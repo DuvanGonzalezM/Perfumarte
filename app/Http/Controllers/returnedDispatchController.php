@@ -49,18 +49,12 @@ class returnedDispatchController extends Controller
             $detail->save();
 
             $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-                ->where('warehouse_id', 2)
+                ->whereIn('warehouse_id', [2, 3])
                 ->first();
 
             if ($inventory) {
                 $inventory->quantity += $detailData['returned_quantity'];
                 $inventory->save();
-            } else {
-                Inventory::create([
-                    'product_id' => $detail->inventory->product_id,
-                    'warehouse_id' => 2,
-                    'quantity' => $detailData['returned_quantity'],
-                ]);
             }
         }
 

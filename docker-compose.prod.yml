@@ -24,8 +24,7 @@ services:
       - "443:443"
     volumes:
       - './docker/production/nginx:/etc/nginx/conf.d'
-      - './certbot/conf:/etc/letsencrypt'
-      - './certbot/www:/var/www/certbot'
+      - './docker/production/ssl:/etc/ssl_aws'
       - public_assets:/var/www/public:ro
       - nginx-logs:/var/log/nginx
     command: nginx -g "daemon off;"

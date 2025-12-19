@@ -22,7 +22,7 @@ const props = defineProps({
             <!-- <Alert /> -->
         </template>
 
-        <SectionCard :subextra="'Valor total: $' + sale.total" :subtitle="sale.payment_method">
+        <SectionCard :subextra="'Valor total: ' + Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(sale.total)" :subtitle="sale.payment_method">
             <template #headerSection>
                 <strong>Venta de {{ sale.user.name }}</strong>
             </template>
@@ -40,10 +40,10 @@ const props = defineProps({
                     <tbody id="productsList">
                         <tr v-for="(reference, index) in props.sale.sale_details">
                             <td>{{ reference.inventory.product.commercial_reference }}</td>
-                            <td>{{ reference.quantity }} ml</td>
+                            <td>{{ !reference.quantity ? 'N/A' : reference.quantity + ' ML' }}</td>
                             <td>{{ reference.units }}</td>
-                            <td>{{ reference.drops }}</td>
-                            <td>$ {{ reference.price }}</td>
+                            <td>{{ !reference.drops ? 'N/A' : reference.drops }}</td>
+                            <td>{{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(reference.price) }}</td>
                         </tr>
                     </tbody>
                 </table>

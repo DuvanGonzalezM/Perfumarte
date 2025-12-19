@@ -15,30 +15,32 @@ class SupplyReceptionController extends Controller
 {
     public function show()
     {
-        $dispatchDetails = DispatchDetail::with('dispatch', 'inventory.product')->where("warehouse_id", auth()->user()->location_user[0]->warehouses[0]->warehouse_id)
-            ->whereHas('dispatch', function ($query) {
-            return $query->where('status', '=', 'En ruta');
-        })->get();
 
+        $despacho = Dispatch::with('dispatchDetail.inventory.product')
+            ->where('status', '=', 'En ruta')
+            ->whereHas('dispatchDetail', function ($query) {
+                return $query->where('warehouse_id', auth()->user()->location_user[0]->warehouses[0]->warehouse_id);
+            })
+            ->first();
         return Inertia::render('Reception/SupplyReception', [
-            'dispatchDetails' => $dispatchDetails
+            'dispatch' => $despacho,
         ]);
     }
 
     public function receive(Request $request)
-{
-    $validated = $request->validate([
-        'products' => 'required|array',
-        'products.*.received' => 'nullable|boolean',
-        'products.*.observation' => 'nullable|string',
-        'products.*.quantity' => 'required|numeric|min:0'
-    ]);
+    {
+        $validated = $request->validate([
+            'products' => 'required|array',
+            'products.*.received' => 'nullable|boolean',
+            'products.*.observation' => 'nullable|string',
+            'products.*.quantity' => 'required|numeric|min:0'
+        ]);
 
-    if (count($request['products']) > 0) {
-        $dispatch = Dispatch::findOrFail($request['products'][0]['dispatch_id']);
+        if (count($request['products']) > 0) {
+            $dispatch = Dispatch::findOrFail($request['products'][0]['dispatch_id']);
 
-        DB::transaction(function () use ($dispatch, $validated, $request) {
             $dispatch->update(['status' => 'Recibido']);
+            $dispatch->save();
 
             foreach ($request['products'] as $product) {
                 $dispatchDetail = DispatchDetail::where('dispatchs_detail_id', $product['dispatchs_detail_id'])
@@ -54,18 +56,18 @@ class SupplyReceptionController extends Controller
                         $inventory = Inventory::where('product_id', $dispatchDetail->inventory->product_id)
                             ->where('warehouse_id', $dispatchDetail->warehouse_id)
                             ->first();
-                    
+
                         $incomingQuantity = $product['quantity'];
-                        
+
                         $category = optional($dispatchDetail->inventory->product)->category;
-                    
+
                         $applyMax = ($category !== 'Insumo');
                         $maxQuantity = $applyMax ? 750 : null;
-                    
+
                         if ($inventory) {
                             $currentQuantity = $inventory->quantity;
                             $totalAfterAddition = $currentQuantity + $incomingQuantity;
-                    
+
                             if (!$applyMax || $totalAfterAddition <= $maxQuantity) {
                                 $inventory->update([
                                     'quantity' => $totalAfterAddition
@@ -74,7 +76,7 @@ class SupplyReceptionController extends Controller
                             } else {
                                 $acceptedQuantity = $maxQuantity - $currentQuantity;
                                 $returnedQuantity = $incomingQuantity - $acceptedQuantity;
-                    
+
                                 $inventory->update([
                                     'quantity' => $maxQuantity
                                 ]);
@@ -97,14 +99,14 @@ class SupplyReceptionController extends Controller
                                 $dispatchDetail->returned_quantity = $incomingQuantity - $maxQuantity;
                             }
                         }
-                    
+
                         $dispatchDetail->save();
                     }
                 }
             }
-        });
-    }
 
-    return redirect()->route('dispatch.show', ['message' => '', 'status' => 200]);
-}
+        }
+
+        return redirect()->route('inventory.current', ['message' => '', 'status' => 200]);
+    }
 }

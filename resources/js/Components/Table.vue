@@ -13,6 +13,10 @@ const props = defineProps({
     data: {
         type: Array,
         required: true
+    },
+    order: {
+        type: Array,
+        default: () => [[0, 'desc']]
     }
 });
 
@@ -23,9 +27,9 @@ const options = computed(() => ({
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-CO.json'
     },
     lengthChange: false,
-    info: paginVisibility.value,
-    order: [[0, 'desc']],
-    paging: paginVisibility.value,
+    info: true, // siempre mostrar info
+    order: props.order,
+    paging: true, // siempre activar paginación
     pagingType: 'simple_numbers',
     responsive: true,
     pageLength: 10,
@@ -35,6 +39,7 @@ const options = computed(() => ({
         sPageButtonDisabled: 'paginate_button page-item disabled'
     }
 }));
+
 </script>
 
 <template>

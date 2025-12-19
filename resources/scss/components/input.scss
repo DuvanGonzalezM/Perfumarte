@@ -3,7 +3,7 @@
     position: relative !important;
 
     label {
-        top: 10px !important;
+        top: 8px !important;
         left: 10px !important;
         z-index: 1 !important;
         transition: all 0.2s ease-in-out !important;
@@ -88,3 +88,13 @@
         font-size: 0.6rem !important;
     }
 }
+
+.inputContainer.dateinput {
+    input {
+        padding-left: 2rem !important;
+    }
+    label {
+        left: 2rem !important;
+    }
+}
+        

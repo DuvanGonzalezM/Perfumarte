@@ -90,11 +90,11 @@ const handleSubmit = () => {
                 <h4>¿Confirma la base y el inventario inicial para continuar con el módulo?</h4>
             </template>
             <template #body>
-                <h6>Base de la caja: ${{ props.location.cash_base }}</h6>
+                <h6>Base de la caja:  {{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(props.location.cash_base) }}</h6>
 
-                <h5>Cantidades en caja ${{ (form.count_50_bill * 50000) + (form.count_20_bill * 20000) +
+                <h5>Cantidades en caja {{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format((form.count_50_bill * 50000) + (form.count_20_bill * 20000) +
                     (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) +
-                    (form.count_100_bill * 100000) + (form.total_coins * 1) }}</h5>
+                    (form.count_100_bill * 100000) + (form.total_coins * 1)) }}</h5>
                 <div class="row">
 
                     <div class="col-6 col-md-4 my-3">

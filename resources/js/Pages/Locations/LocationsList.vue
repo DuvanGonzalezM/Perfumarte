@@ -30,9 +30,11 @@ const form = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price5: null,
     price30: null,
     price50: null,
     price100: null,
+    price_drops: null,
 });
 
 const formEdit = useForm({
@@ -41,9 +43,12 @@ const formEdit = useForm({
     address: '',
     zone_id: null,
     cash_base: null,
+    price5: '',
     price30: '',
     price50: '',
     price100: '',
+    price_drops: '',
+
 });
 console.log(formEdit);
 
@@ -92,9 +97,11 @@ const openEditModal = (location) => {
     formEdit.address = location.address;
     formEdit.zone_id = location.zone_id;
     formEdit.cash_base = location.cash_base;
+    formEdit.price5 = warehouse?.price5 ?? null;
     formEdit.price30 = warehouse?.price30 ?? null;
     formEdit.price50 = warehouse?.price50 ?? null;
     formEdit.price100 = warehouse?.price100 ?? null;
+    formEdit.price_drops = warehouse?.price_drops ?? null;
 
     showEditModal.value = true;
 };
@@ -148,6 +155,10 @@ const columnsTable = [
     {
         data: 'cash_base',
         title: 'Base de Caja',
+        render: function (data) {
+            return new Intl.NumberFormat('es-CO', { style:'currency',currency:'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data);
+        }
+        ,
     },
     {
         data: 'zone.zone_name',
@@ -167,7 +178,8 @@ const columnsTable = [
         createdCell: function (td, cellData, rowData) {
             td.innerHTML = "";
             const icon = document.createElement("i");
-            icon.className = "fa-solid fa-pen-to-square text-primary cursor-pointer";
+            icon.className = "fa-solid fa-pen-to-square cursor-pointer";
+            icon.className = "fa-solid fa-pen-to-square  cursor-pointer";
             icon.style.cursor = "pointer";
             icon.addEventListener("click", () => openEditModal(rowData));
             td.appendChild(icon);
@@ -180,7 +192,7 @@ const columnsTable = [
         createdCell: function (td, cellData, rowData) {
             td.innerHTML = "";
             const icon = document.createElement("i");
-            icon.className = "fa-solid fa-trash text-danger cursor-pointer";
+            icon.className = "fa-solid fa-trash cursor-pointer";
             icon.style.cursor = "pointer";
             icon.addEventListener("click", () => {
                 userToDelete.value = rowData.location_id;
@@ -240,6 +252,10 @@ const columnsTable = [
                         v-model="form.cash_base" required autocomplete="cash_base" />
                 </div>
                 <div class="mt-4">
+                    <TextInput labelValue="Precio 5 ml" id="price5" name="price5" type="number"
+                        v-model="form.price5" required autocomplete="price5" />
+                </div>
+                <div class="mt-4">
                     <TextInput labelValue="Precio 30 ml" id="price30" name="price30" type="number"
                         v-model="form.price30" required autocomplete="price30" />
                 </div>
@@ -250,6 +266,10 @@ const columnsTable = [
                 <div class="mt-4">
                     <TextInput labelValue="Precio 100 ml" id="price100" name="price100" type="number"
                         v-model="form.price100" required autocomplete="price100" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio Gotas" id="price_drops" name="price_drops" type="number"
+                        v-model="form.price_drops" required autocomplete="price_drops" />
                 </div>
                 <div class="mt-4">
                     <SelectSearch v-model="form.zone_id" :options="optionsZones" labelValue="Zona" required />
@@ -290,6 +310,11 @@ const columnsTable = [
                     <InputError class="mt-2" :message="formEdit.errors.cash_base" />
                 </div>
                 <div class="mt-4">
+                    <TextInput labelValue="Precio 5 ml" id="edit-price5" type="number"
+                        v-model="formEdit.price5" required autocomplete="price5" />
+                    <InputError class="mt-2" :message="formEdit.errors.price5" />
+                </div>
+                <div class="mt-4">
                     <TextInput labelValue="Precio 30 ml" id="edit-price30" type="number"
                         v-model="formEdit.price30" required autocomplete="price30" />
                     <InputError class="mt-2" :message="formEdit.errors.price30" />
@@ -303,6 +328,11 @@ const columnsTable = [
                     <TextInput labelValue="Precio 100 ml" id="edit-price100" type="number"
                         v-model="formEdit.price100" required autocomplete="price100" />
                     <InputError class="mt-2" :message="formEdit.errors.price100" />
+                </div>
+                <div class="mt-4">
+                    <TextInput labelValue="Precio Gotas" id="edit-price_drops" type="number"
+                        v-model="formEdit.price_drops" required autocomplete="price_drops" />
+                    <InputError class="mt-2" :message="formEdit.errors.price_drops" />
                 </div>
 
                 <div class="mt-4">

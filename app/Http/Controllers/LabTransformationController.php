@@ -15,7 +15,7 @@ class LabTransformationController extends Controller
     public function getAllTransformation()
     {
 
-        $getLabTransformation = Transformation::with(['inventory.product'])->get();
+        $getLabTransformation = Transformation::with(['inventory.product'])->limit(100)->orderBy('transformation_id', 'desc')->get();
 
         return Inertia::render('LabTransformations/LabTransformationList', props: ['getLabTransformation' => $getLabTransformation]);
     }

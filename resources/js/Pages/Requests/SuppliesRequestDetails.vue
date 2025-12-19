@@ -43,7 +43,7 @@ const columnsTable = [
             <div class="container">
                 <div class="col-6 p-2 cardboxprais cardpurcheorder">
                     <strong>Sede: </strong>
-                    <span>{{ props.requestPrais.user?.location_user[0]?.name || 'No disponible' }}</span><br>
+                    <span>{{ props.requestPrais.location.name || 'No disponible' }}</span><br>
                     <strong>Usuario: </strong>
                     <span>{{ props.requestPrais.user?.username || 'No disponible' }}</span><br>
                     <strong>Fecha: </strong>

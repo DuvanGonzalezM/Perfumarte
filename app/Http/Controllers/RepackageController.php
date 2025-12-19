@@ -13,7 +13,7 @@ class RepackageController extends Controller
     public function getrepackage()
     {
 
-        $repackageList = ChangeWarehouse::with(['inventory.product',])->get();
+        $repackageList = ChangeWarehouse::with(['inventory.product',])->limit(100)->orderBy('change_warehouse_id', 'desc')->get();
         return Inertia::render('Repackage/RepackageList', props: ['repackageList' => $repackageList]);
     }
 

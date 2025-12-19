@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id('request_id');
             $table->integer('request_type');
             $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained('locations', 'location_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('status'); 
             $table->timestamps();
         

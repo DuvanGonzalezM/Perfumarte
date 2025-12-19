@@ -15,21 +15,19 @@ class RequestPraisController extends Controller
     public function getAllRequest()
     {
         $user = Auth::user();
-        $locationId = $user->location_user->first()?->location_id;
-        $suppliesRequest = RequestPrais::with(
-            [
-                'user.location_user' => function ($query) use ($locationId) {
-                    $query->where('location_user.location_id', $locationId);
-                }
-            ]
-        )
-            ->where('request_type', '1')
-            ->get();
-
+        $request = RequestPrais::with('user', 'location')
+            ->where('request_type', '1');
+        if (count($user->location_user) >= 1) {
+            $locationIds = $user->location_user->pluck('location_id')->toArray();
+            $request->whereIn('location_id', $locationIds);
+        }
+        $suppliesRequest = $request->limit(100)->orderBy('request_id', 'desc')->get();
         if ($user->hasRole('Jefe de Operaciones')) {
-            $suppliesRequest = RequestPrais::with('user.location')
+            $suppliesRequest = RequestPrais::with('user', 'location')
                 ->where('request_type', '1')
                 ->where('status', 'Pendiente')
+                ->limit(100)
+                ->orderBy('request_id', 'desc')
                 ->get();
         }
 
@@ -57,6 +55,7 @@ class RequestPraisController extends Controller
         $requestPrais = RequestPrais::create([
             'request_type' => '1',
             'user_id' => $user->user_id,
+            'location_id' => $user->location_user->first()?->location_id,
             'status' => 'Por solicitar'
         ]);
         foreach ($request->references as $reference) {
@@ -71,7 +70,8 @@ class RequestPraisController extends Controller
     public function detailRequest($requestId)
     {
         $suppliesRequest = RequestPrais::with([
-            'user.location_user',
+            'user',
+            'location',
             'detailRequest.inventory.product',
         ])->findOrFail($requestId);
         return Inertia::render('Requests/SuppliesRequestDetails', [
@@ -82,7 +82,8 @@ class RequestPraisController extends Controller
     {
         $requestPrais = RequestPrais::with([
             'detailRequest.inventory.product',
-            'user.location_user'
+            'user',
+            'location'
         ])->findOrFail($requestId);
         $inventory = Inventory::with('product')
             ->whereIn('warehouse_id', [2, 3])
@@ -174,6 +175,14 @@ class RequestPraisController extends Controller
         return redirect()->route('transformationRequest.list', [
             'message' => 'Solicitud de transformación registrada exitosamente.',
             'status' => 200
+        ]);
+    }
+
+    public function getAllDamagedReturn()
+    {
+        $damagedReturn = RequestPrais::where('request_type', '3')->get();
+        return Inertia::render('DamagedReturn/DamagedReturnList', [
+            'damagedReturn' => $damagedReturn
         ]);
     }
 }

@@ -121,7 +121,7 @@ const submit = () => {
                         <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">
                             Volver
                         </PrimaryButton>
-                        <PrimaryButton v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')"
+                        <PrimaryButton v-if="requestPrais.status.trim().toLowerCase() === 'por solicitar' && can('Editar Solicitudes Insumos')"
                             @click="showApproveModal = true" class="px-5">
                             Aprobar
                         </PrimaryButton>

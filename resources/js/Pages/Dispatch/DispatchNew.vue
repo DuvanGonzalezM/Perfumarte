@@ -28,7 +28,7 @@ const form = useForm({
 });
 const showModal = ref(false);
 const optionWarehouse = ref(props.warehouses.map(warehouse => ({ 'title': warehouse.location.name, 'value': warehouse.warehouse_id })));
-const optionRequests = ref(props.requests.map(request => ({ 'title': (request.user.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
+const optionRequests = ref(props.requests.map(request => ({ 'title': (request.request_id + ' - ' + request.location.name + ' - ' + moment(request.created_at).format('DD/MM/Y')), 'value': request.request_id })));
 const optionInventory = ref(props.inventory.map(inventory => ({ 'title': inventory.product.reference, 'value': inventory.inventory_id })));
 
 const addReference = (dispatch) => {
@@ -52,6 +52,7 @@ const openModal = () => {
 
 const addDispatch = () => {
     let locationRequest = null;
+    let requestId = null;
     let warehouse = null;
     let references = [
         {
@@ -61,8 +62,9 @@ const addDispatch = () => {
     ];
     showModal.value = false;
     if (requestSeleted.value) {
-        locationRequest = props.requests.find(requestI => requestI.request_id == requestSeleted.value);
-        warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.user.location_id).warehouse_id;
+        requestId = requestSeleted.value;
+        locationRequest = props.requests.find(requestI => requestI.request_id == requestId);
+        warehouse = props.warehouses.find(warehouseI => warehouseI.location_id == locationRequest.location_id).warehouse_id;
         if (locationRequest.detail_request.length > 0) {
             references = [];
             locationRequest.detail_request.forEach(detail => {
@@ -75,18 +77,32 @@ const addDispatch = () => {
     } else if (locationSeleted.value) {
         warehouse = locationSeleted.value;
     }
-    requestSeleted.value = null;
-    locationSeleted.value = null;
     form.dispatches.push({
         warehouse: warehouse,
+        request_id: requestId,
         references: references,
     });
+    requestSeleted.value = null;
+    locationSeleted.value = null;
 };
 const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
 
+// Agregar método para validar referencias
+const hasValidReferences = (dispatches) => {
+    return dispatches.some(dispatch => 
+        dispatch.references.some(ref => 
+            ref.reference && ref.dispatched_quantity && ref.dispatched_quantity > 0
+        )
+    );
+};
+
 const submit = () => {
+    if (!hasValidReferences(form.dispatches)) {
+        alert('Por favor, asegúrese de agregar al menos una referencia con cantidad válida');
+        return;
+    }
     form.post(route('dispatch.store'));
 };
 </script>
@@ -188,7 +204,11 @@ const submit = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
+                            <PrimaryButton 
+                                @click="submit" 
+                                class="px-5" 
+                                :class="{ 'disabled': form.processing || form.dispatches.length === 0 || !hasValidReferences(form.dispatches) }"
+                                :disabled="form.processing || form.dispatches.length === 0 || !hasValidReferences(form.dispatches)">
                                 Crear Despacho
                             </PrimaryButton>
                         </div>

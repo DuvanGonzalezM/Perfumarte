@@ -21,7 +21,7 @@ class PurchaseOrderController extends Controller
 {
     public function getAllOrders()
     {
-        $purchaseOrders = PurchaseOrder::with('productEntryOrder.product.supplier')->get();
+        $purchaseOrders = PurchaseOrder::with('productEntryOrder.product.supplier')->limit(100)->orderBy('purchase_order_id', 'desc')->get();
         return Inertia::render('PurchaseOrder/OrdersList', ['purchaseOrders' => $purchaseOrders]);
     }
 

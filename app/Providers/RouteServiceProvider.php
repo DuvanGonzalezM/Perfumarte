@@ -18,7 +18,8 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     public const HOME = 'dashboard';
-    public const INVENTORY_ADVISOR = 'inventario inicial';
+    public const INVENTORY_ADVISOR = 'inventario-inicial';
+    public const MONITORING_DASHBOARD = 'despachos';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.

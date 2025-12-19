@@ -36,10 +36,7 @@ const columnsTable = [
         data: (row) => row.total_collected,
         title: 'Total',
         render: function (data, type, row) {
-            return new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP'
-            }).format(data);
+            return new Intl.NumberFormat('es-CO', { style:'currency',currency:'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data);
         }
     },
     {

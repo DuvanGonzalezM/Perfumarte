@@ -20,11 +20,15 @@ const isCashClosed = () => {
     return props.confirmationclosingcash == "1";
 };
 const columnsTable = [
-{
+    {
+        data: "sale_id",
+        title: 'ID VENTA',
+    },
+    {
         data: "created_at",
         title: 'HORA DE LA VENTA',
         render: function (data) {
-            const formattedDate = moment(data).format('hh:mm');
+            const formattedDate = moment(data).format('hh:mm A ');
             return formattedDate;
         }
     },
@@ -39,8 +43,8 @@ const columnsTable = [
     {
         data: "total",
         title: 'TOTAL VENTA',
-        render: function (data) {
-            return '$' + data;
+        render: function (data, type, row) {
+            return new Intl.NumberFormat('es-CO', { style:'currency',currency:'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data);
         }
     },
 
@@ -64,7 +68,7 @@ const columnsTable = [
             <!-- <Alert /> -->
         </template>
 
-        <SectionCard :subextra="'Ventas total: $' + sales.reduce((acc, sale) => acc + Number(sale.total), 0)">
+        <SectionCard :subextra="'Total ventas: ' + Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(sales.reduce((acc, sale) => acc + Number(sale.total), 0))">
             <template #headerSection>
                 <div class="d-flex justify-content-between align-items-center">
                     <strong>Ventas</strong>

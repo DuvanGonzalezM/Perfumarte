@@ -23,3 +23,5 @@ yarn-error.log
 /.cache
 /.atmp
 /docker/production/nginx/default.conf
+/docker/production/ssl/www.prais.perfum-arte.com/fullchain.pem
+/docker/production/ssl/www.prais.perfum-arte.com/privkey.pem

@@ -80,8 +80,8 @@ const listMeasurement = ref([
     { name: 'UNIDAD' },
 ]);
 
-const optionCategory = ref(props.listCategory.map(category => ({ 'title': category.name, 'value': category.name })));
-const optionMeasurement = ref(props.listMeasurement.map(measurement => ({ 'title': measurement.name, 'value': measurement.name }))); 
+const optionCategory = ref(listCategory.value.map(category => ({ 'title': category.name, 'value': category.name })));
+const optionMeasurement = ref(listMeasurement.value.map(measurement => ({ 'title': measurement.name, 'value': measurement.name }))); 
 const optionSupplier = ref(props.supplierProduct.map(supplier => ({ 'title': supplier.name, 'value': supplier.supplier_id })));
 
 const openModal = (rowData) => {

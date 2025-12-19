@@ -42,10 +42,7 @@ const columnsTable = [
         data: 'total',
         title: 'Total',
         render: function (data) {
-            return new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP'
-            }).format(data);
+            return new Intl.NumberFormat('es-CO', { style:'currency',currency:'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data);
         }
     },
     {
@@ -114,7 +111,7 @@ window.showDetails = (saleId) => {
                         <h6>Información de la Venta</h6>
                             <p><strong>Fecha:</strong> {{ new Date(selectedSale.created_at).toLocaleString('es-CO') }}</p>
                             <p><strong>Usuario:</strong> {{ selectedSale.user }}</p>
-                            <p><strong>Total:</strong> {{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(selectedSale.total) }}</p>
+                            <p><strong>Total:</strong> {{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP',minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(selectedSale.total) }}</p>
                             <p><strong>Método de pago:</strong> {{ selectedSale.payment_method }}</p>
                             <p><strong>Código de transacción:</strong> {{ selectedSale.transaction_code }}</p>
 
@@ -126,6 +123,7 @@ window.showDetails = (saleId) => {
                                             <th>Referencia</th>
                                             <th>Unidades</th>
                                             <th>Tamaño</th>
+                                            <th>Gotas</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
@@ -134,7 +132,8 @@ window.showDetails = (saleId) => {
                                             <td>{{ detail.reference }}</td>
                                             <td>{{ detail.units }}</td>
                                             <td>{{ detail.quantity + ' ml' }}</td>
-                                            <td>{{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(detail.price) }}</td>
+                                            <td>{{ detail.drops }}</td>
+                                            <td>{{ new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(detail.price) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -147,9 +146,3 @@ window.showDetails = (saleId) => {
         </ModalPrais>
     </BaseLayout>
 </template>
-
-<style scoped>
-.modal-backdrop.show {
-    display: block;
-}
-</style>

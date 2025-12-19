@@ -3,8 +3,10 @@
     display: flex !important;
     transition: opacity 0.3s ease !important;
 
+
     .modal-content {
         min-width: 500px;
+
         
         @include respond-to('tablet') {
             min-width: 400px;
@@ -13,7 +15,7 @@
         @include respond-to('mobile') {
             min-width: 300px;
             width: 90% !important;
-            margin: 0 auto !important;
+            margin: 0px auto !important;
         }
     }
     
@@ -47,7 +49,7 @@
     }
 }
 
-/* Animación para el modal */
+
 .modal-enter-active, .modal-leave-active {
     transition: opacity 0.3s ease;
 }

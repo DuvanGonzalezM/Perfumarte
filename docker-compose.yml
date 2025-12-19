@@ -8,6 +8,7 @@ services:
             - './certbot/conf:/etc/letsencrypt'
             - './certbot/www:/var/www/certbot'
             - './docker/${APP_ENV}/nginx/app.conf:/etc/nginx/conf.d/default.conf'
+            - './docker/production/ssl:/etc/ssl_aws'
             - '.:/var/www'
         networks:
             - prais-network

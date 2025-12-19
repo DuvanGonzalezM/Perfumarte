@@ -39,7 +39,6 @@ const form = useForm({
 const disableButton = ref(false);
 
 const submit = () => {
-    console.log('location_id:', form.location_id);
     form.post(route('audit.storeInventory'), {
         onSuccess: () => {
             router.visit(route('audits'));

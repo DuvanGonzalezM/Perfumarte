@@ -33,6 +33,7 @@ const groupedDispatches = computed(() => {
 });
 const showModalSuccess = ref(false);
 const showModalError = ref(false);
+const insufficientQuantityProducts = ref([]);
 const form = useForm({
   dispatch_id: props.dispatch.dispatch_id,
   status: props.dispatch.status,
@@ -46,8 +47,26 @@ const form = useForm({
   }))
 });
 
-console.log(props.dispatch.status);
 const approved = () => {
+    // Check for insufficient quantities before submitting
+    insufficientQuantityProducts.value = [];
+    
+    props.dispatch.dispatchdetail.forEach(item => {
+        if (item.inventory.quantity < item.dispatched_quantity) {
+            insufficientQuantityProducts.value.push({
+                reference: item.inventory.product.reference,
+                available: item.inventory.quantity,
+                required: item.dispatched_quantity,
+                unit: item.inventory.product.measurement_unit.replace('KG', 'ml')
+            });
+        }
+    });
+
+    if (insufficientQuantityProducts.value.length > 0) {
+        showModalError.value = true;
+        return;
+    }
+
     form.put(route('dispatch.approved', props.dispatch.dispatch_id), {
         status: 'En ruta',
         onSuccess() {
@@ -66,7 +85,6 @@ const submitReturnedQuantities = () => {
   Object.values(groupedDispatches.value).forEach(items => {
   if (Array.isArray(items)) {
     items.forEach(item => {
-        console.log('item:', item);
         form.details.push({
         id: item.dispatchs_detail_id,
         returned_quantity: item.returned_quantity
@@ -79,12 +97,11 @@ const submitReturnedQuantities = () => {
 
   form.dispatch_id = props.dispatch.dispatch_id; 
 
-  form.post(route('dispatchReturn.store', form.dispatch_id), {
+  form.put(route('dispatchReturn.store', form.dispatch_id), {
     onSuccess: () => {
       showModalSuccess.value = true;
     },
     onError: () => {
-      console.log(form.errors); 
       showModalError.value = true;
     }
   });
@@ -206,7 +223,19 @@ const submitReturnedQuantities = () => {
             Error al aprobar el despacho
         </template>
         <template #body>
-            Ha ocurrido un error al aprobar el despacho. Por favor verifique cantidades y existencias e intente nuevamente.
+            <div v-if="insufficientQuantityProducts.length > 0">
+                <p>No hay suficiente cantidad disponible para los siguientes productos:</p>
+                <ul class="list-group">
+                    <li v-for="(product, index) in insufficientQuantityProducts" :key="index" class="list-group-item">
+                        <strong>{{ product.reference }}</strong>: 
+                        Disponible: {{ product.available }} {{ product.unit }}, 
+                        Requerido: {{ product.required }} {{ product.unit }}
+                    </li>
+                </ul>
+            </div>
+            <div v-else>
+                Ha ocurrido un error al procesar la solicitud. Por favor, intente nuevamente.
+            </div>
         </template>
     </ModalPrais>
 </template>
