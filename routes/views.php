@@ -45,9 +45,9 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(DispatchController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
-            Route::get('despachos',  'getAllDispatch')->name('dispatch.list');
-            Route::get('detalle-despachos/{dispatchId}',  'detailDispatch')->name('dispatch.detail');
-            Route::get('despachos/detalle-despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
+            Route::get('despachos', 'getAllDispatch')->name('dispatch.list');
+            Route::get('detalle-despachos/{dispatchId}', 'detailDispatch')->name('dispatch.detail');
+            Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
 
         });
         Route::group(['middleware' => ['can:Crear Despachos']], function () {
