@@ -143,7 +143,6 @@ class DamageReturnController extends Controller
 
     public function approvedDamageReturn(Request $request, $id)
     {
-
         $damageReturn = DamageReturn::findOrFail($id);
 
         if ($damageReturn->status !== 'Confirmar') {
