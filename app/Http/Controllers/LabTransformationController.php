@@ -42,7 +42,7 @@ class LabTransformationController extends Controller
 
         $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
 
-        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['commercial_reference'])->first();
+        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
 
         $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
 
