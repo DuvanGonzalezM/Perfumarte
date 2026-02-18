@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $user = User::whit('roles')->where('username', $request->username)->firstOrFail();
+        $user = User::with('roles')->where('username', $request->username)->firstOrFail();
         if ($user && $user->default_password) {
             return redirect()->route('password.change', ['username' => $user->username]);
         }
