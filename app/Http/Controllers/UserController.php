@@ -11,12 +11,19 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function getUsers()
     {
-        $users = User::with('roles')->get();
+        $users = User::with('roles');
+        if(!Auth::user()->hasRole('TI')){
+            $users->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'TI');
+            });
+        }
+        $users = $users->get();
         $roles = Role::all();
         $zones = Zone::all();
         $boss = User::with(['roles', 'zone'])
@@ -87,8 +94,16 @@ class UserController extends Controller
     public function detailUser($user_id)
     {
         $user = User::with('roles', 'permissions')->findOrFail($user_id);
-        $roles = Role::with('permissions')->get();
+        $currentUser = Auth::user();
         $zones = Zone::all();
+        $roles = Role::with('permissions');
+        if(!$currentUser->hasRole('TI')){
+            $roles = $roles->where('name', '!=', 'TI');
+            if($user->hasRole('TI')){
+                return redirect()->route('users.list');
+            }
+        }
+        $roles = $roles->get();
         $permissions = Permission::all();
         $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
             $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
@@ -166,7 +181,7 @@ class UserController extends Controller
         ]);
         $permission = Permission::make(['guard_name' => 'web','name' => $request->name]); 
         $permission->saveOrFail();
-        $roleAdministrador = Role::where('name', 'Administrador')->firstOrFail();
+        $roleAdministrador = Role::whereIn('name', ['Administrador', 'TI'])->firstOrFail();
         $roleAdministrador->givePermissionTo($permission);
 
         return redirect('permissions');

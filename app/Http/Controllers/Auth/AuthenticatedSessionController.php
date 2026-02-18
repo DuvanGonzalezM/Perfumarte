@@ -18,10 +18,12 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $error = $request->session()->get('error') ?? '';
         return Inertia::render('Auth/Login', [
             'status' => session('status'),
+            'error' => $error
         ]);
     }
 
@@ -30,9 +32,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $user = User::where('username', $request->username)->whereAnd('enabled', true)->whereAnd('default_password', true)->first();
+        $user = User::where('username', $request->username)->firstOrFail();
         if ($user && $user->default_password) {
             return redirect()->route('password.change', ['username' => $user->username]);
+        }
+        if($user && $user->enabled == 0){
+            return redirect()->route('login')->with('error', 'El usuario '.$user->username.' no esta habilitado');
         }
         $request->authenticate();
 
@@ -55,11 +60,11 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
+        $error = $request->session()->get('error') ?? '';
         $request->session()->invalidate();
-
+        
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login')->with('error', $error);
     }
 }

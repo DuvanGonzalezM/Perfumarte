@@ -33,7 +33,7 @@ return [
     ],
     'boolean' => 'El campo :attribute debe ser verdadero o falso.',
     'can' => 'El campo :attribute contiene un valor no autorizado.',
-    'confirmed' => 'La confirmación del campo :attribute no coincide.',
+    'confirmed' => 'El campo :attribute no coincide con el campo de confirmación.',
     'current_password' => 'La contraseña es incorrecta.',
     'date' => 'El campo :attribute debe ser una fecha válida.',
     'date_equals' => 'El campo :attribute debe ser una fecha igual a :date.',
@@ -188,6 +188,7 @@ return [
 
 'attributes' => [
     'username' => 'Nombre de usuario',
+    'password_confirmation' => 'Confirmar Nueva Contraseña',
     'password' => 'Contraseña',
     'dispatches.*.references.*.dispatched_quantity' => 'Cantidad Enviada',
     'dispatches.*.references.*.reference' => 'Referencia / Insumo',

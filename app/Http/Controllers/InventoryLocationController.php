@@ -16,7 +16,10 @@ class InventoryLocationController extends Controller
     {
         try {
             $user = Auth::user();
-            
+            if(!isset($user->location_user[0])){
+                return redirect()->route('logout')->with('error', 'El usuario ' . $user->username . ' no tiene una sede asignada');
+            }
+
             $hasAcceptedToday = InventoryValidation::where('location_id', $user->location_user[0]->location_id)
                 ->whereDate('date', Carbon::today())
                 ->exists();
@@ -37,7 +40,7 @@ class InventoryLocationController extends Controller
                 'location' => $location_user[0],
                 'sidebarHidden' => true
             ]);
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             return redirect()->route('logout');
         }
     }
