@@ -1,7 +1,8 @@
 <template>
     <div class="card notifications" :class="{'mobile-notifications': isMobile}">
+        <a id="readAll" v-if="props.notifications.length > 0" href="#" @click="props.readNotification(null, false, true)">Marcar todo como leido</a><br>
         <a href="#" v-for="notification in props.notifications" :key="notification.id" 
-            class="alert" :class="'alert-info'" role="alert">
+            class="alert-prais" :class="'alert-info'" role="alert">
             <span @click="props.readNotification(notification, true)" >{{ notification.data.message }}</span>
             <button type="button" class="btn-close" aria-label="Close" @click="props.readNotification(notification, false)"></button>
         </a>

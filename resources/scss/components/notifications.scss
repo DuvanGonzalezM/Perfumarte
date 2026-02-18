@@ -2,6 +2,10 @@
     color: $textBlack !important;
     border: none !important;
     font-size: 10px !important;
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(13, 202, 240, 0.2) transparent !important;
 
     div {
         padding: 7px !important;

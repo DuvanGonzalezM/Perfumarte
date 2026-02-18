@@ -255,6 +255,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(NotificationController::class)->group(function () {
         Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
+        Route::post('notificaciones', 'readAllNotification')->name('notifications.readAll');
     });
     Route::controller(CashRegisterController::class)->group(function () {
         Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
