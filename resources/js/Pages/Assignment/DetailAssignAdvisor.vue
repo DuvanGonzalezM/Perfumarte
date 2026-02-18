@@ -22,7 +22,7 @@ const props = defineProps({
 
 const advisorList = ref([]);
 
-const optionAdvisors = ref(props.advisors.map((advisor) => ({ 'title': advisor.name, 'value': advisor.user_id })));
+const optionAdvisors = ref(props.advisors.filter((advisors) => advisors.enabled === "1").map((advisor) => ({ 'title': advisor.name, 'value': advisor.user_id })));
 const optionUsers = ref([
     ...props.users.map(user => ({ title: user.name, value: user.user_id })),
     ...props.advisors.map(advisor => ({ title: advisor.name, value: advisor.user_id })),
@@ -34,12 +34,12 @@ const form = useForm({
     location_id: props.getSede.location_id,
     caja1: 
         {
-            'user_id': usersEnabled[0] ? usersEnabled[0].user_id : '',
+            'user_id': usersEnabled[0] ? usersEnabled[0].user_id : null,
         }
     ,
     caja2: 
         {
-            'user_id': usersEnabled[1] ? usersEnabled[1].user_id : '',
+            'user_id': usersEnabled[1] ? usersEnabled[1].user_id : null,
         }
     ,       
     advisorList: props.getSede.users_location.filter((user) => !usersEnabled.find((u) => u.user_id === user.user_id)),

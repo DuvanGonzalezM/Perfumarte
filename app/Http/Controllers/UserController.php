@@ -127,6 +127,11 @@ class UserController extends Controller
             ]);
     
         $user = User::findOrFail($user_id);
+        
+        if($request->enabled == 0){
+            $user->location_user()->detach();
+        }
+
         $user->update([
             'username' => (string) $request->username,
             'name' => (string) $request->name,
