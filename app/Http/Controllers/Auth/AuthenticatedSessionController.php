@@ -32,11 +32,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $user = User::where('username', $request->username)->firstOrFail();
+        $user = User::whit('roles')->where('username', $request->username)->firstOrFail();
         if ($user && $user->default_password) {
             return redirect()->route('password.change', ['username' => $user->username]);
         }
-        if($user && $user->enabled == 0){
+        if($user && $user->hasRole('Asesor comercial') && $user->enabled == 0){
             return redirect()->route('login')->with('error', 'El usuario '.$user->username.' no esta habilitado');
         }
         $request->authenticate();
