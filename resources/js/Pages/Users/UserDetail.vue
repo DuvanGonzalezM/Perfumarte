@@ -42,7 +42,7 @@ const form = useForm({
     boss_user: props.user.boss_user != 0 ? parseInt(props.user.boss_user) : null,
     location_id: 1,
     zone_id: props.user.zone_id != 0 ? parseInt(props.user.zone_id) : null,
-    enabled: props.user.enabled ? true : false,
+    enabled: props.user.enabled != 0 ? true : false,
     roles: rolesIdUser,
     permissions: permissionsIdUser,
     default_password: props.user.default_password,
