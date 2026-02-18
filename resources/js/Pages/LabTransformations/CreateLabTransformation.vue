@@ -64,6 +64,7 @@ const submit = async () => {
         if (references.value.length == 1) {
             form.status = 'Finalizada';
         }
+        console.log(form);
         await axios.post(route('store.LabTransformation', form))
             .then(function (response) {
                 if(form.status != 'Finalizada'){

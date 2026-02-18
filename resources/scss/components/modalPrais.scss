@@ -2,13 +2,11 @@
     background-color: rgba(0, 0, 0, 0.5) !important;
     display: flex !important;
     transition: opacity 0.3s ease !important;
-    overflow-y: auto; 
+
 
     .modal-content {
         min-width: 500px;
-        max-height: 90vh; 
-        display: flex;
-        flex-direction: column;
+
         
         @include respond-to('tablet') {
             min-width: 400px;
@@ -17,7 +15,7 @@
         @include respond-to('mobile') {
             min-width: 300px;
             width: 90% !important;
-            margin: 20px auto !important;
+            margin: 0px auto !important;
         }
     }
     
@@ -36,32 +34,6 @@
         @include respond-to('mobile') {
             padding: 15px !important;
             font-size: 0.9rem !important;
-        }
-        
-        padding-right: 15px;
-        overflow-y: visible; 
-        
-        .table-responsive {
-            max-height: 30vh;
-            overflow-y: auto;
-            
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-            
-            &::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 4px;
-            }
-            
-            &::-webkit-scrollbar-thumb {
-                background: #888;
-                border-radius: 4px;
-            }
-            
-            &::-webkit-scrollbar-thumb:hover {
-                background: #555;
-            }
         }
     }
     

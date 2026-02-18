@@ -11,18 +11,19 @@ use App\Http\Controllers\SupplyReceptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\InventoryLocationController;
-use App\Http\Controllers\AuditController;   
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\NoveltyController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\DamageReturnController;
+use App\Http\Controllers\ConsumableController;
 
 Route::middleware('auth')->group(function () {
     Route::get('change-password', [PasswordController::class, 'show'])->name('change-password');
@@ -44,9 +45,9 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(DispatchController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
-            Route::get('despachos',  'getAllDispatch')->name('dispatch.list');
-            Route::get('detalle-despachos/{dispatchId}',  'detailDispatch')->name('dispatch.detail');
-            Route::get('despachos/detalle-despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
+            Route::get('despachos', 'getAllDispatch')->name('dispatch.list');
+            Route::get('detalle-despachos/{dispatchId}', 'detailDispatch')->name('dispatch.detail');
+            Route::get('despachos/detalle despacho-devolucion/{dispatch_id}', 'getReturnedDispatch')->name('dispatchReturn.list');
 
         });
         Route::group(['middleware' => ['can:Crear Despachos']], function () {
@@ -261,4 +262,45 @@ Route::middleware('auth')->group(function () {
         Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
         Route::post('cerrar-caja', 'store')->name('cash.close');
     });
+
+    Route::controller(DamageReturnController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Devoluciones']], function () {
+            Route::get('devoluciones', 'getAllDamageReturn')->name('damageReturn.list');
+            Route::get('detalle-devolucion-de-averias/{id}', 'editDamageReturn')->name('damageReturn.detail');
+
+        });
+        Route::group(['middleware' => ['can:Crear Devoluciones']], function () {
+            Route::get('devoluciones/nueva-devolucion', 'createDamageReturn')->name('damageReturn.create');
+            Route::post('devoluciones/nueva-devolucion', 'storeDamageReturn')->name('damageReturn.store');
+        });
+
+        Route::group(['middleware' => ['can:Confirmar Devoluciones']], function () {
+            Route::post('detalle-devolucion-de-averias/{id}', 'approvedDamageReturn')->name('damageReturn.approved');
+        });
+
+        Route::group(['middleware' => ['can:Aprobar Devoluciones']], function () {
+            Route::put('aprobar-devolucion-de-averias/{id}', 'approveReturnFinal')->name('returnFinal.approved');
+        });
+    });
+
+    Route::controller(ConsumableController::class)->group(function () {
+        Route::group(['middleware' => ['can:Ver Consumibles']], function () {
+            Route::get('consumibles', 'getAllConsumable')->name('consumable.list');
+
+        });
+        Route::group(['middleware' => ['can:Crear Consumibles']], function () {
+            Route::get('consumibles/nuevo-registro-consumible', 'createConsumable')->name('consumable.create');
+            Route::post('consumibles/nuevo-registro-consumible', 'storeConsumable')->name('consumable.store');
+        });
+
+        Route::group(['middleware' => ['can:Confirmar Devoluciones']], function () {
+            Route::post('detalle-devolucion-de-consumibles/{id}', 'approvedConsumableReturn')->name('consumableReturn.approved');
+        });
+
+        Route::group(['middleware' => ['can:Aprobar Devoluciones']], function () {
+            Route::put('aprobar-devolucion-de-consumibles/{id}', 'approveReturnFinal')->name('consumableReturnFinal.approved');
+        });
+    });
+
+
 });
