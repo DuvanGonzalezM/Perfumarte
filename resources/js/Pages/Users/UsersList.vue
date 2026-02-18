@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { is } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
     users: {
@@ -108,7 +109,7 @@ const columnsTable = [
                         </PrimaryButton>
                     </div>
                     <div class="col-md-6 col-12 text-end">
-                        <PrimaryButton :href="route('roles.list')" class="px-5">
+                        <PrimaryButton :href="route('roles.list')" v-if="is('TI')" class="px-5">
                             Roles
                         </PrimaryButton>
                     </div>

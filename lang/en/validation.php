@@ -189,6 +189,7 @@ return [
 
     'attributes' => [
         'username' => 'Nombre de usuario',
+        'password_confirmation' => 'Confirmar Nueva Contraseña',
         'password' => 'Contraseña',
         'dispatches.*.references.*.dispatched_quantity' => 'Cantidad Enviada',
         'dispatches.*.references.*.reference' => 'Referencia / Insumo',

@@ -256,6 +256,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(NotificationController::class)->group(function () {
         Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
+        Route::post('notificaciones', 'readAllNotification')->name('notifications.readAll');
     });
     Route::controller(CashRegisterController::class)->group(function () {
         Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
@@ -293,11 +294,11 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::group(['middleware' => ['can:Confirmar Devoluciones']], function () {
-            Route::post('detalle-devolucion-de-averias/{id}', 'approvedDamageReturn')->name('damageReturn.approved');
+            Route::post('detalle-devolucion-de-consumibles/{id}', 'approvedConsumableReturn')->name('consumableReturn.approved');
         });
 
         Route::group(['middleware' => ['can:Aprobar Devoluciones']], function () {
-            Route::put('aprobar-devolucion-de-averias/{id}', 'approveReturnFinal')->name('returnFinal.approved');
+            Route::put('aprobar-devolucion-de-consumibles/{id}', 'approveReturnFinal')->name('consumableReturnFinal.approved');
         });
     });
 

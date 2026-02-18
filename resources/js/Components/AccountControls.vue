@@ -24,8 +24,17 @@ watchEffect(() => {
         });
 });
 
-const readNotification = async (notification, redirect) => {
-    await axios.post(route('notifications.read', notification.id))
+const readNotification = async (notification, redirect, all=false) => {
+    if (all) {
+        await axios.post(route('notifications.readAll'))
+        .then((response) => {
+            notifications.value = response.data;
+        })
+        .catch(error => {
+            console.error("No read the notifications");
+        });
+    } else {
+        await axios.post(route('notifications.read', notification.id))
         .then((response) => {
             notifications.value = response.data;
             if (redirect) {
@@ -33,8 +42,9 @@ const readNotification = async (notification, redirect) => {
             }
         })
         .catch(error => {
-            console.error(error);
+            console.error("No read the notification");
         });
+    }
 }
 </script>
 <template>

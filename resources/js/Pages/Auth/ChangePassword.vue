@@ -2,6 +2,7 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Alert from '@/Components/Alert.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -21,6 +22,7 @@ const submit = () => {
 <template>
     <GuestLayout title="Cambiar Contraseña" :loading="form.processing">
         <Head title="Cambiar Contraseña" />
+        <Alert v-if="form.hasErrors" :message="Object.values(form.errors)[0]" type="danger" icon="fa-circle-xmark" />
         <div class="text-center mb-1">
             <p>Su cuenta tiene una contraseña predeterminada. Por razones de seguridad, debe cambiarla antes de continuar.</p>
         </div>
@@ -33,7 +35,6 @@ const submit = () => {
                     type="password"
                     v-model="form.password"
                     required
-                    :messageError="form.errors.password"
                 />
             </div>
 
@@ -45,7 +46,6 @@ const submit = () => {
                     type="password"
                     v-model="form.password_confirmation"
                     required
-                    :messageError="form.errors.password_confirmation"
                 />
             </div>
 

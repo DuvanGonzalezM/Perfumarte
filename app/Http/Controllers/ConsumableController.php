@@ -180,7 +180,7 @@ class ConsumableController extends Controller
     }
 
 
-    public function approvedDamageReturn(Request $request, $id)
+    public function approvedConsumableReturn(Request $request, $id)
     {
 
         $damageReturn = DamageReturn::findOrFail($id);

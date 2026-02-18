@@ -1,6 +1,10 @@
 .accountControls {
     font-size: 1.75rem !important;
 
+    #readAll {
+        text-align: right;
+    }
+
     .dropdown-menu.show {
         min-width: 20rem !important;
         border-radius: 1rem !important;

@@ -100,10 +100,13 @@ class AssignmentController extends Controller
     public function getAllLocation()
     {
         $user = Auth::user();
-        $getSede = Location::select('locations.location_id', 'locations.name')->whereHas('users_location', function ($query) use ($user) {
-            $query->where('location_user.user_id', '=', $user->user_id);
-        })
-            ->whereNotIn('locations.location_id', ['1'])->get();
+        if($user->hasRole('Administrador')){
+            $getSede = Location::select('locations.location_id', 'locations.name')->whereNotIn('locations.location_id', ['1'])->get();
+        }else{
+            $getSede = Location::select('locations.location_id', 'locations.name')->whereHas('users_location', function ($query) use ($user) {
+                $query->where('location_user.user_id', '=', $user->user_id);
+            })->whereNotIn('locations.location_id', ['1'])->get();
+        }
 
         $advisors = User::select('user_id', 'name')->whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Asesor comercial');
@@ -115,33 +118,37 @@ class AssignmentController extends Controller
     public function getAllAdvisor($location_id)
     {
         $user = Auth::user();
-        $getSede = Location::where('location_id', $location_id)->whereHas('users_location', function ($query) use ($user) {
-            $query->where('location_user.user_id', '=', $user->user_id);
-        })
-            ->with([
+        $getSede = Location::where('location_id', $location_id)->with([
                 'users_location' => function ($query) {
                     $query->whereHas('roles', function ($q) {
                         $q->whereIn('name', ['Usuario', 'Asesor comercial']);
                     });
                 }
-            ])
-            ->first();
+            ]);
+
         $advisors = User::whereHas('roles', function ($roladvisor) {
-            $roladvisor->where('name', 'Asesor comercial');
-        })->where('boss_user', '=', $user->user_id)
-            ->whereDoesntHave('location_user', function ($query) use ($location_id) {
+                $roladvisor->where('name', 'Asesor comercial');
+            })->whereDoesntHave('location_user', function ($query) use ($location_id) {
                 $query->where('location_user.location_id', '!=', $location_id);
-            })
-            ->get();
+            });
 
         $users = User::whereHas('roles', function ($roladvisor) {
-            $roladvisor->where('name', 'Usuario');
-        })->where('boss_user', '=', $user->user_id)
-            ->whereDoesntHave('location_user', function ($query) use ($location_id) {
+                $roladvisor->where('name', 'Usuario');
+            })->whereDoesntHave('location_user', function ($query) use ($location_id) {
                 $query->where('location_user.location_id', '!=', $location_id);
-            })
-            ->get();
+            });
+        
+        if(!$user->hasRole('Administrador')){
+            $getSede->whereHas('users_location', function ($query) use ($user) {
+                $query->where('location_user.user_id', '=', $user->user_id);
+            });
+            $advisors->where('boss_user', '=', $user->user_id);
+            $users->where('boss_user', '=', $user->user_id);
+        }
 
+        $getSede = $getSede->first();
+        $advisors = $advisors->get();
+        $users = $users->get();
         return Inertia::render('Assignment/DetailAssignAdvisor', ['getSede' => $getSede, 'advisors' => $advisors, 'users' => $users]);
     }
 
@@ -162,15 +169,12 @@ class AssignmentController extends Controller
             ->first();
 
         foreach ($location->users_location as $userAssigned) {
-            User::findOrFail($userAssigned['user_id'])->update(['enabled' => 0]);
             $location->users_location()->detach($userAssigned['user_id']);
         }
 
-        User::findOrFail($request['caja1']['user_id'])->update(['enabled' => 1, 'location_id' => $request['location_id']]);
         $location->users_location()->attach($request['caja1']['user_id']);
 
         if ($request['caja2']['user_id'] !== '' && $request['caja2']['user_id'] !== null) {
-            User::findOrFail($request['caja2']['user_id'])->update(['enabled' => 1, 'location_id' => $request['location_id']]);
             $location->users_location()->attach($request['caja2']['user_id']);
         }
 
