@@ -235,12 +235,6 @@ class ConsumableController extends Controller
                 if ($inventoryTarget) {
                     $inventoryTarget->quantity += $detail->damage_quantity;
                     $inventoryTarget->save();
-                } else {
-                    Inventory::create([
-                        'product_id' => $detail->inventory->product_id,
-                        'warehouse_id' => $targetWarehouseId,
-                        'quantity' => $detail->damage_quantity,
-                    ]);
                 }
             }
         }
