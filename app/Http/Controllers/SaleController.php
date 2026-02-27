@@ -138,7 +138,7 @@ class SaleController extends Controller
             $price = $drops * $warehouse->price_drops;
 
             $unitPrice = ($reference['reference'] == $giftBagId)
-                ? 2000
+                ? 3000
                 : $this->priceReference(
                     $reference['quantity'],
                     $warehouse,

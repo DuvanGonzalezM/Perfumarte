@@ -198,7 +198,7 @@ const priceReference = (value, productId = null) => {
         return props.warehouse.price5;
     } else {
         if (productId == giftBag) {
-            return 2000;
+            return 3000;
         }
         return 0;
     }
