@@ -26,6 +26,7 @@ const form = useForm({
     commercial_reference: '',
     category: '',
     supplier_id: '',
+    code: '',
 });
 
 const showModal = ref(false);
@@ -68,11 +69,11 @@ const columnsTable = [
 ];
 
 const listCategory = ref([
-    { name: 'Hombre' },
+    { name: 'Caballero' },
     { name: 'Dama' },
     { name: 'Niño' },
     { name: 'Unisex' },
-    { name: 'N/A' },
+    { name: 'Insumo' },
 ]);
 
 const listMeasurement = ref([
@@ -91,6 +92,7 @@ const openModal = (rowData) => {
     form.commercial_reference = rowData.commercial_reference;
     form.category = rowData.category;
     form.supplier_id = rowData.supplier?.supplier_id;
+    form.code = rowData.code;
     showModal.value = true;
 }
 
@@ -179,6 +181,11 @@ const disableProduct = () => {
                             <div class="col-md-12 my-3">
                                 <SelectSearch v-model="form.supplier_id" :options="optionSupplier"
                                     :messageError="Object.keys(form.errors).length ? form.errors.supplier_id : null" :error="form.errors.supplier_id" />
+                            </div>
+                            <div class="col-md-12 my-3">
+                                <TextInput type="string" name="code" id="code" v-model="form.code"
+                                    :focus="form.code != null ? true : false" labelValue="Codigo interno"
+                                    :required="true" :error="form.errors.code"/>
                             </div>
                         </div>
                         <div class="col-md-12 my-4 d-flex justify-content-center">

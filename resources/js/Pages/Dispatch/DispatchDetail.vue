@@ -35,22 +35,22 @@ const showModalSuccess = ref(false);
 const showModalError = ref(false);
 const insufficientQuantityProducts = ref([]);
 const form = useForm({
-  dispatch_id: props.dispatch.dispatch_id,
-  status: props.dispatch.status,
-  details: props.dispatch.dispatchdetail.map(detail => ({
-    id: detail.id,
-    returned_quantity: detail.returned_quantity ?? 0,
-    dispatched_quantity: detail.dispatched_quantity,
-    observations: detail.observations,
-    received: detail.received,
-    inventory: detail.inventory, 
-  }))
+    dispatch_id: props.dispatch.dispatch_id,
+    status: props.dispatch.status,
+    details: props.dispatch.dispatchdetail.map(detail => ({
+        id: detail.id,
+        returned_quantity: detail.returned_quantity ?? 0,
+        dispatched_quantity: detail.dispatched_quantity,
+        observations: detail.observations,
+        received: detail.received,
+        inventory: detail.inventory,
+    }))
 });
 
 const approved = () => {
     // Check for insufficient quantities before submitting
     insufficientQuantityProducts.value = [];
-    
+
     props.dispatch.dispatchdetail.forEach(item => {
         if (item.inventory.quantity < item.dispatched_quantity) {
             insufficientQuantityProducts.value.push({
@@ -79,32 +79,32 @@ const approved = () => {
 };
 
 const submitReturnedQuantities = () => {
-  
-  form.details = [];
 
-  Object.values(groupedDispatches.value).forEach(items => {
-  if (Array.isArray(items)) {
-    items.forEach(item => {
-        form.details.push({
-        id: item.dispatchs_detail_id,
-        returned_quantity: item.returned_quantity
-      });
+    form.details = [];
+
+    Object.values(groupedDispatches.value).forEach(items => {
+        if (Array.isArray(items)) {
+            items.forEach(item => {
+                form.details.push({
+                    id: item.dispatchs_detail_id,
+                    returned_quantity: item.returned_quantity
+                });
+            });
+        } else {
+            console.warn('Valor inesperado en groupedDispatches:', items);
+        }
     });
-  } else {
-    console.warn('Valor inesperado en groupedDispatches:', items);
-  }
-});
 
-  form.dispatch_id = props.dispatch.dispatch_id; 
+    form.dispatch_id = props.dispatch.dispatch_id;
 
-  form.put(route('dispatchReturn.store', form.dispatch_id), {
-    onSuccess: () => {
-      showModalSuccess.value = true;
-    },
-    onError: () => {
-      showModalError.value = true;
-    }
-  });
+    form.put(route('dispatchReturn.store', form.dispatch_id), {
+        onSuccess: () => {
+            showModalSuccess.value = true;
+        },
+        onError: () => {
+            showModalError.value = true;
+        }
+    });
 };
 
 
@@ -143,7 +143,7 @@ const submitReturnedQuantities = () => {
                                     <th>Recibido</th>
                                     <th>Cantidad Devuelta</th>
                                     <th>Observaciones</th>
-                             
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -156,12 +156,14 @@ const submitReturnedQuantities = () => {
                                         <i v-else class="fa-regular fa-circle"></i>
                                     </th>
                                     <td>
-                                    <template v-if="can('Aprobar Despachos')">
-                                    <TextInput :id="`returned_quantity_${index}`" type="number" name="returned_quantity[]"v-model="item.returned_quantity":placeholder="item.inventory.product.measurement_unit.replace('KG', 'ml')" />
-                                    </template>
-                                    <template v-else>
-                                    <span>{{ item.returned_quantity }}</span>
-                                    </template>
+                                        <template v-if="can('Aprobar Despachos')">
+                                            <TextInput :id="`returned_quantity_${index}`" type="number"
+                                                name="returned_quantity[]" v-model="item.returned_quantity"
+                                                :placeholder="item.inventory.product.measurement_unit.replace('KG', 'ml')" />
+                                        </template>
+                                        <template v-else>
+                                            <span>{{ item.returned_quantity }}</span>
+                                        </template>
                                     </td>
                                     <th>{{ item.observations }}</th>
                                 </tr>
@@ -170,45 +172,36 @@ const submitReturnedQuantities = () => {
                     </div>
                 </div>
 
-                <div class="row my-5">
-                    <div class="col-12">
-                      <div
-                        v-if="can('Aprobar Despachos')"
-                        class="d-flex justify-content-between"
-                      >
-                        <PrimaryButton :href="route('dispatch.list')" class="px-5">
-                          Volver
-                        </PrimaryButton>
-
-                        <PrimaryButton
-                          v-if="dispatch.status === 'En aprobacion'"
-                          @click="approved"
-                          class="px-5"
-                          :disabled="form.processing"
-                        >
-                          Aprobar
-                        </PrimaryButton>
-
-                        <PrimaryButton
-                          v-else-if="dispatch.status === 'Recibido'"
-                          @click="submitReturnedQuantities"
-                          :disabled="form.processing"
-                        >
-                          Confirmar Devolución
-                        </PrimaryButton>
-                      </div>
-
-                      <div v-else class="d-flex justify-content-center w-100">
-                    <div class="text-center">
-                      <PrimaryButton :href="route('dispatch.list')" class="px-5">
+                <div v-if="can('Aprobar Despachos')" :class="[
+                    'd-flex',
+                    (dispatch.status === 'En aprobacion' || dispatch.status === 'Recibido')
+                        ? 'justify-content-between'
+                        : 'justify-content-center'
+                ]">
+                    <PrimaryButton :href="route('dispatch.list')" class="px-5">
                         Volver
-                       </PrimaryButton>
+                    </PrimaryButton>
+
+                    <PrimaryButton v-if="dispatch.status === 'En aprobacion'" @click="approved" class="px-5"
+                        :disabled="form.processing">
+                        Aprobar
+                    </PrimaryButton>
+
+                    <PrimaryButton v-else-if="dispatch.status === 'Recibido'" @click="submitReturnedQuantities"
+                        :disabled="form.processing">
+                        Confirmar Devolución
+                    </PrimaryButton>
+                </div>
+
+                <div v-else class="d-flex justify-content-center w-100">
+                    <div class="text-center">
+                        <PrimaryButton :href="route('dispatch.list')" class="px-5">
+                            Volver
+                        </PrimaryButton>
                     </div>
-                  </div>
                 </div>
             </div>
-            </div>
-        </SectionCard> 
+        </SectionCard>
     </BaseLayout>
     <ModalPrais v-model="showModalSuccess" @close="showModalSuccess = false">
         <template #header>
@@ -227,8 +220,8 @@ const submitReturnedQuantities = () => {
                 <p>No hay suficiente cantidad disponible para los siguientes productos:</p>
                 <ul class="list-group">
                     <li v-for="(product, index) in insufficientQuantityProducts" :key="index" class="list-group-item">
-                        <strong>{{ product.reference }}</strong>: 
-                        Disponible: {{ product.available }} {{ product.unit }}, 
+                        <strong>{{ product.reference }}</strong>:
+                        Disponible: {{ product.available }} {{ product.unit }},
                         Requerido: {{ product.required }} {{ product.unit }}
                     </li>
                 </ul>

@@ -58,7 +58,9 @@ const submit = () => {
                         <tr>
                             <th>Referencia</th>
                             <th>Cantidad</th>
-                            <th v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')"></th>
+                            <th
+                                v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')">
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="productsList">
@@ -94,8 +96,8 @@ const submit = () => {
                     </tbody>
                 </table>
                 <div class="row text-center justify-content-center my-5">
-                    <div v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')" @click="addReference"
-                        class="addItem">
+                    <div v-if="requestPrais.status.trim().toLowerCase() !== 'pendiente' && can('Editar Solicitudes Insumos')"
+                        @click="addReference" class="addItem">
                         <i class="fa-solid fa-plus"></i>
                     </div>
                 </div>
@@ -117,11 +119,13 @@ const submit = () => {
                     </div>
                 </div>
                 <div class="row my-5">
-                    <div class="col-12 d-flex justify-content-between">
+                    <div
+                        :class="['col-12 d-flex', (requestPrais.status.trim().toLowerCase() === 'por solicitar' && can('Editar Solicitudes Insumos')) ? 'justify-content-between' : 'justify-content-center']">
                         <PrimaryButton :href="route('suppliesrequest.list')" class="px-5">
                             Volver
                         </PrimaryButton>
-                        <PrimaryButton v-if="requestPrais.status.trim().toLowerCase() === 'por solicitar' && can('Editar Solicitudes Insumos')"
+                        <PrimaryButton
+                            v-if="requestPrais.status.trim().toLowerCase() === 'por solicitar' && can('Editar Solicitudes Insumos')"
                             @click="showApproveModal = true" class="px-5">
                             Aprobar
                         </PrimaryButton>
