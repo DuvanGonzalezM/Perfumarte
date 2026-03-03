@@ -20,6 +20,7 @@ class Product extends Model
         'commercial_reference',
         'category',
         'dependents',
+        'code',
         'status',
     ];
     protected $casts = [

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('measurement_unit');
             $table->string('commercial_reference');
             $table->string('category');
+            $table->string('code');
             $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('status')->default(1);
             $table->string('dependents');

@@ -24,10 +24,10 @@ class ConsumableController extends Controller
             $consumable = Consumable::with(['inventory.product', 'warehouse.location', 'user'])
                 ->whereHas('warehouse', function ($query) use ($userWarehouses) {
                     $query->whereIn('warehouse_id', $userWarehouses);
-                })
-                ->get();
+                })->orderBy('consumable_id', 'desc')->get();
         } else {
-            $consumable = Consumable::with(['inventory.product', 'warehouse.location', 'user'])->get();
+            $consumable = Consumable::with(['inventory.product', 'warehouse.location', 'user'])
+            ->orderBy('consumable_id', 'desc') ->get();
         }
 
         return Inertia::render('Consumable/ConsumableList', [

@@ -20,14 +20,15 @@ const form = useForm({
     commercial_reference: '',
     category: '',
     supplier_id: '',
+    code: '',
 });
 
 const listCategory = ref([
-    { name: 'Hombre' },
+    { name: 'Caballero' },
     { name: 'Dama' },
     { name: 'Niño' },
     { name: 'Unisex' },
-    { name: 'N/A' },
+    { name: 'Insumo' },
 ]);
 
 const listMeasurement = ref([
@@ -113,6 +114,13 @@ const confirmCreate = () => {
                                 <td>
                                     <SelectSearch v-model="form.supplier_id" :options="optionSupplier"
                                     :messageError="Object.keys(form.errors).length ? form.errors.supplier_id : null" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>CODIGO INTERNO</td>
+                                <td>
+                                    <TextInput type="text" name="code[]" id="code[]" v-model="form.code" />
                                 </td>
                             </tr>
                         </tbody>
