@@ -590,7 +590,8 @@ watch(
                                             labelValue="Cantidad total de monedas" :minimo="0" :required="true" />
                                     </div>
                                     <div class="col-md-12 my-4 d-flex justify-content-center">
-                                        <PrimaryButton @click="openModalChange" class="px-5">
+                                        <PrimaryButton :class="((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) < (form.total || 0) ? 'disabled' : ''"
+                                            @click="openModalChange" class="px-5">
                                             Cobrar
                                         </PrimaryButton>
                                     </div>
@@ -674,7 +675,16 @@ watch(
                                 style: 'currency', currency: 'COP',
                                 maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
                         </template>
+                       
                         <template #body>
+                            <h4 class="mt-3 d-flex justify-content-center">{{ Intl.NumberFormat('es-CO', {
+                                        style: 'currency', currency: 'COP', maximumFractionDigits: 0,
+                                        minimumFractionDigits: 0
+                                    }).format(parseInt((form.rest_count_100_bill * 100000) + (form.rest_count_50_bill * 50000) +
+                                        (form.rest_count_20_bill * 20000) + (form.rest_count_10_bill * 10000) + (form.rest_count_5_bill
+                                            * 5000) + (form.rest_count_2_bill * 2000) + 
+                                        (form.rest_total_coins * 1))) }}
+                            </h4>
                             <div class="row">
                                 <div class="col-md-4 my-3">
                                     <CountControl v-model="form.rest_count_100_bill" :min="0"

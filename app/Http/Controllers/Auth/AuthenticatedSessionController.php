@@ -32,8 +32,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $user = User::with('roles')->where('username', $request->username)->firstOrFail();
-        if ($user && $user->default_password) {
+        try {
+            $user = User::with('roles')->where('username', $request->username)->firstOrFail();
+        } catch (\Exception $e) {
+            return redirect()->route('login')->with('error', 'Estas credenciales no coinciden con nuestros registros.');
+        }
+        if ($user && $user->deleted_at) {
+            return redirect()->route('login')->with('error', 'Estas credenciales no coinciden con nuestros registros.');
+        }
+        if ($user && $user->default_password && !$user->deleted_at) {
             return redirect()->route('password.change', ['username' => $user->username]);
         }
         if($user && $user->hasRole('Asesor comercial') && $user->enabled == 0){
@@ -68,3 +75,4 @@ class AuthenticatedSessionController extends Controller
         return redirect()->route('login')->with('error', $error);
     }
 }
+
