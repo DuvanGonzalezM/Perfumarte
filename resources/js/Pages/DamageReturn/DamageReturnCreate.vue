@@ -6,6 +6,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
+import TextInput from '@/Components/TextInput.vue'; 
 
 const props = defineProps({
     inventoryReturn: {
@@ -106,15 +107,15 @@ const confirmCreate = () => {
                                         </td>
 
                                         <td>
-                                            <input type="number" v-model="ref.damage_quantity" class="form-control w-20"
+                                            <TextInput type="number" minimo="1" v-model="ref.damage_quantity" class="w-20"
                                                 :class="{ 'is-invalid': getError(damageReturnIndex, refIndex, 'damage_quantity') }" />
 
                                             <div v-if="getError(damageReturnIndex, refIndex, 'damage_quantity')">
-                                            </div>
+                                            </div>  
                                         </td>
 
                                         <td>
-                                            <input type="text" v-model="ref.observations" class="border p-1 w-full" />
+                                            <TextInput type="text" v-model="ref.observations" class="w-full" />
                                         </td>
                                         <div class="removeItem" @click="removeReference(damageReturn, refIndex)">
                                             <i class="fa-solid fa-trash"></i>

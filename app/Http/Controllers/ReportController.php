@@ -89,7 +89,7 @@ class ReportController extends Controller
                     ->join('warehouses', 'inventories.warehouse_id', '=', 'warehouses.warehouse_id')
                     ->join('locations', 'warehouses.location_id', '=', 'locations.location_id');
                 if($where == 'category'){
-                    $query->whereIn('category', ['Dama', 'Caballero', 'Unisex']);
+                    $query->whereIn('products.category', ['Dama', 'Caballero', 'Unisex']);
                 }else{
                     $query->where('products.reference', 'like', '%'. $where .'%');
                 }
@@ -109,16 +109,15 @@ class ReportController extends Controller
                 ->join('warehouses', 'inventories.warehouse_id', '=', 'warehouses.warehouse_id')
                 ->join('locations', 'warehouses.location_id', '=', 'locations.location_id');
             if($where == 'category'){
-                $query->whereIn('category', ['Dama', 'Caballero', 'Unisex']);
+                $query->whereIn('products.category', ['Dama', 'Caballero', 'Unisex']);
             }else{
                 $query->where('products.reference', 'like', '%' . $where . '%');
             }
-            $query->groupBy('products.product_id')
-                ->orderBy('total_quantity_sold', $orderBy)
-                ->whereBetween('sale_details.created_at', [$startDate, $endDate])
-                ->limit(10)
-                ->get();
-
+            $query->groupBy('products.product_id', 'products.reference')
+            ->orderBy('total_quantity_sold', $orderBy)
+            ->whereBetween('sale_details.created_at', [$startDate, $endDate])
+            ->limit(10);
+            
             $locationsQuery[] = $query->get();
         }
 
@@ -208,7 +207,7 @@ class ReportController extends Controller
             case '2':
                 $nameReport = 'Top 10 Fragancias';
                 foreach ($data as $location) {
-                    $title = $location[0]->location_name ?? 'Top 10 Fragancias';
+                    $title = $location[0]->location_name ?? '10 Fragancias con mayor venta';
                     $dataForExcel[] = [
                         'collection' => collect($location->map(function ($reference) {
                             return [
@@ -225,7 +224,7 @@ class ReportController extends Controller
             case '3':
                 $nameReport = 'Top 10 Fragancias con menor venta';
                 foreach ($data as $location) {
-                    $title = $location[0]->location_name ?? 'Top 10 Fragancias con menor venta';
+                    $title = $location[0]->location_name ?? '10 Fragancias con menor venta';
                     $dataForExcel[] = [
                         'collection' => collect($location->map(function ($reference) {
                             return [
@@ -242,7 +241,7 @@ class ReportController extends Controller
             case '4':
                 $nameReport = 'Picos altos de venta por hora y sucursal';
                 foreach ($data as $location) {
-                    $title = $location[0]->location_name ?? 'Picos altos de venta por hora general';
+                    $title = $location[0]->location_name ?? 'Picos altos de venta por hora';
                     $dataForExcel[] = [
                         'collection' => collect($location->map(function ($hour) {
                             return [
@@ -265,7 +264,7 @@ class ReportController extends Controller
                             'total' => $sale->total_sales ?? 0,
                         ];
                     })), 
-                    'title' => 'Top 10 Sucursales con mayor venta', 
+                    'title' => '10 Sucursales con mayor venta', 
                     'headings' => ['Sucursal', 'Total Ventas'],
                     'columnFormat' => 'B'
                 ];

@@ -43,6 +43,9 @@ class DamageReturnController extends Controller
 
         $inventory = Inventory::with('product')
             ->where('warehouse_id', $warehouse->warehouse_id)
+            ->whereHas('product', function ($query) {
+                $query->whereNotIn('product_id', [1, 2]);
+            })
             ->get();
 
         return Inertia::render('DamageReturn/DamageReturnCreate', [

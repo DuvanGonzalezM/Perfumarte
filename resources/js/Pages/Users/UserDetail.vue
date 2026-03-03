@@ -9,6 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 
+
 const props = defineProps({
     user: {
         type: Object,
@@ -34,6 +35,7 @@ const optionsZones = ref(props.zones.map((zone) => [{ 'title': zone.zone_name, '
 const showConfirmEditModal = ref(null);
 const showConfirmDeleteModal = ref(null);
 const showConfirmResetPasswordModal = ref(null);
+const showConfirmEnableModal = ref(null);
 let permissionsNameRole = [];
 
 const form = useForm({
@@ -42,7 +44,7 @@ const form = useForm({
     boss_user: props.user.boss_user != 0 ? parseInt(props.user.boss_user) : null,
     location_id: 1,
     zone_id: props.user.zone_id != 0 ? parseInt(props.user.zone_id) : null,
-    enabled: props.user.enabled != 0 ? true : false,
+    enabled: props.user.enabled ?? false,
     roles: rolesIdUser,
     permissions: permissionsIdUser,
     default_password: props.user.default_password,
@@ -111,6 +113,13 @@ const deleteUser = () => {
             showConfirmDeleteModal.value = false;
         },
     });
+}
+const enableUser = () => {
+    form.post(route('users.enable', { user_id: props.user.user_id }), {
+        onSuccess: () => {
+            showConfirmEnableModal.value = false;
+        },
+    });
 };
 </script>
 
@@ -131,13 +140,23 @@ const deleteUser = () => {
 
                     <div class="d-flex justify-content-between">
                         <div class="col-md-6">
-                            <PrimaryButton @click="showConfirmResetPasswordModal = true;" class="px-5">
+                            <PrimaryButton v-if="!props.user.deleted_at" @click="showConfirmResetPasswordModal = true;" class="px-4">
                                 Restablecer contraseña
                             </PrimaryButton>
                         </div>
-                        <PrimaryButton @click="showConfirmDeleteModal = true;" class="px-5">
-                            Eliminar
-                        </PrimaryButton>
+                        <div class="col-md-6 d-flex justify-content-end gap-2">
+                            <!-- Botón HABILITAR (solo si usuario está eliminado) -->
+                            <PrimaryButton v-if="props.user.deleted_at" @click="showConfirmEnableModal = true;"
+                                class="px-4">
+                                HABILITAR
+                            </PrimaryButton>
+
+                            <!-- Botón DESHABILITAR (solo si usuario está activo) -->
+                            <PrimaryButton v-if="!props.user.deleted_at" @click="showConfirmDeleteModal = true;"
+                                class="px-4">
+                                DESHABILITAR
+                            </PrimaryButton>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -241,12 +260,12 @@ const deleteUser = () => {
 
         <ModalPrais v-model="showConfirmDeleteModal" @close="showConfirmDeleteModal = false">
             <template #header>
-                Confirmar Eliminación
+                Confirmar Deshabilitación
             </template>
             <template #body>
                 <div class="text-center">
                     <i class="fa-solid fa-trash text-danger"></i>
-                    <h3>¿Estás seguro de que quieres eliminar este usuario?</h3>
+                    <h3>¿Estás seguro de que quieres deshabilitar este usuario?</h3>
                 </div>
             </template>
             <template #footer>
@@ -274,6 +293,24 @@ const deleteUser = () => {
                 </PrimaryButton>
             </template>
         </ModalPrais>
-        
+        <ModalPrais v-model="showConfirmEnableModal" @close="showConfirmEnableModal = false">
+            <template #header>
+                Confirmar Habilitación
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <i class="fa-solid fa-check text-success"></i>
+                    <h3>¿Estás seguro de que quieres habilitar este usuario?</h3>
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="enableUser()" class="px-5">
+                    Confirmar
+                </PrimaryButton>
+                <PrimaryButton @click="showConfirmEnableModal = false" class="px-5">
+                    Cancelar
+                </PrimaryButton>
+            </template>
+        </ModalPrais>
     </BaseLayout>
 </template>

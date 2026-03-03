@@ -67,17 +67,26 @@ const submit = () => {
 const columnsTable = [
     {
         data: 'name',
-        title: 'Nombre'
+        title: 'Nombre',
+        render: function (data, type, row) {
+            const opacity = row.deleted_at ? 'opacity: 0.5;' : '';
+            return `<span style="${opacity}">${data}</span>`;
+        }
     },
     {
         data: 'username',
-        title: 'Documento de usuario'
+        title: 'Documento de usuario',
+        render: function (data, type, row) {
+            const opacity = row.deleted_at ? 'opacity: 0.5;' : '';
+            return `<span style="${opacity}">${data}</span>`;
+        }
     },
     {
         data: 'roles',
         title: 'Roles',
-        render: function (data) {
-            return data.map(role => role.name).join(', ');
+        render: function (data, type, row) {
+            const opacity = row.deleted_at ? 'opacity: 0.5;' : '';
+            return `<span style="${opacity}">${data.map(role => role.name).join(', ')}</span>`;
         },
     },
     {

@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function getAllProducts()
     {
-       $getproducts = Product::with('supplier')->where('status', 1)->get();
+       $getproducts = Product::with('supplier')->where('status', 1)->get(['product_id', 'reference', 'measurement_unit', 'commercial_reference', 'category', 'supplier_id', 'code']);
        $supplierProduct = Supplier::all();
      
        return Inertia::render('Products/ProductsList', [
@@ -34,12 +34,14 @@ class ProductController extends Controller
 
     public function storeProduct(Request $request)
     {
+
         $request->validate([
             'reference' => 'required',
             'measurement_unit' => 'required',
             'commercial_reference' => 'required',
             'category' => 'required',
             'supplier_id' => 'required',
+            'code' => 'required',
         ]);
 
         Product::create([
@@ -48,6 +50,7 @@ class ProductController extends Controller
             'commercial_reference' => $request['commercial_reference'],
             'category' => $request['category'],
             'supplier_id' => $request['supplier_id'],
+            'code' => $request['code'],
             'status' => 1,
 
         ]);
@@ -58,12 +61,15 @@ class ProductController extends Controller
 
     public function editProduct(Request $request, $product_id)
     {
+
+
         $request->validate([
             'reference' => 'required|string|max:255',
             'measurement_unit' => 'required|string|max:255',
             'commercial_reference' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'supplier_id' => 'required',
+            'code' => 'required',
         ]);
         $product = Product::findOrFail($product_id);
         $product->update([
@@ -72,6 +78,7 @@ class ProductController extends Controller
             'commercial_reference' => (string) $request->commercial_reference,
             'category' => (string) $request->category,
             'supplier_id' => (int) $request->supplier_id,
+            'code' => (string) $request->code,
         ]);
 
         return redirect()->route('products.list');
