@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
         Route::post('users', 'storeUser')->name('users.store');
+        Route::post('users/{user_id}/enable', 'enableUser')->name('users.enable');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
         Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi')->middleware('can:Editar Usuarios');
         Route::post('users/{user_id}/reset-password', 'resetPassword')->name('users.reset-password');

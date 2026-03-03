@@ -15,9 +15,10 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    
     public function getUsers()
     {
-        $users = User::with('roles');
+        $users = User::with('roles')->withTrashed();
         if(!Auth::user()->hasRole('TI')){
             $users->whereDoesntHave('roles', function ($query) {
                 $query->where('name', 'TI');
@@ -26,7 +27,7 @@ class UserController extends Controller
         $users = $users->get();
         $roles = Role::all();
         $zones = Zone::all();
-        $boss = User::with(['roles', 'zone'])
+        $boss = User::with(['roles', 'zone'])->withTrashed()
             ->whereHas('roles', function ($query) {
                 $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
             })
@@ -91,9 +92,23 @@ class UserController extends Controller
         }
     }
 
+    public function enableUser($user_id)
+{
+    try {
+        $user = User::withTrashed()->findOrFail($user_id);
+        $user->restore();
+        $user->default_password = true;
+        $user->save();
+        return redirect()->route('users.list');
+       
+    } catch (\Exception $e) {
+        return back();
+    }
+}
+
     public function detailUser($user_id)
     {
-        $user = User::with('roles', 'permissions')->findOrFail($user_id);
+        $user = User::with('roles', 'permissions')->withTrashed()->findOrFail($user_id);
         $currentUser = Auth::user();
         $zones = Zone::all();
         $roles = Role::with('permissions');
