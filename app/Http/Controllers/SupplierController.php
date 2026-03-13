@@ -19,7 +19,6 @@ class SupplierController extends Controller
     
     }
 
-
     public function createSupplier()
     {
         $newSupplier = Supplier::all();
@@ -31,7 +30,6 @@ class SupplierController extends Controller
 
     public function storeSupplier(Request $request)
     {
-
         $request->validate([
             'nit' => 'required',
             'name' => 'required',
@@ -51,9 +49,7 @@ class SupplierController extends Controller
             'status' => 1,
 
         ]);
-
         return redirect()->route('suppliers.list', ['message' => '', 'status' => 200]);
-
     }
 
     public function editSupplier(Request $request, $supplier_id)
@@ -75,7 +71,6 @@ class SupplierController extends Controller
             'phone' => (string) $request->phone,
             'email' => (string) $request->email,
         ]);
-
         return redirect()->route('suppliers.list');
     }
 

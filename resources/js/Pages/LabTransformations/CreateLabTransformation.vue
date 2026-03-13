@@ -171,7 +171,7 @@ const submit = async () => {
                         <PrimaryButton @click="submit" class="px-5"
                             :disabled="!(quantityTransform == (form.escencia + form.dipropileno + form.disolvente))"
                             :class="!(quantityTransform == (form.escencia + form.dipropileno + form.disolvente)) || disableButton ? 'disabled' : ''">
-                            Registrar
+                            Crear Transformacion
                         </PrimaryButton>
                     </div>
                 </div>

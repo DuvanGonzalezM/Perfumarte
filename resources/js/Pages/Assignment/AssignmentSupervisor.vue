@@ -102,7 +102,7 @@ const submit = () => {
                     </template>
                     <template #footer>
                         <PrimaryButton @click="submit" class="px-5">
-                            Registrar
+                            Asignar
                         </PrimaryButton>
                     </template>
                 </ModalPrais>

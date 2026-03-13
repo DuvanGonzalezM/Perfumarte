@@ -87,7 +87,7 @@ const submit = () => {
             </template>
             <div class="container">
                 <PrimaryButton :href="route('novelty.create')" class="position-absolute" v-if="can('Crear Novedades')">
-                    Nuevo Registro
+                    Crear Novedad
                 </PrimaryButton>
                 <Table :data="getNovelties" :columns="columnsTable">
                     <template #templateRender="items">

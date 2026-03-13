@@ -93,7 +93,7 @@ const submit = () => {
                         <div class="col-6 text-end">
                             <PrimaryButton @click="showConfirmation" class="px-5"
                                 :class="form.processing ? 'disabled' : ''">
-                                Registrar
+                                Crear Reenvase
                             </PrimaryButton>
                         </div>
                     </div>
