@@ -54,6 +54,7 @@ class DamageReturnController extends Controller
             'inventoryReturn' => $inventory,
         ]);
     }
+
     public function storeDamageReturn(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -128,7 +129,6 @@ class DamageReturnController extends Controller
         }
     }
 
-
     public function editDamageReturn($id)
     {
         $user = auth()->user();
@@ -142,7 +142,6 @@ class DamageReturnController extends Controller
             'damageReturn' => $damageReturn,
         ]);
     }
-
 
     public function approvedDamageReturn(Request $request, $id)
     {
@@ -207,7 +206,6 @@ class DamageReturnController extends Controller
 
         return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada');
     }
-
 
     public function approveReturnFinal(Request $request, $id)
     {
