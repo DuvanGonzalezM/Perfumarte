@@ -15,7 +15,6 @@ class SupplyReceptionController extends Controller
 {
     public function show()
     {
-
         $despacho = Dispatch::with('dispatchDetail.inventory.product')
             ->where('status', '=', 'En ruta')
             ->whereHas('dispatchDetail', function ($query) {
@@ -99,14 +98,12 @@ class SupplyReceptionController extends Controller
                                 $dispatchDetail->returned_quantity = $incomingQuantity - $maxQuantity;
                             }
                         }
-
                         $dispatchDetail->save();
                     }
                 }
             }
 
         }
-
         return redirect()->route('inventory.current', ['message' => '', 'status' => 200]);
     }
 }

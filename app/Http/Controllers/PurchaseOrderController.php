@@ -95,6 +95,7 @@ class PurchaseOrderController extends Controller
             return redirect()->route('orders.list');
         }
     }
+
     public function editOrders($orderId)
     {
         $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', $orderId)->get();
@@ -174,7 +175,6 @@ class PurchaseOrderController extends Controller
                 }
             }
         }
-    
         return redirect()->route('orders.list')->with('success', 'Orden actualizada correctamente');
     }
 }

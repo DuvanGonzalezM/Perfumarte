@@ -23,7 +23,6 @@ class NoveltyController extends Controller
 
     }
 
-
     public function createNovelty()
     {
         $newNovelty = Warehouse::all();
@@ -53,7 +52,6 @@ class NoveltyController extends Controller
         ]);
 
         return redirect()->route('novelties.list', ['message' => '', 'status' => 200]);
-
     }
 
     public function editSupplier(Request $request, $supplier_id)

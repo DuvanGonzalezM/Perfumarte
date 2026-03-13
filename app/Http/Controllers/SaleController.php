@@ -18,7 +18,6 @@ class SaleController extends Controller
     {
         $userLocation = auth()->user()->location_user[0]->location_id;
 
-        // Obtener las ventas del día
         $sales = Sale::with('user')
             ->whereHas('cashRegister', function ($query) use ($userLocation) {
                 $query->where('location_id', $userLocation)
@@ -26,11 +25,9 @@ class SaleController extends Controller
             })
             ->get();
 
-        // Obtener el estado de la caja del día
         $cashRegister = CashRegister::where('location_id', $userLocation)
             ->whereDate('created_at', date('Y-m-d'))
             ->first();
-
 
         return Inertia::render('Sale/SalesList', [
             'sales' => $sales,
@@ -67,7 +64,6 @@ class SaleController extends Controller
             100 => 0
         ];
 
-        // Calcular total de unidades por tamaño
         foreach ($allReferences as $ref) {
             if (isset($ref['quantity']) && isset($ref['units']) && isset($totalUnitsBySize[$ref['quantity']])) {
                 $totalUnitsBySize[$ref['quantity']] += $ref['units'];
@@ -106,7 +102,6 @@ class SaleController extends Controller
 
         $warehouse = auth()->user()->location_user[0]->warehouses[0];
 
-        // Crear venta (se eliminará si falla alguna validación)
         $sale = Sale::create([
             'cash_register_id' => $cashRegister->cash_register_id,
             'total' => $request->total,
@@ -119,9 +114,6 @@ class SaleController extends Controller
 
         foreach ($request->references as $reference) {
 
-            // ================================
-            // DATOS BASE
-            // ================================
             $giftBagId = Inventory::with('product')
                 ->whereHas('product', function ($query) {
                     $query->where('reference', 'Bolsa de regalo');
@@ -157,18 +149,12 @@ class SaleController extends Controller
                 'price' => $totalPrice,
             ]);
 
-            // ================================
-            // CALCULAR CANTIDAD A DESCONTAR
-            // ================================
             if ($reference['reference'] == $giftBagId) {
                 $quantityToSubtract = $reference['units'];
             } else {
                 $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
             }
 
-            // ================================
-            // OBTENER INVENTARIOS
-            // ================================
             $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                 ->where('inventory_id', $reference['reference'])
                 ->first();
@@ -204,9 +190,6 @@ class SaleController extends Controller
                 }
             }
 
-            // ================================
-            // VALIDACIONES (SIN DESCONTAR)
-            // ================================
             if (!$inventory || $inventory->quantity < $quantityToSubtract) {
                 $sale->delete();
                 return back()->withErrors([
@@ -237,9 +220,6 @@ class SaleController extends Controller
                 }
             }
 
-            // ================================
-            // DESCONTAR INVENTARIOS
-            // ================================
             $inventory->quantity -= $quantityToSubtract;
             $inventory->save();
 
@@ -259,9 +239,6 @@ class SaleController extends Controller
             }
         }
 
-        // ================================
-        // ACTUALIZAR CAJA
-        // ================================
         $cashRegister->total_collected += $request->total;
 
         if ($request->pay_method == 'Transferencia') {

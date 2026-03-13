@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
             Route::put('ordenes-compra/update-orden/{orderId}', 'updateOrders')->name('orders.update');
         });
     });
+
     Route::controller(DispatchController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Despachos']], function () {
             Route::get('despachos', 'getAllDispatch')->name('dispatch.list');
@@ -88,6 +89,7 @@ Route::middleware('auth')->group(function () {
             Route::post('transformaciones/nueva-transformacion', 'storeTransformation')->name('transformation.store');
         });
     });
+
     Route::controller(StockController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Stock']], function () {
             Route::get('stock', 'getStocks')->name('stock.dashboard');
@@ -97,6 +99,7 @@ Route::middleware('auth')->group(function () {
             Route::put('stock/update', 'updateInventory')->name('stock.inventory.update');
         });
     });
+
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
         Route::post('users', 'storeUser')->name('users.store');
@@ -130,7 +133,6 @@ Route::middleware('auth')->group(function () {
 
     });
 
-
     Route::controller(RepackageController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
             Route::get('reenvase', 'getrepackage')->name('repackage.list');
@@ -144,6 +146,7 @@ Route::middleware('auth')->group(function () {
             Route::put('reenvase/editar/{repackage_id}', 'updateRepackage')->name('update.repackage');
         });
     });
+
     Route::controller(LabTransformationController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Reenvases']], function () {
             Route::get('transformaciones-de-laboratorio', 'getAllTransformation')->name('LabTransformation.list');
@@ -158,6 +161,7 @@ Route::middleware('auth')->group(function () {
             Route::put('transformaciones-de-laboratorio/{transformationId}/actualizar', 'updateTransformation')->name('LabTransformation.update');
         });
     });
+
     Route::controller(AssignmentController::class)->group(function () {
         Route::group(['middleware' => ['can:Asignar Supervisor']], function () {
             Route::get('asignacion-supervisores', 'getAllSupervisor')->name('assignment.supervisor');
@@ -169,6 +173,7 @@ Route::middleware('auth')->group(function () {
             Route::post('asignar-asesores', 'storeAdvisor')->name('store.Advisor');
         });
     });
+
     Route::controller(InventoryLocationController::class)->group(function () {
         Route::get('inventario inicial', function () {
             return redirect()->route('inventory.start');
@@ -182,6 +187,7 @@ Route::middleware('auth')->group(function () {
             Route::get('inventario-actual', 'current')->name('inventory.current');
         });
     });
+
     Route::group(['middleware' => ['inventory.check']], function () {
         Route::controller(SupplyReceptionController::class)->group(function () {
             Route::group(['middleware' => ['can:Recibir Insumos']], function () {
@@ -201,6 +207,7 @@ Route::middleware('auth')->group(function () {
             });
         });
     });
+
     Route::controller(AuditController::class)->group(function () {
         Route::group(['middleware' => ['can:Auditar']], function () {
             Route::get('auditorias', 'showAudits')->name('audits');
@@ -212,6 +219,7 @@ Route::middleware('auth')->group(function () {
             Route::post('auditoria/inventario', 'storeAuditInventory')->name('audit.storeInventory');
         });
     });
+    
     Route::controller(ProductController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Productos']], function () {
             Route::get('productos', 'getAllProducts')->name('products.list');
@@ -227,10 +235,12 @@ Route::middleware('auth')->group(function () {
             Route::put('/productos/{product_id}', 'disableProduct')->name('products.disable');
         });
     });
+    
     Route::controller(ReportController::class)->group(function () {
         Route::get('reportes', 'getReports')->name('reports');
         Route::get('reportes/generate/{typeReport}/{range_date}/{warehouseIds}', 'generateReport')->name('generate.report');
     });
+    
     Route::controller(SupplierController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Proveedores']], function () {
             Route::get('proveedores', 'getAllSuppliers')->name('suppliers.list');
@@ -246,6 +256,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/proveedores/{supplier_id}', 'disableSupplier')->name('supplier.disable');
         });
     });
+    
     Route::controller(NoveltyController::class)->group(function () {
         Route::group(['middleware' => ['can:Ver Novedades']], function () {
             Route::get('novedades', 'getAllNovelties')->name('novelties.list');
@@ -255,10 +266,12 @@ Route::middleware('auth')->group(function () {
             Route::post('novedades/nueva-novedad', 'storeNovelty')->name('novelty.store');
         });
     });
+    
     Route::controller(NotificationController::class)->group(function () {
         Route::post('notificaciones/{notification_id}', 'readNotification')->name('notifications.read');
         Route::post('notificaciones', 'readAllNotification')->name('notifications.readAll');
     });
+    
     Route::controller(CashRegisterController::class)->group(function () {
         Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
         Route::post('cerrar-caja', 'store')->name('cash.close');
@@ -302,6 +315,4 @@ Route::middleware('auth')->group(function () {
             Route::put('aprobar-devolucion-de-consumibles/{id}', 'approveReturnFinal')->name('consumableReturnFinal.approved');
         });
     });
-
-
 });

@@ -89,7 +89,7 @@ const optionNovelties = ref(listNovelties.value.map(novelty => ({ 'title': novel
                     <div class="row my-5 text-center">
                         <div class="col">
                             <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
-                                Registrar
+                                Registrar Novedad
                             </PrimaryButton>
                         </div>
                     </div>

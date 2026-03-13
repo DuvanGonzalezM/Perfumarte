@@ -29,7 +29,6 @@ class ConsumableController extends Controller
             $consumable = Consumable::with(['inventory.product', 'warehouse.location', 'user'])
             ->orderBy('consumable_id', 'desc') ->get();
         }
-
         return Inertia::render('Consumable/ConsumableList', [
             'consumable' => $consumable
         ]);
@@ -81,13 +80,12 @@ class ConsumableController extends Controller
         $user = auth()->user();
         $isSpecialRole = $user->hasRole(['Administrador', 'Gerencia', 'Jefe de operaciones']);
 
-        // Validación inicial: verificar cantidades disponibles
         if ($request->has('consumable')) {
             foreach ($request->consumable as $locationIndex => $location) {
                 $warehouseId = $location['warehouse_id'] ?? null;
 
                 if ($isSpecialRole) {
-                    $warehouseId = 3; // ejemplo: bodega especial
+                    $warehouseId = 3; 
                 }
 
                 foreach ($location['references'] as $referenceIndex => $reference) {
@@ -107,7 +105,6 @@ class ConsumableController extends Controller
             }
         }
 
-        // Si falla validación Laravel o validación manual
         if ($validator->fails() || !empty($errors)) {
             return back()
                 ->withInput()
@@ -140,11 +137,9 @@ class ConsumableController extends Controller
                     $consumable->consumable_quantity = $reference['consumable_quantity'];
                     $consumable->save();
 
-                    // Actualizar inventario
                     $inventory->quantity -= $reference['consumable_quantity'];
                     $inventory->save();
 
-                    // Cargar relaciones para mostrar en la vista
                     $consumable->load(['inventory.product', 'warehouse.location', 'user']);
 
                     $savedConsumables[] = $consumable;

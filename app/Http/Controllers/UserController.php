@@ -14,8 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
-{
-    
+{  
     public function getUsers()
     {
         $users = User::with('roles')->withTrashed();
@@ -41,7 +40,6 @@ class UserController extends Controller
             'username' => 'required|string|max:255|unique:' . User::class,
         ]);
 
-
         $user = User::create([
             'username' => (string) $request->username,
             'name' => (string) $request->name,
@@ -55,7 +53,6 @@ class UserController extends Controller
 
         $user->syncRoles($request->role_id);
         
-
         event(new Registered($user));
         return redirect()->route('users.list');
     }
@@ -76,7 +73,6 @@ class UserController extends Controller
             'zone_id' => (int) $request->zone_id ?? null,
             'default_password' => $request->has('default_password') ? 0 : $user->default_password,
         ]);
-
         return redirect()->route('users.list');
     }
 
@@ -135,10 +131,7 @@ class UserController extends Controller
         $request->validate([
             'roles' => 'required',
                 'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
-                'name' => 'required|string|max:255',
-                // 'boss_user' => 'required|integer',
-                // 'enabled' => 'required|boolean',
-    
+                'name' => 'required|string|max:255',  
             ]);
     
         $user = User::findOrFail($user_id);
@@ -171,7 +164,6 @@ class UserController extends Controller
             'default_password' => true,
             'password' => Hash::make(Str::password(16, true, true, true, false)),
         ]);
-
         return redirect()->route('users.detail', $user_id)->with('success', 'Contraseña restablecida exitosamente');
     }
 
