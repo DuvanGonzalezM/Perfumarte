@@ -45,7 +45,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
             <h1>Lista de transformaciones laboratorio</h1>
         </template>
 

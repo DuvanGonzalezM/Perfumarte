@@ -49,7 +49,7 @@ const props = defineProps({
             <h1 class="dashboard-title">Inicio</h1>
         </template>
         <div class="dashboard-container">
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones | Laboratorio ')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones | Laboratorio ')">
                 <InformationCard 
                     title="Stock bodega 1 Referencias" 
                     :number="props.inventory.length"
@@ -57,7 +57,7 @@ const props = defineProps({
                 />
             </div>
             
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones | Laboratorio')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones | Laboratorio')">
                 <InformationCard 
                     title="Stock bodega 2 Referencias" 
                     :number="props.inventory2.length"
@@ -65,7 +65,7 @@ const props = defineProps({
                 />
             </div>
             
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones')">
                 <InformationCard 
                     title="Stock almacen Articulos" 
                     :number="props.inventoryAlmacen.length"
@@ -73,7 +73,7 @@ const props = defineProps({
                 />
             </div>
             
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones ')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones ')">
                 <InformationCard 
                     title="Solicitudes pendientes despachos" 
                     :number="props.pendingDispatches.length"
@@ -81,7 +81,7 @@ const props = defineProps({
                 />
             </div>
             
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones | Laboratorio ')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones | Laboratorio ')">
                 <InformationCard 
                     title="Solicitudes pendientes transformaciones"
                     :number="props.pendingTransformation.length" 
@@ -89,7 +89,7 @@ const props = defineProps({
                 />
             </div>
             
-            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de Operaciones')">
+            <div class="dashboard-card-container" v-if="is('Gerencia | Administrador | Jefe de operaciones')">
                 <InformationCard 
                     title="Despachos finalizados" 
                     :number="props.finalized.length"

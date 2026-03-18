@@ -67,7 +67,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
         </template>
 
         <SectionCard>

@@ -75,7 +75,7 @@ const submit = () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Asignacion de supervisores</h1>
         </template>
 

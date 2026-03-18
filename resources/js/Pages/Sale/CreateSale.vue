@@ -100,13 +100,7 @@ const validateChange = async () => {
     }
 }
 
-// const validateChange = () => {
-//     try {
-//         devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) - form.total;
-//     } catch (error) {
-//         devolver.value = 0;
-//     }
-// }
+
 const changeReference = () => {
     referenceNew.value.quantity = '';
     referenceNew.value.units = 1;
@@ -133,12 +127,11 @@ const changePayMethod = () => {
 }
 
 const changePerdurable = () => {
-    // Inicializar el array de perdurables con 0 para cada unidad
     referenceNew.value.perdurable = Array(referenceNew.value.units).fill(0);
 }
 
 const togglePerdurable = (index, value) => {
-    // Si ya está seleccionado, lo deseleccionamos
+
     if (referenceNew.value.perdurable[index] === value) {
         referenceNew.value.perdurable[index] = 0;
     } else {
@@ -148,9 +141,7 @@ const togglePerdurable = (index, value) => {
 
 const buttonErrorMessage = ref('');
 
-// Validar si hay referencias de 5ml con menos de 12 unidades en total
 const hasValidReferences = computed(() => {
-    // Sumar todas las unidades de referencias de 5ml
     const totalUnits5ml = form.references
         .filter(ref => ref.quantity === 5)
         .reduce((acc, ref) => acc + ref.units, 0);
@@ -170,7 +161,7 @@ const addReferenceModal = () => {
         'quantity': '',
         'units': 1,
         'container': null,
-        'perdurable': Array(1).fill(0) // Inicializar con 0 para permitir deselección
+        'perdurable': Array(1).fill(0)
     };
 }
 
@@ -217,7 +208,6 @@ const updateTotal = () => {
 }
 
 const addReference = () => {
-    // Convertir quantity a número si es string
     let quantity = typeof referenceNew.value.quantity === 'string' ? parseInt(referenceNew.value.quantity) : referenceNew.value.quantity;
 
     form.references.push(
@@ -230,7 +220,6 @@ const addReference = () => {
         }
     );
 
-    // Actualizar el total
     updateTotal();
 
     showModalReference.value = false;
@@ -279,20 +268,17 @@ const validateStockLive = () => {
 
     let requiredQuantity = 0;
 
-    // 🎁 Bolsa regalo
     if (inventoryItem.product_id === giftBag) {
         requiredQuantity = referenceNew.value.units;
     } else if (referenceNew.value.quantity) {
         requiredQuantity = (referenceNew.value.quantity * referenceNew.value.units) * 0.5;
     }
 
-    // VALIDAR FRAGANCIA
     if (inventoryItem.quantity < requiredQuantity) {
         stockErrorMessage.value = `Stock insuficiente de ${inventoryItem.product.commercial_reference}`;
         return;
     }
 
-    // VALIDAR ENVASE
     if (referenceNew.value.container) {
         const containerInventory = props.inventory.find(
             item => item.product_id === referenceNew.value.container
@@ -303,7 +289,6 @@ const validateStockLive = () => {
             return;
         }
 
-        // VALIDAR DEPENDIENTES
         if (containerInventory.product?.dependents) {
             const dependents = containerInventory.product.dependents.split(',');
 
@@ -340,7 +325,7 @@ watch(
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Nueva Venta</h1>
         </template>
         <SectionCard

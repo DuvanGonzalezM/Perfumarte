@@ -65,7 +65,7 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
+
         </template>
 
         <SectionCard :subextra="'Total ventas: ' + Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(sales.reduce((acc, sale) => acc + Number(sale.total), 0))">
