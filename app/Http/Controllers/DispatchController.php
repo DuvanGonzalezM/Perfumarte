@@ -13,7 +13,10 @@ class DispatchController extends Controller
 {
     public function getAllDispatch()
     {
-        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')->limit(500)->orderBy('dispatch_id', 'desc')->get();
+        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')
+            ->where('created_at', '>=', now()->subDays(90))
+            ->orderBy('dispatch_id', 'desc')
+            ->get();
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 

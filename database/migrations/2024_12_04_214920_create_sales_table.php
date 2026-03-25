@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('transaction_code');
             $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
+
+            // Índice en created_at: se filtra por fecha en la vista de ventas del día
+            $table->index('created_at');
         });
     }
 

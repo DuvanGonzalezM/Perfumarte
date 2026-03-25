@@ -119,19 +119,26 @@ class SaleController extends Controller
                         : '',
                 ]);
 
+                // Consultas fijas que no dependen de la referencia — se ejecutan una sola vez
+                $giftBagId = Inventory::with('product')
+                    ->whereHas('product', function ($query) {
+                        $query->where('reference', 'Bolsa de regalo');
+                    })
+                    ->where('warehouse_id', $warehouse->warehouse_id)
+                    ->first()
+                    ->inventory_id;
+
+                $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
+                    ->whereHas('product', function ($query) {
+                        $query->where('product_id', '2');
+                    })
+                    ->first();
+
                 foreach ($request->references as $reference) {
 
                     // ================================
                     // DATOS BASE
                     // ================================
-                    $giftBagId = Inventory::with('product')
-                        ->whereHas('product', function ($query) {
-                            $query->where('reference', 'Bolsa de regalo');
-                        })
-                        ->where('warehouse_id', $warehouse->warehouse_id)
-                        ->first()
-                        ->inventory_id;
-
                     $drops = 0;
                     array_map(function ($i) use (&$drops) {
                         $drops += $i;
@@ -173,12 +180,6 @@ class SaleController extends Controller
                     // ================================
                     $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                         ->where('inventory_id', $reference['reference'])
-                        ->first();
-
-                    $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
-                        ->whereHas('product', function ($query) {
-                            $query->where('product_id', '2');
-                        })
                         ->first();
 
                     $containerInventory = null;
