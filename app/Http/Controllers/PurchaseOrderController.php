@@ -175,6 +175,6 @@ class PurchaseOrderController extends Controller
             }
         }
     
-        return redirect()->route('orders.list')->with('success', 'Orden actualizada correctamente');
+        return redirect()->route('orders.detail', $purchaseOrderId)->with('success', 'Orden actualizada correctamente');
     }
 }
