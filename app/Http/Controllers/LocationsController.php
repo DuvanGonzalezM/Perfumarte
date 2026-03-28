@@ -87,7 +87,12 @@ class LocationsController extends Controller
         
 
         $location = Location::findOrFail($id);
-        $location->update($request->all());
+        $location->update([
+            'name' => $request->name,
+            'address' => $request->address,
+            'zone_id' => $request->zone_id,
+            'cash_base' => $request->cash_base,
+        ]);
         $warehouse = Warehouse::where('location_id', $id)->first();
         $warehouse->update([
             'price5' => $request->price5,

@@ -62,6 +62,10 @@ class AuditController extends Controller
     {
         $cashRegister = CashRegister::with('sales.saleDetails')->where('location_id', $locationId)->first();
 
+        if (!$cashRegister) {
+            return redirect()->route('audits')->withErrors(['error' => 'No se encontró la caja registradora para esta ubicación.']);
+        }
+
         $validatedData = $request->validate([
             'total_cash_sales' => 'required|numeric',
             'total_digital_sales' => 'required|numeric',
@@ -108,7 +112,7 @@ class AuditController extends Controller
     }
     public function showDetailAuditCash($id)
     {
-        $audit = Audit::with('location')->find($id);
+        $audit = Audit::with('location')->findOrFail($id);
 
         $auditCash = AuditCash::where('id_audits', $audit->id_audits)->first();
 

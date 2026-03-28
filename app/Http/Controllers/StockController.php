@@ -14,7 +14,7 @@ class StockController extends Controller
     public function getStocks()
     {
         $warehouses = Warehouse::whereHas('location.userLocation', function ($query) {
-            return $query->where('user_id', '=', session('user_id'));
+            return $query->where('user_id', '=', auth()->id());
         })->get();
         return Inertia::render('Stock/Dashboard', ['warehouses' => $warehouses]);
     }
@@ -40,7 +40,7 @@ class StockController extends Controller
     public function getMultipleInventory()
 {
     $warehouses = Warehouse::whereHas('location.userLocation', function ($query) {
-        return $query->where('user_id', '=', session('user_id'));
+        return $query->where('user_id', '=', auth()->id());
     })->get();
 
     $inventory = Inventory::with('product.supplier')
@@ -49,7 +49,7 @@ class StockController extends Controller
 
     $locations = Location::with('warehouses')
         ->whereDoesntHave('userLocation', function ($query) {
-            return $query->where('user_id', session('user_id'));
+            return $query->where('user_id', auth()->id());
         })
         ->get();
 

@@ -134,6 +134,35 @@ class SaleController extends Controller
                     })
                     ->first();
 
+                $referenceIds = collect($request->references)->pluck('reference')->all();
+                $containerProductIds = collect($request->references)->pluck('container')->filter()->values()->all();
+
+                $inventoryMap = Inventory::where('warehouse_id', $warehouse->warehouse_id)
+                    ->whereIn('inventory_id', $referenceIds)
+                    ->get()->keyBy('inventory_id');
+
+                $containerInventoryMap = collect();
+                $dependentsInventoryMap = collect();
+
+                if (!empty($containerProductIds)) {
+                    $containerInventoryMap = Inventory::with('product')
+                        ->where('warehouse_id', $warehouse->warehouse_id)
+                        ->whereIn('product_id', $containerProductIds)
+                        ->get()->keyBy('product_id');
+
+                    $dependentCodes = $containerInventoryMap
+                        ->filter(fn($item) => $item->product->dependents)
+                        ->flatMap(fn($item) => explode(',', $item->product->dependents))
+                        ->unique()->values()->all();
+
+                    if (!empty($dependentCodes)) {
+                        $dependentsInventoryMap = Inventory::with('product')
+                            ->where('warehouse_id', $warehouse->warehouse_id)
+                            ->whereHas('product', fn($q) => $q->whereIn('code', $dependentCodes))
+                            ->get()->keyBy(fn($item) => $item->product->code);
+                    }
+                }
+
                 foreach ($request->references as $reference) {
 
                     // ================================
@@ -176,32 +205,21 @@ class SaleController extends Controller
                     }
 
                     // ================================
-                    // OBTENER INVENTARIOS
+                    // OBTENER INVENTARIOS (desde mapas pre-cargados)
                     // ================================
-                    $inventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
-                        ->where('inventory_id', $reference['reference'])
-                        ->first();
+                    $inventory = $inventoryMap->get($reference['reference']);
 
                     $containerInventory = null;
                     $dependentsInventories = [];
 
                     if ($reference['container']) {
-                        $containerInventory = Inventory::with('product')
-                            ->where('warehouse_id', $warehouse->warehouse_id)
-                            ->where('product_id', $reference['container'])
-                            ->first();
+                        $containerInventory = $containerInventoryMap->get($reference['container']);
 
-                        if ($containerInventory) {
+                        if ($containerInventory && $containerInventory->product->dependents) {
                             foreach (explode(',', $containerInventory->product->dependents) as $dependent) {
-                                $dependentInventory = Inventory::with('product')
-                                    ->where('warehouse_id', $warehouse->warehouse_id)
-                                    ->whereHas('product', function ($query) use ($dependent) {
-                                        $query->where('code', $dependent);
-                                    })
-                                    ->first();
-
-                                if ($dependentInventory) {
-                                    $dependentsInventories[] = $dependentInventory;
+                                $dep = $dependentsInventoryMap->get($dependent);
+                                if ($dep) {
+                                    $dependentsInventories[] = $dep;
                                 }
                             }
                         }

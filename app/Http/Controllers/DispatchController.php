@@ -42,7 +42,7 @@ class DispatchController extends Controller
             }
 
             $warehouses = Warehouse::with('location')->whereDoesntHave('location.userLocation', function ($query) {
-                return $query->where('user_id', '=', session('user_id'));
+                return $query->where('user_id', '=', auth()->id());
             })->get();
             $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
             $inventory = Inventory::with('product')->whereIn('warehouse_id', [2, 3])->get();
@@ -153,7 +153,7 @@ class DispatchController extends Controller
     public function createDispatch()
     {
         $warehouses = Warehouse::with('location')->whereDoesntHave('location.userLocation', function ($query) {
-            return $query->where('user_id', '=', session('user_id'));
+            return $query->where('user_id', '=', auth()->id());
         })->get();
         $requests = RequestPrais::with(['detailRequest.inventory.product', 'user','location'])->where('request_type', 1)->where('status', 'Pendiente')->get();
         $inventory = Inventory::with('product')

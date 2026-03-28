@@ -15,7 +15,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Pest\Plugins\Parallel\Handlers\Laravel;
 
 class PurchaseOrderController extends Controller
 {
@@ -121,7 +120,7 @@ class PurchaseOrderController extends Controller
         foreach ($request->references as $reference) {
 
             $warehouse = (strtoupper($reference['unity'] ?? '') == 'KG') ? 1 : 3;
-            $quantity = ($warehouse == 1) ? ($reference['quantity']) : $reference['quantity'];
+            $quantity = $reference['quantity'];
     
             if (isset($reference['product_entry_id'])) {
 
