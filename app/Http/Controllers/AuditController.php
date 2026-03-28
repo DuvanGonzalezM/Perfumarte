@@ -19,7 +19,6 @@ class AuditController extends Controller
 {
     public function getCashAuditByLocation($locationId)
     {
-
         $today = now()->toDateString();
         $location = Location::find($locationId);
 
@@ -88,6 +87,7 @@ class AuditController extends Controller
 
         return redirect()->route('audits')->with('success', 'Cash audit confirmed successfully');
     }
+
     public function showAudits()
     {
         $user = auth()->user();
@@ -106,6 +106,7 @@ class AuditController extends Controller
             'warehouses' => $warehouses
         ]);
     }
+
     public function showDetailAuditCash($id)
     {
         $audit = Audit::with('location')->find($id);
@@ -117,9 +118,9 @@ class AuditController extends Controller
             'auditCash' => $auditCash
         ]);
     }
+
     public function getAllProducts(Request $request)
     {
-
         $locationId = $request->input('location_id');
 
         if (!$locationId) {
@@ -143,9 +144,9 @@ class AuditController extends Controller
             'location_name' => $location ? $location->name : 'Ubicación no encontrada',
         ]);
     }
+
     public function storeAuditInventory(Request $request)
     {
-
         $validatedData = $request->validate([
             'products' => 'required|array',
             'products.*.inventory_id' => 'required|integer',
@@ -154,7 +155,6 @@ class AuditController extends Controller
             'products.*.observations' => 'nullable',
             'location_id' => 'required|integer',
         ]);
-
 
         $audit = Audit::create([
             'user_id' => auth()->user()->user_id,
@@ -171,7 +171,6 @@ class AuditController extends Controller
                 'observation' => $product['observations'],
             ]);
         }
-
         return redirect()->route('audits')->with('success', 'Auditoría registrada exitosamente.');
     }
 
@@ -179,7 +178,5 @@ class AuditController extends Controller
     {
         $auditInventoryDetail = Audit::with('auditInventory.inventory.product', 'location')->where('id_audits', $id_audits)->first();
         return Inertia::render('Audit/AuditDetailInventory', ['auditInventoryDetail' => $auditInventoryDetail]);
-
     }
-
 }

@@ -176,6 +176,7 @@ const buttons = [
             <i :class="isMobileMenuOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
         </button>
     </div>
+    
 
     <div 
         v-if="isMobileMenuOpen" 

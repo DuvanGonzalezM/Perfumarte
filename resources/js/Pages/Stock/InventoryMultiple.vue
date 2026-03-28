@@ -2,6 +2,7 @@
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionCard from '@/Components/SectionCard.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
+import TextInput from '@/Components/TextInput.vue';
 import Table from '@/Components/Table.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head } from '@inertiajs/vue3';
@@ -47,10 +48,6 @@ const selectedWarehouse = async () => {
 };
 
 const openEditModal = () => {
-    if (!location.value) {
-        alert('Por favor, seleccione una bodega primero');
-        return;
-    }
 
     showEditModal.value = true;
     formEdit.warehouse_id = location.value;
@@ -62,6 +59,7 @@ const openEditModal = () => {
         action: 'add'
     }));
 };
+
 const showConfirmEditModal = ref(false);
 const showEditModal = ref(false);
 const showSuccessEditModal = ref(null);
@@ -99,10 +97,6 @@ const availableProducts = computed(() => {
 });
 
 const addNewProduct = () => {
-    if (!newProduct.value.product_id || !newProduct.value.quantity) {
-        alert('Por favor, seleccione un producto y una cantidad');
-        return;
-    }
 
     formEdit.products.push({
         product_id: newProduct.value.product_id,
@@ -119,7 +113,7 @@ const addNewProduct = () => {
 };
 
 const removeProduct = (index) => {
-    if (confirm('¿Está seguro de eliminar este producto?')) {
+    if (formEdit.products.length > 0) {
         formEdit.products.splice(index, 1);
     }
 };
@@ -225,19 +219,23 @@ const columnsTable = [
         </template>
         <template #body>
             <div class="mb-3">
-                <label class="form-label">Productos en inventario</label>
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Productos en inventario</label>
+                    </div>
+                </div>
                 <div class="overflow-y-auto" style="max-height: 300px; height: 300px; overflow-x: hidden;">
                     <div v-for="(product, index) in formEdit.products" :key="product.product_id" class="mb-3">
                         <div class="row">
-                            <div class="col-md-4">
-                                <label class="form-label">{{ product.reference }} - {{ product.name }}</label>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ product.reference }} - {{ product.category }}</label>
                             </div>
                             <div class="col-md-3">
                                 <input v-model="product.quantity" type="number" class="form-control" min="0"
                                     :placeholder="product.quantity">
                             </div>
                             <div class="col-md-2">
-                                <i class="fa-solid fa-trash " @click="removeProduct(index)">
+                                <i class="fa-solid fa-trash " style="cursor: pointer;" @click="removeProduct(index)">
                                 </i>
                             </div>
                         </div>
@@ -248,21 +246,19 @@ const columnsTable = [
             <div class="mb-3">
                 <label class="form-label">Agregar nuevo producto</label>
                 <div class="row">
-                    <div class="col-md-4">
-                        <select v-model="newProduct.product_id" class="form-select">
-                            <option value="">Seleccionar producto</option>
-                            <option v-for="product in availableProducts" :key="product.product_id"
-                                :value="product.product_id">
-                                {{ product.reference }} - {{ product.name }}
-                            </option>
-                        </select>
+                    <div class="col-md-5">
+                        <SelectSearch v-model="newProduct.product_id" :options="availableProducts.map(product => ({
+                            'title': `${product.reference} - ${product.category}`,
+                            'value': product.product_id
+                        }))" placeholder="Seleccionar producto" />
                     </div>
                     <div class="col-md-3">
-                        <input v-model="newProduct.quantity" type="number" class="form-control" min="1"
-                            placeholder="Cantidad">
+                        <TextInput v-model="newProduct.quantity" type="number" min="1"
+                            placeholder="Cantidad" />
                     </div>
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-primary" @click="addNewProduct">
+                        <button type="button" class="btn btn-primary" :disabled="!newProduct.product_id || !newProduct.quantity"
+                            @click="addNewProduct">
                             Agregar
                         </button>
                     </div>
@@ -274,16 +270,10 @@ const columnsTable = [
             <button type="button" class="btn btn-secondary" @click="showEditModal = false">
                 Cancelar
             </button>
-            <button type="button" class="btn btn-primary" @click="showConfirmEditModal = true; showEditModal = false" :disabled="!formEdit.products.length">
+            <button type="button" class="btn btn-primary" @click="showConfirmEditModal = true; showEditModal = false"
+                :disabled="!formEdit.products.length">
                 Guardar cambios
             </button>
         </template>
     </ModalPrais>
-
-
-
-
-
-
-
 </template>

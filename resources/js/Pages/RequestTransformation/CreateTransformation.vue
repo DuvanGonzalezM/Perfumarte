@@ -68,12 +68,12 @@ const submit = () => {
 
     <BaseLayout :loading="form.processing">
         <template #header>
-            <h1>Nueva Transformación</h1>
+            <h1> Solicitud de Transformación</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Nueva Transformación</strong>
+                <strong>Nueva Solicitud de Transformación</strong>
             </template>
 
             <div class="container px-0">
@@ -118,7 +118,7 @@ const submit = () => {
                         <div class="col-6 text-end">
                             <PrimaryButton @click="showConfirmation" class="px-5"
                                 :class="{ disabled: form.processing }">
-                                Enviar
+                                Crear Solicitud
                             </PrimaryButton>
                         </div>
                     </div>
