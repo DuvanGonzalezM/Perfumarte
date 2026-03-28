@@ -6,13 +6,24 @@ use App\Models\Inventory;
 use App\Models\RequestPrais;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DispatchController extends Controller
 {
     public function getAllDispatch()
     {
-        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')->limit(500)->orderBy('dispatch_id', 'desc')->get();
+        $dispatch = Dispatch::with('dispatchdetail.warehouse.location')
+            ->where('created_at', '>=', now()->subDays(90))
+            ->orderBy('dispatch_id', 'desc')
+            ->get();
+
+        if ($dispatch->isEmpty()) {
+            $dispatch = Dispatch::with('dispatchdetail.warehouse.location')
+                ->orderBy('dispatch_id', 'desc')
+                ->limit(300)
+                ->get();
+        }
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 
@@ -96,42 +107,46 @@ class DispatchController extends Controller
 
     public function approvedDispatch($id)
     {
-        $dispatch = Dispatch::with('dispatchdetail')->findOrFail($id);
-        $requestList = [];
-        foreach ($dispatch->dispatchdetail as $detail) {
+        try {
+            return DB::transaction(function () use ($id) {
+                $dispatch = Dispatch::with('dispatchdetail')->findOrFail($id);
+                $requestList = [];
 
-            $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
-                ->whereIn('warehouse_id', [2, 3])
-                ->first();
+                foreach ($dispatch->dispatchdetail as $detail) {
+                    $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
+                        ->whereIn('warehouse_id', [2, 3])
+                        ->first();
 
-            if (!$inventoryOrigin) {
-                return redirect()->back()->withErrors(['error' => 'Inventario no encontrado en bodega principal']);
-            }
+                    if (!$inventoryOrigin) {
+                        throw new \Exception('Inventario no encontrado en bodega principal');
+                    }
 
-            if ($inventoryOrigin->quantity < $detail->dispatched_quantity) {
-                return redirect()->back()->withErrors(['error' => 'Cantidad insuficiente en bodega principal']);
-            }
+                    if ($inventoryOrigin->quantity < $detail->dispatched_quantity) {
+                        throw new \Exception('Cantidad insuficiente en bodega principal');
+                    }
 
-            $inventoryOrigin->quantity -= $detail->dispatched_quantity;
-            $inventoryOrigin->save();
+                    $inventoryOrigin->quantity -= $detail->dispatched_quantity;
+                    $inventoryOrigin->save();
 
-            if ($detail->request_id) {
-                if (!in_array($detail->request_id, $requestList)) {
-                    $requestList[] = $detail->request_id;
+                    if ($detail->request_id && !in_array($detail->request_id, $requestList)) {
+                        $requestList[] = $detail->request_id;
+                    }
                 }
-            }
+
+                $dispatch->status = 'En ruta';
+                $dispatch->save();
+
+                $requests = RequestPrais::whereIn('request_id', $requestList)->where('status', 'Pendiente')->get();
+                foreach ($requests as $request) {
+                    $request->status = 'Despachado';
+                    $request->save();
+                }
+
+                return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $dispatch->status = 'En ruta';
-        $dispatch->save();
-
-        $requests = RequestPrais::whereIn('request_id', $requestList)->where('status', 'Pendiente')->get();
-        foreach ($requests as $request) {
-            $request->status = 'Despachado';
-            $request->save();
-        }
-
-        return redirect()->route('dispatch.list')->with('success', 'Despacho aprobado');
     }
 
 

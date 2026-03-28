@@ -68,27 +68,39 @@ const openModal = () => {
     form.transaction_code = null;
 }
 const openModalChange = () => {
-    showModalChange.value = true;
-    showModal.value = false;
     try {
         devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) - form.total;
     } catch (error) {
         devolver.value = 0;
     }
+    if (devolver.value > 0) {
+        showModalChange.value = true;
+        showModal.value = false;
+    } else {
+        showModal.value = false;
+        submit();
+    }
 }
 
+const backendError = ref('');
+
 const submit = () => {
+    backendError.value = '';
     form.post(route('sales.store'), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
         },
         onError: (errors) => {
-            console.log('Error en la validación');
+            console.log(errors)
+            showModal.value = false;
+            showModalChange.value = false;
+            backendError.value = errors?.stock ?? 'Ocurrió un error al registrar la venta. Intenta de nuevo.';
         },
     });
 };
 
+<<<<<<< HEAD
 const validateChange = async () => {
     try {
         await axios.get(route('sales.validate', { precio: form.total, pago: ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) }))
@@ -101,6 +113,8 @@ const validateChange = async () => {
 }
 
 
+=======
+>>>>>>> 0e8b04bf33f0bcaeae51cb4a92470b7b79049fad
 const changeReference = () => {
     referenceNew.value.quantity = '';
     referenceNew.value.units = 1;
@@ -401,6 +415,9 @@ watch(
                             <span v-if="!hasValidReferences" class="text-danger">{{ buttonErrorMessage }}</span>
                         </div>
                     </div>
+                    <div v-if="backendError" class="alert alert-danger text-center mt-2">
+                        {{ backendError }}
+                    </div>
 
                     <ModalPrais v-model="showModalReference" @close="showModalReference = false">
                         <template #header>
@@ -598,59 +615,6 @@ watch(
                         </template>
                         <template #footer>
                             <div></div>
-                        </template>
-                    </ModalPrais>
-
-                    <ModalPrais v-model="showModalChange" @close="showModalChange = false">
-                        <template #header>
-                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', {
-                                style: 'currency', currency: 'COP',
-                                maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
-                        </template>
-                        <template #body>
-                            <div class="row">
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_100_bill" :min="0"
-                                        title="Billetes de $100,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_50_bill" :min="0"
-                                        title="Billetes de $50,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_20_bill" :min="0"
-                                        title="Billetes de $20,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_10_bill" :min="0"
-                                        title="Billetes de $10,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_5_bill" :min="0"
-                                        title="Billetes de $5,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_2_bill" :min="0"
-                                        title="Billetes de $2,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_total_coins" :min="0" title="Monedas de $100" />
-                                </div>
-                            </div>
-                        </template>
-                        <template #footer>
-                            <div class="row">
-                                <div class="col-6">
-                                    <PrimaryButton @click="openModal">
-                                        Volver
-                                    </PrimaryButton>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <PrimaryButton @click="submit">
-                                        Registrar Venta
-                                    </PrimaryButton>
-                                </div>
-                            </div>
                         </template>
                     </ModalPrais>
 

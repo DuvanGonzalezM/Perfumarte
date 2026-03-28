@@ -99,35 +99,45 @@ Route::middleware('auth')->group(function () {
     });
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'getUsers')->name('users.list');
-        Route::post('users', 'storeUser')->name('users.store');
-        Route::post('users/{user_id}/enable', 'enableUser')->name('users.enable');
         Route::get('users/{user_id}', 'detailUser')->name('users.detail');
-        Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi')->middleware('can:Editar Usuarios');
-        Route::post('users/{user_id}/reset-password', 'resetPassword')->name('users.reset-password');
         Route::get('api/permissions_roles/{roles_id}', 'getPermissionRol')->name('api.permi_roles');
-        Route::get('permissions', 'getPermissions')->name('permissions.list');
-        Route::post('permissions', 'storePermission')->name('permissions.store');
-        Route::put('permissions', 'updatePermission')->name('permissions.update');
-        Route::get('roles', 'getRoles')->name('roles.list');
-        Route::post('roles', 'storeRole')->name('roles.store');
-        Route::put('roles', 'updateRole')->name('roles.update');
-        Route::put('users/edit/{user_id}', 'editUser')->name('users.edit');
-        Route::delete('users/delete/{user_id}', 'destroyUser')->name('users.destroy');
+        Route::group(['middleware' => ['can:Editar Usuarios']], function () {
+            Route::post('users', 'storeUser')->name('users.store');
+            Route::post('users/{user_id}/enable', 'enableUser')->name('users.enable');
+            Route::post('users/{user_id}', 'updateUserRolePermission')->name('users.role_permi');
+            Route::post('users/{user_id}/reset-password', 'resetPassword')->name('users.reset-password');
+            Route::put('users/edit/{user_id}', 'editUser')->name('users.edit');
+            Route::delete('users/delete/{user_id}', 'destroyUser')->name('users.destroy');
+        });
+        Route::group(['middleware' => ['role:TI']], function () {
+            Route::get('permissions', 'getPermissions')->name('permissions.list');
+            Route::post('permissions', 'storePermission')->name('permissions.store');
+            Route::put('permissions', 'updatePermission')->name('permissions.update');
+            Route::get('roles', 'getRoles')->name('roles.list');
+            Route::post('roles', 'storeRole')->name('roles.store');
+            Route::put('roles', 'updateRole')->name('roles.update');
+        });
     });
 
     Route::controller(LocationsController::class)->group(function () {
-        Route::get('sedes', 'getLocations')->name('locations.list');
-        Route::post('sedes', 'storeLocation')->name('locations.store');
-        Route::get('sedes/detalle/{location_id}', 'detailLocation')->name('locations.detail');
-        Route::put('sedes/update/{location_id}', 'updateLocation')->name('locations.update');
-        Route::delete('sedes/delete/{location_id}', 'destroyLocation')->name('locations.destroy');
-        Route::get('sedes/inventario/{location_id}', 'inventorylocation')->name('locations.inventory');
-        Route::get('sedes/personal/{location_id}', 'personallocation')->name('locations.personal');
-        Route::get('sedes/ventas/{location_id}', 'saleslocation')->name('locations.sales');
-        Route::get('sedes/ventas/{location_id}/detalle/{cash_register_id}', 'salesDetail')->name('locations.salesDetail');
-        Route::get('sedes/auditoria/{location_id}', 'auditlocation')->name('locations.audit');
-
-
+        Route::group(['middleware' => ['can:Ver Sedes']], function () {
+            Route::get('sedes', 'getLocations')->name('locations.list');
+            Route::get('sedes/detalle/{location_id}', 'detailLocation')->name('locations.detail');
+            Route::get('sedes/inventario/{location_id}', 'inventorylocation')->name('locations.inventory');
+            Route::get('sedes/personal/{location_id}', 'personallocation')->name('locations.personal');
+            Route::get('sedes/ventas/{location_id}', 'saleslocation')->name('locations.sales');
+            Route::get('sedes/ventas/{location_id}/detalle/{cash_register_id}', 'salesDetail')->name('locations.salesDetail');
+            Route::get('sedes/auditoria/{location_id}', 'auditlocation')->name('locations.audit');
+        });
+        Route::group(['middleware' => ['can:Crear Sedes']], function () {
+            Route::post('sedes', 'storeLocation')->name('locations.store');
+        });
+        Route::group(['middleware' => ['can:Editar Sedes']], function () {
+            Route::put('sedes/update/{location_id}', 'updateLocation')->name('locations.update');
+        });
+        Route::group(['middleware' => ['can:Eliminar Sedes']], function () {
+            Route::delete('sedes/delete/{location_id}', 'destroyLocation')->name('locations.destroy');
+        });
     });
 
 
