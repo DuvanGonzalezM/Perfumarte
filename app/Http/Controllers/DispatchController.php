@@ -17,6 +17,13 @@ class DispatchController extends Controller
             ->where('created_at', '>=', now()->subDays(90))
             ->orderBy('dispatch_id', 'desc')
             ->get();
+
+        if ($dispatch->isEmpty()) {
+            $dispatch = Dispatch::with('dispatchdetail.warehouse.location')
+                ->orderBy('dispatch_id', 'desc')
+                ->limit(300)
+                ->get();
+        }
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 

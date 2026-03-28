@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer('count_10_bill');
             $table->integer('count_5_bill');
             $table->integer('count_2_bill');
-            $table->integer('count_1_bill');
             $table->integer('total_coins');
             $table->text('observations')->nullable();
             $table->boolean('confirmationclosingcash')->nullable();
