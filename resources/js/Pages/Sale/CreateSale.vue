@@ -100,7 +100,6 @@ const submit = () => {
     });
 };
 
-<<<<<<< HEAD
 const validateChange = async () => {
     try {
         await axios.get(route('sales.validate', { precio: form.total, pago: ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) }))
@@ -113,8 +112,6 @@ const validateChange = async () => {
 }
 
 
-=======
->>>>>>> 0e8b04bf33f0bcaeae51cb4a92470b7b79049fad
 const changeReference = () => {
     referenceNew.value.quantity = '';
     referenceNew.value.units = 1;
