@@ -35,7 +35,7 @@ class DispatchController extends Controller
 
         if ($dispatch->status == 'En aprobacion') {
 
-            if (!$user->hasRole('Jefe de Operaciones')) {
+            if (!$user->hasRole('Jefe de operaciones')) {
                 return Inertia::render('Dispatch/DispatchDetail', [
                     'dispatch' => $dispatch,
                 ]);

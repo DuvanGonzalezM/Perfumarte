@@ -12,7 +12,7 @@ const props = defineProps({
     inventories: {
         type: Array,
     },
-    errors: Object // Asegura recibir errores del backend
+    errors: Object 
 });
 
 const form = useForm({
@@ -24,7 +24,6 @@ const form = useForm({
     ],
 });
 
-// Opciones para el select
 const optionProduts = ref(
     props.inventories.map(inventory => ({
         title: inventory.product.commercial_reference,
@@ -127,7 +126,6 @@ const submit = () => {
             </div>
         </SectionCard>
 
-        <!-- Modal de Confirmación -->
         <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
             <template #header>
                 Confirmar solicitud

@@ -31,6 +31,7 @@ const props = defineProps({
     minimo: {
         type: Number,
     },
+    
 });
 
 const hasFocus = ref(false);
