@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class RepackageController extends Controller
 {
-
     public function getrepackage()
     {
 
@@ -28,30 +27,25 @@ class RepackageController extends Controller
     }
     public function storeRepackage(Request $request)
     {
-        $warehouse = '2'; // Bodega destino
-        $esenceWarehouse = '1'; // Bodega origen
+        $warehouse = '2';
+        $esenceWarehouse = '1';
     
         $request->validate([
             'reference' => 'required',
             'quantity' => 'required|numeric|min:0',
         ]);
     
-        // Obtener inventario en bodega origen (warehouse_1)
         $inventoryOut = Inventory::where('warehouse_id', $esenceWarehouse)
                                 ->where('product_id', $request['reference'])
                                 ->first();
     
-    
-        // Validar que haya suficiente cantidad
         if ($inventoryOut->quantity < $request['quantity']) {
             return back()->withErrors([
                 'quantity' => 'No hay suficiente stock en la bodega de origen. Disponible: '.$inventoryOut->quantity
             ]);
         }
     
-        // Procesar el reenvase (sin transacciones)
         try {
-            // Actualizar o crear en bodega destino (warehouse_2)
             $inventory = Inventory::firstOrNew([
                 'warehouse_id' => $warehouse,
                 'product_id' => $request['reference']
@@ -59,12 +53,10 @@ class RepackageController extends Controller
     
             $inventory->quantity = $inventory->quantity + $request['quantity'];
             $inventory->save();
-    
-            // Actualizar bodega origen (warehouse_1)
+
             $inventoryOut->quantity -= $request['quantity'];
             $inventoryOut->save();
     
-            // Registrar el movimiento
             ChangeWarehouse::create([
                 'inventory_id' => $inventory->inventory_id,
                 'quantity' => $request['quantity'],
@@ -141,8 +133,6 @@ class RepackageController extends Controller
             ->whereIn('product_id', $productsId)
             ->get();
     
-            return redirect()->route('repackage.list')  ;
+        return redirect()->route('repackage.list');
     }
-   
-
 }

@@ -11,7 +11,6 @@ use Inertia\Inertia;
 
 class RequestPraisController extends Controller
 {
-
     public function getAllRequest()
     {
         $user = Auth::user();
@@ -35,6 +34,7 @@ class RequestPraisController extends Controller
             'suppliesRequest' => $suppliesRequest
         ]);
     }
+
     public function createRequst()
     {
         $inventory = Inventory::with('product')
@@ -67,6 +67,7 @@ class RequestPraisController extends Controller
         }
         return redirect()->route('suppliesrequest.list', ['message' => '', 'status' => 200]);
     }
+
     public function detailRequest($requestId)
     {
         $suppliesRequest = RequestPrais::with([
@@ -78,6 +79,7 @@ class RequestPraisController extends Controller
             'requestPrais' => $suppliesRequest
         ]);
     }
+
     public function showDetail($requestId)
     {
         $requestPrais = RequestPrais::with([
@@ -150,20 +152,17 @@ class RequestPraisController extends Controller
 
     public function storeTransformation(Request $request)
     {
-        // Validación básica de campos requeridos
         $request->validate([
             "references.*.reference" => 'required',
-            "references.*.quantity" => 'required|numeric|min:0', // Validación de cantidad sin límite máximo
+            "references.*.quantity" => 'required|numeric|min:0',
         ]);
     
-        // Crear solicitud
         $transformationRequest = RequestPrais::create([
             'request_type' => '2',
             'user_id' => $request->user()->user_id,
             'status' => 'Pendiente'
         ]);
     
-        // Crear detalles de la solicitud
         foreach ($request->references as $reference) {
             RequestDetail::create([
                 'request_id' => $transformationRequest->request_id,

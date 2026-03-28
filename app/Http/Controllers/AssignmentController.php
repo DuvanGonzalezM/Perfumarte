@@ -11,33 +11,22 @@ use Illuminate\Support\Facades\Auth;
 class AssignmentController extends Controller
 {
     /**
-     * Obtiene todos los supervisores y sus ubicaciones asignadas
-     * - Los administradores ven todos los supervisores de todas las sedes
-     * - Los subdirectores ven solo los supervisores de su zona
-     * - Otros roles ven todos los supervisores excepto los de la ubicación 1
-     *
      * @return \Inertia\Response
      */
     public function getAllSupervisor()
     {
         $user = Auth::user();
         
-        // Consulta base para ubicaciones con sus supervisores
         $locationsQuery = Location::query();
         
-        // Filtros según el rol del usuario
         if ($user->hasRole('Administrador')) {
-            // Administradores ven todas las ubicaciones excepto la 1
             $locationsQuery->whereNotIn('locations.location_id', ['1']);
         } elseif ($user->hasRole('Subdirector')) {
-            // Subdirectores ven solo su zona
             $locationsQuery->where('locations.zone_id', '=', $user->zone_id);
         } else {
-            // Otros roles ven todas excepto ubicación 1
             $locationsQuery->whereNotIn('locations.location_id', ['1']);
         }
         
-        // Cargar la relación con los supervisores
         $locations = $locationsQuery->with([
             'users_location' => function ($query) {
                 $query->whereHas('roles', function ($q) {
@@ -46,10 +35,10 @@ class AssignmentController extends Controller
             }
         ])->get();
 
-        // Obtener supervisores disponibles para asignar
+
         $supervisorsQuery = User::role('Supervisor');
         
-        // Si no es administrador, solo puede ver los supervisores que le pertenecen
+
         if (!$user->hasRole('Administrador')) {
             $supervisorsQuery->where('boss_user', $user->user_id);
         }
@@ -93,14 +82,10 @@ class AssignmentController extends Controller
         return back();
     }
 
-
-    /* Funciones para la asignacion de asesores */
-
-
     public function getAllLocation()
     {
         $user = Auth::user();
-        if($user->hasRole('Administrador')){
+        if($user->hasRole('Administrador' )){
             $getSede = Location::select('locations.location_id', 'locations.name')->whereNotIn('locations.location_id', ['1'])->get();
         }else{
             $getSede = Location::select('locations.location_id', 'locations.name')->whereHas('users_location', function ($query) use ($user) {

@@ -51,7 +51,7 @@ const readNotification = async (notification, redirect, all=false) => {
     <div class="accountControls row">
         <div class="dropstart col-6" :class="[notifications.length > 0 ? 'has-unread' : '']">
             <div class="notification-wrapper" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-comment"></i>
+                <i class="fa-solid fa-comment" style="cursor: pointer;"></i>
                 <span v-if="notifications.length > 0" class="notification-badge">
                     {{ notifications.length }}
                 </span>
@@ -61,7 +61,7 @@ const readNotification = async (notification, redirect, all=false) => {
             </div>
         </div>
         <div class="dropdown-center profile col-6" :class="[{'ms-2' : isMobile}]">
-            <i class="fa-solid fa-user" data-bs-toggle="dropdown" aria-expanded="false"></i>
+            <i class="fa-solid fa-user" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false"></i>
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.name }}</strong>
                 <li class="my-2">

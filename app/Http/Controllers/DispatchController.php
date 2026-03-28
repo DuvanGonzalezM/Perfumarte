@@ -27,7 +27,6 @@ class DispatchController extends Controller
         return Inertia::render('Dispatch/DispatchList', props: ['dispatch' => $dispatch]);
     }
 
-
     public function editDispatch($id)
     {
         $user = auth()->user();
@@ -166,6 +165,7 @@ class DispatchController extends Controller
         ]);
 
     }
+
     public function storeDispatch(Request $request)
     {
         $request->validate([
@@ -216,7 +216,7 @@ class DispatchController extends Controller
             'dispatchdetail.warehouse.location'
         ])->findOrFail($id);
 
-        if ($dispatch->status == 'Recibido' && $user->hasRole('Control Gerencia')) {
+        if ($dispatch->status == 'Recibido' && $user->hasRole('Control gerencia')) {
             return Inertia::render('Dispatch/DispatchDetail', [
                 'dispatch' => $dispatch
             ]);
@@ -261,7 +261,6 @@ class DispatchController extends Controller
         $dispatch = Dispatch::findOrFail($request->dispatch_id);
         $dispatch->status = 'Devuelto';
         $dispatch->save();
-
 
         return redirect()->route('dispatch.list')->with('success', 'Cantidades devueltas registradas en inventario.');
     }

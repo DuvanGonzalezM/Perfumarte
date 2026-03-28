@@ -135,7 +135,7 @@ const confirmCreate = () => {
                         </div>
                         <div class="col-6 text-end">
                             <PrimaryButton @click="submit" class="px-5" :class="form.processing ? 'disabled' : ''">
-                                REGISTRAR
+                                REGISTRAR PRODUCTO
                             </PrimaryButton>
                         </div>
                     </div>

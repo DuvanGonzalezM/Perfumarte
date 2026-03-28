@@ -19,7 +19,6 @@ class SaleController extends Controller
     {
         $userLocation = auth()->user()->location_user[0]->location_id;
 
-        // Obtener las ventas del día
         $sales = Sale::with('user')
             ->whereHas('cashRegister', function ($query) use ($userLocation) {
                 $query->where('location_id', $userLocation)
@@ -27,11 +26,9 @@ class SaleController extends Controller
             })
             ->get();
 
-        // Obtener el estado de la caja del día
         $cashRegister = CashRegister::where('location_id', $userLocation)
             ->whereDate('created_at', date('Y-m-d'))
             ->first();
-
 
         return Inertia::render('Sale/SalesList', [
             'sales' => $sales,
@@ -68,7 +65,6 @@ class SaleController extends Controller
             100 => 0
         ];
 
-        // Calcular total de unidades por tamaño
         foreach ($allReferences as $ref) {
             if (isset($ref['quantity']) && isset($ref['units']) && isset($totalUnitsBySize[$ref['quantity']])) {
                 $totalUnitsBySize[$ref['quantity']] += $ref['units'];
@@ -119,7 +115,6 @@ class SaleController extends Controller
                         : '',
                 ]);
 
-                // Consultas fijas que no dependen de la referencia — se ejecutan una sola vez
                 $giftBagId = Inventory::with('product')
                     ->whereHas('product', function ($query) {
                         $query->where('reference', 'Bolsa de regalo');
@@ -165,9 +160,6 @@ class SaleController extends Controller
 
                 foreach ($request->references as $reference) {
 
-                    // ================================
-                    // DATOS BASE
-                    // ================================
                     $drops = 0;
                     array_map(function ($i) use (&$drops) {
                         $drops += $i;
@@ -195,18 +187,12 @@ class SaleController extends Controller
                         'price' => $totalPrice,
                     ]);
 
-                    // ================================
-                    // CALCULAR CANTIDAD A DESCONTAR
-                    // ================================
                     if ($reference['reference'] == $giftBagId) {
                         $quantityToSubtract = $reference['units'];
                     } else {
                         $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
                     }
 
-                    // ================================
-                    // OBTENER INVENTARIOS (desde mapas pre-cargados)
-                    // ================================
                     $inventory = $inventoryMap->get($reference['reference']);
 
                     $containerInventory = null;
@@ -225,9 +211,6 @@ class SaleController extends Controller
                         }
                     }
 
-                    // ================================
-                    // VALIDACIONES
-                    // ================================
                     if (!$inventory || $inventory->quantity < $quantityToSubtract) {
                         throw new \Exception('Stock insuficiente del producto seleccionado.');
                     }
@@ -246,9 +229,6 @@ class SaleController extends Controller
                         }
                     }
 
-                    // ================================
-                    // DESCONTAR INVENTARIOS
-                    // ================================
                     $inventory->quantity -= $quantityToSubtract;
                     $inventory->save();
 
@@ -268,9 +248,6 @@ class SaleController extends Controller
                     }
                 }
 
-                // ================================
-                // ACTUALIZAR CAJA
-                // ================================
                 $cashRegister->total_collected += $request->total;
 
                 if ($request->pay_method == 'Transferencia') {

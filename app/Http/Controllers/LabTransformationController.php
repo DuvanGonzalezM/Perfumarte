@@ -95,6 +95,7 @@ class LabTransformationController extends Controller
             'LabtransformationDetail' => $Labtranformation
         ]);
     }
+
     public function editTransformation($transformationId)
     {
         $inventory = Inventory::with('product')->where('warehouse_id', 2)->get();
@@ -116,25 +117,21 @@ class LabTransformationController extends Controller
         'solvent' => 'required|numeric|min:0',
     ]);
 
-    // Obtener la transformación con relaciones
     $transformation = Transformation::with(['inventory.product'])->findOrFail($transformationId);
 
-    // Guardar valores iniciales para calcular diferencias
     $initialValues = [
         'escence' => $transformation->escence,
         'dipropylene' => $transformation->dipropylene,
         'solvent' => $transformation->solvent
     ];
 
-    // Actualizar la transformación
     $transformation->update([
         'inventory_id' => $request['inventory_id'],
         'escence' => $request['escence'],
         'dipropylene' => $request['dipropylene'],
         'solvent' => $request['solvent'],
     ]);
-
-    
+ 
     $escenciaProductId = $transformation->inventory->product->product_id; 
     $escenciaInventory = Inventory::firstOrCreate(
         ['warehouse_id' => 1, 'product_id' => $escenciaProductId],
@@ -161,10 +158,7 @@ class LabTransformationController extends Controller
                   ($initialValues['escence'] + $initialValues['dipropylene'] + $initialValues['solvent']);
 
     $productoTerminadoInventory = Inventory::firstOrCreate(
-        [
-            'warehouse_id' => 2,
-            'product_id' => $transformation->inventory->product->product_id
-        ],
+        [ 'warehouse_id' => 2, 'product_id' => $transformation->inventory->product->product_id],
         ['quantity' => 0]
     );
     $productoTerminadoInventory->quantity += $totalChange;

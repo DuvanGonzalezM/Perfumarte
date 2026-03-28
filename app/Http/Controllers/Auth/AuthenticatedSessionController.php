@@ -54,7 +54,7 @@ class AuthenticatedSessionController extends Controller
         if ($request->user()->hasRole('Asesor comercial')) {
             return redirect()->intended(RouteServiceProvider::INVENTORY_ADVISOR);
         }
-        if ($request->user()->hasRole('Control Gerencia')) {
+        if ($request->user()->hasRole('Control gerencia')) {
             return redirect()->intended(RouteServiceProvider::MONITORING_DASHBOARD);
         }
 

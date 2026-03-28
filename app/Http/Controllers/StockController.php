@@ -53,7 +53,6 @@ class StockController extends Controller
         })
         ->get();
 
-    // Obtener todos los productos disponibles
     $products = Product::with('supplier')->get();
 
     return Inertia::render('Stock/InventoryMultiple', [
@@ -73,33 +72,25 @@ public function updateInventory(Request $request)
         'products.*.quantity' => 'required|numeric',
     ]);
 
-    // Obtener la bodega
     $warehouse = Warehouse::findOrFail($validated['warehouse_id']);
 
-    // Obtener el inventario actual de la bodega
     $currentInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)->get();
 
-    // Convertir el inventario actual en un array para facilitar la actualización
     $currentInventoryMap = $currentInventory->keyBy('product_id');
 
-    // Identificar los productos a eliminar
     $productsToDelete = $currentInventory->filter(function($item) use ($validated) {
         return !in_array($item->product_id, array_column($validated['products'], 'product_id'));
     });
 
-    // Eliminar los productos que ya no están en el inventario
     foreach ($productsToDelete as $product) {
         $product->delete();
     }
 
-    // Actualizar cantidades de productos existentes y agregar nuevos productos
     foreach ($validated['products'] as $product) {
-        // Si el producto ya existe en el inventario, actualizamos la cantidad
         if (isset($currentInventoryMap[$product['product_id']])) {
             $inventoryItem = $currentInventoryMap[$product['product_id']];
             $inventoryItem->update(['quantity' => $product['quantity']]);
         } else {
-            // Si el producto no existe, lo agregamos al inventario
             Inventory::create([
                 'warehouse_id' => $warehouse->warehouse_id,
                 'product_id' => $product['product_id'],
@@ -108,12 +99,10 @@ public function updateInventory(Request $request)
         }
     }
 
-    // Obtener el inventario actualizado
     $inventory = Inventory::with('product.supplier')
         ->where('warehouse_id', $warehouse->warehouse_id)
         ->get();
 
     return redirect()->route('stock.multiple');
 }
-
 }

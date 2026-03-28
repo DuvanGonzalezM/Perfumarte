@@ -138,7 +138,7 @@ const disableProduct = () => {
             </template>
             <div class="container">
                 <PrimaryButton :href="route('product.create')" class="position-absolute" v-if="can('Crear Productos')">
-                    Nuevo Registro
+                    Nuevo Producto
                 </PrimaryButton>
                 <Table :data="getProducts" :columns="columnsTable">
                     <template #templateRender="items">
