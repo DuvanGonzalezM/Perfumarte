@@ -89,7 +89,6 @@ const removeDispatch = (index) => {
     form.dispatches.splice(index, 1);
 };
 
-// Agregar método para validar referencias
 const hasValidReferences = (dispatches) => {
     return dispatches.some(dispatch => 
         dispatch.references.some(ref => 

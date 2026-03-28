@@ -48,7 +48,7 @@ const form = useForm({
 });
 
 const approved = () => {
-    // Check for insufficient quantities before submitting
+
     insufficientQuantityProducts.value = [];
 
     props.dispatch.dispatchdetail.forEach(item => {

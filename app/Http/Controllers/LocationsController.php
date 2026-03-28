@@ -71,7 +71,6 @@ class LocationsController extends Controller
 
     public function updateLocation(Request $request, $id)
     {
-
         $request->validate([
             'name' => 'required',
             'address' => 'required',
@@ -84,10 +83,13 @@ class LocationsController extends Controller
             'price_drops' => 'required',
         ]);
        
-        
-
         $location = Location::findOrFail($id);
-        $location->update($request->all());
+        $location->update([
+            'name' => $request->name,
+            'address' => $request->address,
+            'zone_id' => $request->zone_id,
+            'cash_base' => $request->cash_base,
+        ]);
         $warehouse = Warehouse::where('location_id', $id)->first();
         $warehouse->update([
             'price5' => $request->price5,
@@ -102,12 +104,9 @@ class LocationsController extends Controller
 
     public function detailLocation($id)
     {
-
         return Inertia::render('Locations/LocationsDetail', [
             'location' => Location::with('zone')->findOrFail($id)
         ]);
-
-
     }
 
     public function inventorylocation($id){
@@ -130,8 +129,6 @@ class LocationsController extends Controller
             'location' => $location,
             'currentInventory' => $currentInventory
         ]);
-
-
     }
 
     public function personallocation($id){

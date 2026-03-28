@@ -63,9 +63,16 @@ const columnsTable = [
                 </div>
                 <Table :data="purchaseOrder.product_entry_order" :columns="columnsTable" />
                 <div class="actions-container">
-                    <PrimaryButton :href="route('orders.list')" class="action-button">
-                        Volver
-                    </PrimaryButton>
+                    <div :class="can('Editar Ordenes de Compra') ? 'col-6' : ''">
+                        <PrimaryButton :href="route('orders.list')" class="px-5">
+                            Volver
+                        </PrimaryButton>
+                    </div>
+                    <div v-if="can('Editar Ordenes de Compra')" class="col-6 text-end">
+                        <PrimaryButton :href="route('orders.edit', purchaseOrder.purchase_order_id)" class="px-5">
+                            Editar
+                        </PrimaryButton>
+                    </div>
                 </div>
             </div>
         </SectionCard>

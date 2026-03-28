@@ -12,7 +12,7 @@ const props = defineProps({
     inventories: {
         type: Array,
     },
-    errors: Object // Asegura recibir errores del backend
+    errors: Object 
 });
 
 const form = useForm({
@@ -24,7 +24,6 @@ const form = useForm({
     ],
 });
 
-// Opciones para el select
 const optionProduts = ref(
     props.inventories.map(inventory => ({
         title: inventory.product.commercial_reference,
@@ -69,12 +68,12 @@ const submit = () => {
 
     <BaseLayout :loading="form.processing">
         <template #header>
-            <h1>Nueva Transformación</h1>
+            <h1> Solicitud de Transformación</h1>
         </template>
 
         <SectionCard>
             <template #headerSection>
-                <strong>Nueva Transformación</strong>
+                <strong>Nueva Solicitud de Transformación</strong>
             </template>
 
             <div class="container px-0">
@@ -119,7 +118,7 @@ const submit = () => {
                         <div class="col-6 text-end">
                             <PrimaryButton @click="showConfirmation" class="px-5"
                                 :class="{ disabled: form.processing }">
-                                Enviar
+                                Crear Solicitud
                             </PrimaryButton>
                         </div>
                     </div>
@@ -127,7 +126,6 @@ const submit = () => {
             </div>
         </SectionCard>
 
-        <!-- Modal de Confirmación -->
         <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
             <template #header>
                 Confirmar solicitud

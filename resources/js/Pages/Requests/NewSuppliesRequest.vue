@@ -106,7 +106,7 @@ const submit = () => {
                             Volver
                         </PrimaryButton>
                         <PrimaryButton @click="showApproveModal = true" class="px-5">
-                            Crear
+                            Crear Solicitud
                         </PrimaryButton>
                     </div>
                 </div>

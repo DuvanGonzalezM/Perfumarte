@@ -14,7 +14,6 @@ class CashRegisterController extends Controller
     {
         $today = Carbon::today();
         
-        // Obtener la ubicación del usuario
         $userLocation = auth()->user()->location_user()->first();
         
         if (!$userLocation) {
@@ -23,7 +22,6 @@ class CashRegisterController extends Controller
             ], 404);
         }
 
-        // Buscar la caja del día actual para la sede del usuario que no esté cerrada
         $cashRegister = CashRegister::whereDate('created_at', $today)
             ->where('location_id', $userLocation->location_id)
             ->where('confirmationclosingcash', null)
@@ -45,7 +43,6 @@ class CashRegisterController extends Controller
             ->where('cash_register_id', $cashRegister->cash_register_id)
             ->sum('total');
 
-        // Preparar los datos para la vista
         $data = [
             'totalDigital' => $totalDigital,
             'totalCash' => $totalCash,
@@ -94,7 +91,6 @@ class CashRegisterController extends Controller
             'observations' => 'nullable|string'
         ]);
 
-        // Calcular el total recolectado en efectivo
         $totalCash = 
             ($request->count_100_bill * 100000) +
             ($request->count_50_bill * 50000) +
@@ -104,13 +100,10 @@ class CashRegisterController extends Controller
             ($request->count_2_bill * 2000) +
             $request->total_coins;
 
-        // Calcular el total recolectado (efectivo + digital)
         $totalCollected = (float) $totalCash + (float) $request->total_digital;
 
-        // Actualizar el registro de cierre de caja existente
         $cashRegister = CashRegister::findOrFail($request->cashRegisterId);
         
-        // Verificar que la caja pertenezca a la sede del usuario
         if ($cashRegister->location_id !== auth()->user()->location_id) {
             return redirect()->back()
                 ->with('error', 'No tienes permiso para cerrar esta caja');

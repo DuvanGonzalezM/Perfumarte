@@ -110,20 +110,18 @@ const confirmCreate = () => {
                                 </thead>
                                 <tbody>
                                     <tr v-for="(ref, refIndex) in consumable.references" :key="refIndex">
-                                        <!-- Selección de referencia -->
+
                                         <td>
                                             <SelectSearch v-model="ref.reference" :options="optionInventory"
                                                 placeholder="Selecciona referencia" />
                                         </td>
 
-                                        <!-- Cantidad -->
                                         <td>
                                             <input type="number" v-model="ref.consumable_quantity"
                                                 class="form-control w-20"
                                                 :class="{ 'is-invalid': getError(consumableIndex, refIndex, 'consumable_quantity') }" />
                                         </td>
 
-                                        <!-- Botón eliminar -->
                                         <td>
                                             <div class="removeItem" @click="removeReference(consumable, refIndex)">
                                                 <i class="fa-solid fa-trash"></i>

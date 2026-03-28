@@ -92,7 +92,6 @@ const submit = async () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
             <h1>Nueva transformacion laboratorio</h1>
         </template>
 
@@ -171,7 +170,7 @@ const submit = async () => {
                         <PrimaryButton @click="submit" class="px-5"
                             :disabled="!(quantityTransform == (form.escencia + form.dipropileno + form.disolvente))"
                             :class="!(quantityTransform == (form.escencia + form.dipropileno + form.disolvente)) || disableButton ? 'disabled' : ''">
-                            Registrar
+                            Crear Transformacion
                         </PrimaryButton>
                     </div>
                 </div>

@@ -17,7 +17,6 @@ class DashboardController extends Controller
 {
     public function getDataInventory()
     {
-        // Si es asesor comercial, redirigir a inventario actual
         if (Auth::user()->hasRole('Asesor comercial')) {
             return redirect()->route('inventory.current');
         }
@@ -56,6 +55,5 @@ class DashboardController extends Controller
             'getAuditCash' => $arqueo,
             'asesores' => $getAdvisorsSubdirector
         ]);
-
     }
 }

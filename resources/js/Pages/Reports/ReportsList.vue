@@ -127,7 +127,7 @@ const submit = () => {
                     </template>
                     <template #footer>
                         <PrimaryButton @click="submit" class="px-5" :disabled="form.processing || !form.type_report || form.warehouse_id.length === 0 || !form.range_date">
-                            Guardar
+                            Guardar Reporte
                         </PrimaryButton>
                     </template>
                 </ModalPrais>

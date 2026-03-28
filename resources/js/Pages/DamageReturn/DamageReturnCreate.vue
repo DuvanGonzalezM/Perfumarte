@@ -6,7 +6,7 @@ import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
-import TextInput from '@/Components/TextInput.vue'; 
+import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps({
     inventoryReturn: {
@@ -53,6 +53,14 @@ const addReference = (dispatch) => {
     });
 };
 const removeReference = (damageReturn, referenceIndex) => {
+
+    const errorKey = `damageReturn.${form.damageReturn.indexOf(damageReturn)}.references.${referenceIndex}.damage_quantity`;
+    form.clearErrors(errorKey);
+    
+    form.clearErrors(Object.keys(form.errors).filter(key => 
+        key.includes(`damageReturn.${form.damageReturn.indexOf(damageReturn)}.references.${referenceIndex}`)
+    ));
+    
     damageReturn.references.splice(referenceIndex, 1);
 };
 
@@ -61,7 +69,7 @@ const confirmCreate = () => {
     form.post(route('damageReturn.store'), {
         onSuccess: () => {
             showConfirmModal.value = false;
-            
+
         },
         onError: () => {
             showErrorsModal.value = true;
@@ -103,19 +111,28 @@ const confirmCreate = () => {
                                     <tr v-for="(ref, refIndex) in damageReturn.references" :key="refIndex">
                                         <td>
                                             <SelectSearch v-model="ref.reference" :options="optionInventory"
+                                                :name="`damageReturn.${damageReturnIndex}.references.${refIndex}.reference`"
                                                 placeholder="Selecciona referencia" />
                                         </td>
 
                                         <td>
-                                            <TextInput type="number" minimo="1" v-model="ref.damage_quantity" class="w-20"
-                                                :class="{ 'is-invalid': getError(damageReturnIndex, refIndex, 'damage_quantity') }" />
+                                            <input type="number" min="1" v-model="ref.damage_quantity"
+                                                :name="`damageReturn.${damageReturnIndex}.references.${refIndex}.damage_quantity`"
+                                                class="form-control w-20 text-center" 
+                                                :class="{ 'is-invalid': !!getError(damageReturnIndex, refIndex,
+                                                'damage_quantity')
+                                                }" />
 
-                                            <div v-if="getError(damageReturnIndex, refIndex, 'damage_quantity')">
-                                            </div>  
+                                            <div v-if="getError(damageReturnIndex, refIndex, 'damage_quantity')"
+                                                class="invalid-feedback d-block">
+                                                {{ getError(damageReturnIndex, refIndex, 'damage_quantity') }}
+                                            </div>
                                         </td>
 
                                         <td>
-                                            <TextInput type="text" v-model="ref.observations" class="w-full" />
+                                            <input type="text" v-model="ref.observations"
+                                                :name="`damageReturn.${damageReturnIndex}.references.${refIndex}.observations`"
+                                                class="w-full" />
                                         </td>
                                         <div class="removeItem" @click="removeReference(damageReturn, refIndex)">
                                             <i class="fa-solid fa-trash"></i>
@@ -138,7 +155,8 @@ const confirmCreate = () => {
                             </PrimaryButton>
                         </div>
                         <div class="col-6 text-end">
-                            <PrimaryButton @click="showConfirmModal = true" class="px-5" :disabled="!isFormValid || form.processing">
+                            <PrimaryButton @click="showConfirmModal = true" class="px-5"
+                                :disabled="!isFormValid || form.processing">
                                 Registar devolucion
                             </PrimaryButton>
                         </div>
@@ -164,14 +182,14 @@ const confirmCreate = () => {
         </ModalPrais>
 
         <ModalPrais v-model="showErrorsModal" @close="showErrorsModal = false">
-         <template #header>
-            ERROR!
-         </template>
-         <template #body>
-            <div class="text-center">
-                <h4>La cantidad devuelta supera la cantidad en inventario</h4>
-            </div>
-         </template>
+            <template #header>
+                ERROR!
+            </template>
+            <template #body>
+                <div class="text-center">
+                    <h4>La cantidad devuelta supera la cantidad en inventario</h4>
+                </div>
+            </template>
         </ModalPrais>
     </BaseLayout>
 </template>

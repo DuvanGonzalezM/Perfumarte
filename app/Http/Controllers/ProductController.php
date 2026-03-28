@@ -8,12 +8,11 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 
-
 class ProductController extends Controller
 {
     public function getAllProducts()
     {
-       $getproducts = Product::with('supplier')->where('status', 1)->get(['product_id', 'reference', 'measurement_unit', 'commercial_reference', 'category', 'supplier_id', 'code']);
+       $getproducts = Product::with('supplier')->where('status', 1)->get();
        $supplierProduct = Supplier::all();
      
        return Inertia::render('Products/ProductsList', [
@@ -34,7 +33,6 @@ class ProductController extends Controller
 
     public function storeProduct(Request $request)
     {
-
         $request->validate([
             'reference' => 'required',
             'measurement_unit' => 'required',
@@ -52,17 +50,13 @@ class ProductController extends Controller
             'supplier_id' => $request['supplier_id'],
             'code' => $request['code'],
             'status' => 1,
-
         ]);
 
         return redirect()->route('products.list', ['message' => '', 'status' => 200]);
-
     }
 
     public function editProduct(Request $request, $product_id)
     {
-
-
         $request->validate([
             'reference' => 'required|string|max:255',
             'measurement_unit' => 'required|string|max:255',
@@ -80,7 +74,6 @@ class ProductController extends Controller
             'supplier_id' => (int) $request->supplier_id,
             'code' => (string) $request->code,
         ]);
-
         return redirect()->route('products.list');
     }
 

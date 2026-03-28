@@ -75,7 +75,7 @@ const submit = () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Asignacion de supervisores</h1>
         </template>
 
@@ -102,7 +102,7 @@ const submit = () => {
                     </template>
                     <template #footer>
                         <PrimaryButton @click="submit" class="px-5">
-                            Registrar
+                            Asignar
                         </PrimaryButton>
                     </template>
                 </ModalPrais>

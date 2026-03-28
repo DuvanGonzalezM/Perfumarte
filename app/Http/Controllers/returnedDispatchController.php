@@ -12,7 +12,6 @@ use App\Models\DispatchDetail;
 
 class returnedDispatchController extends Controller
 {
-
     public function getReturnedDispatch($id)
     {
         $user = auth()->user();
@@ -61,7 +60,6 @@ class returnedDispatchController extends Controller
         $dispatch = Dispatch::findOrFail($request->dispatch_id);
         $dispatch->status = 'Devuelto';
         $dispatch->save();
-
 
         return redirect()->route('dispatch.list')->with('success', 'Cantidades devueltas registradas en inventario.');
     }

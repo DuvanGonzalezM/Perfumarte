@@ -17,6 +17,9 @@ return new class extends Migration {
             $table->integer('quantity');
             $table->string('position');
             $table->timestamps();
+
+            // Índice compuesto: la mayoría de consultas filtran por warehouse + product juntos
+            $table->index(['warehouse_id', 'product_id']);
         });
     }
 

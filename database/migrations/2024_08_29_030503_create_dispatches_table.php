@@ -14,6 +14,11 @@ return new class extends Migration {
             $table->id('dispatch_id');
             $table->string('status');
             $table->timestamps();
+
+            // Índice en status: se filtra frecuentemente por estado (En aprobacion, En ruta, etc.)
+            $table->index('status');
+            // Índice en created_at: el listado filtra por los últimos 90 días
+            $table->index('created_at');
         });
     }
 

@@ -15,7 +15,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Pest\Plugins\Parallel\Handlers\Laravel;
 
 class PurchaseOrderController extends Controller
 {
@@ -95,6 +94,7 @@ class PurchaseOrderController extends Controller
             return redirect()->route('orders.list');
         }
     }
+
     public function editOrders($orderId)
     {
         $purchaseOrder = PurchaseOrder::with('productEntryOrder.product.supplier.products')->where('purchase_order_id', $orderId)->get();
@@ -121,7 +121,7 @@ class PurchaseOrderController extends Controller
         foreach ($request->references as $reference) {
 
             $warehouse = (strtoupper($reference['unity'] ?? '') == 'KG') ? 1 : 3;
-            $quantity = ($warehouse == 1) ? ($reference['quantity']) : $reference['quantity'];
+            $quantity = $reference['quantity'];
     
             if (isset($reference['product_entry_id'])) {
 
@@ -175,6 +175,6 @@ class PurchaseOrderController extends Controller
             }
         }
     
-        return redirect()->route('orders.list')->with('success', 'Orden actualizada correctamente');
+        return redirect()->route('orders.detail', $purchaseOrderId)->with('success', 'Orden actualizada correctamente');
     }
 }

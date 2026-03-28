@@ -152,13 +152,6 @@ const buttons = [
         can: 'Ver Proveedores',
     },
     {
-        name: 'Novedades',
-        href: route('novelties.list'),
-        icon: 'fa-solid fa-file-circle-exclamation',
-        active: page.component.startsWith('Novelty'),
-        can: 'Ver Novedades',
-    },
-    {
         name: 'Devoluciones',              
         href: route('damageReturn.list'),
         icon: 'fa-solid fa-recycle',   
@@ -183,6 +176,7 @@ const buttons = [
             <i :class="isMobileMenuOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
         </button>
     </div>
+    
 
     <div 
         v-if="isMobileMenuOpen" 

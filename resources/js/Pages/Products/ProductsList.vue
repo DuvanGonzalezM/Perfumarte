@@ -138,7 +138,7 @@ const disableProduct = () => {
             </template>
             <div class="container">
                 <PrimaryButton :href="route('product.create')" class="position-absolute" v-if="can('Crear Productos')">
-                    Nuevo Registro
+                    Nuevo Producto
                 </PrimaryButton>
                 <Table :data="getProducts" :columns="columnsTable">
                     <template #templateRender="items">
@@ -215,7 +215,6 @@ const disableProduct = () => {
                     </template>
                 </ModalPrais>
 
-                <!-- Modal de Confirmación de Actualización -->
                 <ModalPrais v-model="confirmUpdate" @close="confirmUpdate = false">
                     <template #header>
                         Confirmar Edicion

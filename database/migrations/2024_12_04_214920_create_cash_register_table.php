@@ -26,6 +26,9 @@ return new class extends Migration
             $table->text('observations')->nullable();
             $table->boolean('confirmationclosingcash')->nullable();
             $table->timestamps();
+
+            // Índice compuesto: siempre se consulta por location + fecha juntos
+            $table->index(['location_id', 'created_at']);
         });
     }
 

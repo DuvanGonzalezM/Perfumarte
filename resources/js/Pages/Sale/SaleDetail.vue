@@ -19,7 +19,7 @@ const props = defineProps({
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
+
         </template>
 
         <SectionCard :subextra="'Valor total: ' + Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(sale.total)" :subtitle="sale.payment_method">

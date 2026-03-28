@@ -8,6 +8,7 @@ use App\Models\Transformation;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 
 class LabTransformationController extends Controller
@@ -40,56 +41,50 @@ class LabTransformationController extends Controller
             'status' => 'required'
         ]);
 
-        $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
+        return DB::transaction(function () use ($request, $warehouse) {
+            $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
 
-        $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
+            $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
 
-        $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
+            $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
+            $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->first();
+            $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->first();
 
-        $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->first();
+            if (!$escencia || $escencia->quantity < $request['escencia']) {
+                throw new \Exception('Stock insuficiente de esencia.');
+            }
+            if (!$dipropylene || $dipropylene->quantity < $request['dipropileno']) {
+                throw new \Exception('Stock insuficiente de dipropileno.');
+            }
+            if (!$solvent || $solvent->quantity < $request['disolvente']) {
+                throw new \Exception('Stock insuficiente de disolvente.');
+            }
 
-        $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->first();
+            $escencia->update(['quantity' => $escencia->quantity - $request['escencia']]);
+            $dipropylene->update(['quantity' => $dipropylene->quantity - $request['dipropileno']]);
+            $solvent->update(['quantity' => $solvent->quantity - $request['disolvente']]);
 
+            if ($inventory) {
+                $inventory->update(['quantity' => $inventory->quantity + $quantityFragance]);
+            } else {
+                $inventory = Inventory::create([
+                    'warehouse_id' => $warehouse,
+                    'product_id' => $request['reference'],
+                    'quantity' => $quantityFragance,
+                ]);
+            }
 
-        if ($escencia && $escencia->quantity >= $request['escencia']) {
-            $escencia->update([
-                'quantity' => $escencia->quantity - $request['escencia'],
+            Transformation::create([
+                'inventory_id' => $inventory->inventory_id,
+                'escence' => $request['escencia'],
+                'dipropylene' => $request['dipropileno'],
+                'solvent' => $request['disolvente'],
             ]);
-        }
 
-        if ($dipropylene && $dipropylene->quantity >= $request['dipropileno']) {
-            $dipropylene->update([
-                'quantity' => $dipropylene->quantity - $request['dipropileno'],
-            ]);
-        }
+            RequestPrais::where('request_id', $request['request'])->update(['status' => $request['status']]);
 
-        if ($solvent && $solvent->quantity >= $request['disolvente']) {
-            $solvent->update([
-                'quantity' => $solvent->quantity - $request['disolvente'],
-            ]);
-        }
-
-        if ($inventory) {
-            $quantity = $inventory->quantity + $quantityFragance;
-            $inventory->update([
-                'quantity' => $quantity,
-            ]);
-        } else {
-            $inventory = Inventory::create([
-                'warehouse_id' => $warehouse,
-                'product_id' => $request['reference'],
-                'quantity' => $quantityFragance,
-            ]);
-        }
-
-        Transformation::create([
-            'inventory_id' => $inventory->inventory_id,
-            'escence' => $request['escencia'],
-            'dipropylene' => $request['dipropileno'],
-            'solvent' => $request['disolvente'],
-        ]);
-
-        RequestPrais::where('request_id', $request['request'])->update(['status' => $request['status']]);
+            return redirect()->route('labTransformation.list')->with('success', 'Transformación registrada correctamente.');
+        });
     }
 
     public function detailLabTransformation($transformationId)
@@ -100,6 +95,7 @@ class LabTransformationController extends Controller
             'LabtransformationDetail' => $Labtranformation
         ]);
     }
+
     public function editTransformation($transformationId)
     {
         $inventory = Inventory::with('product')->where('warehouse_id', 2)->get();
@@ -121,43 +117,39 @@ class LabTransformationController extends Controller
         'solvent' => 'required|numeric|min:0',
     ]);
 
-    // Obtener la transformación con relaciones
     $transformation = Transformation::with(['inventory.product'])->findOrFail($transformationId);
 
-    // Guardar valores iniciales para calcular diferencias
     $initialValues = [
         'escence' => $transformation->escence,
         'dipropylene' => $transformation->dipropylene,
         'solvent' => $transformation->solvent
     ];
 
-    // Actualizar la transformación
     $transformation->update([
         'inventory_id' => $request['inventory_id'],
         'escence' => $request['escence'],
         'dipropylene' => $request['dipropylene'],
         'solvent' => $request['solvent'],
     ]);
-
-    
+ 
     $escenciaProductId = $transformation->inventory->product->product_id; 
     $escenciaInventory = Inventory::firstOrCreate(
         ['warehouse_id' => 1, 'product_id' => $escenciaProductId],
-        
+        ['quantity' => 0]
     );
     $escenciaInventory->quantity -= ($request['escence'] - $initialValues['escence']);
     $escenciaInventory->save();
 
     $dipropilenoInventory = Inventory::firstOrCreate(
         ['warehouse_id' => 1, 'product_id' => 1],
-        
+        ['quantity' => 0]
     );
     $dipropilenoInventory->quantity -= ($request['dipropylene'] - $initialValues['dipropylene']);
     $dipropilenoInventory->save();
 
     $disolventeInventory = Inventory::firstOrCreate(
         ['warehouse_id' => 1, 'product_id' => 2],
-        
+        ['quantity' => 0]
     );
     $disolventeInventory->quantity -= ($request['solvent'] - $initialValues['solvent']);
     $disolventeInventory->save();
@@ -166,11 +158,8 @@ class LabTransformationController extends Controller
                   ($initialValues['escence'] + $initialValues['dipropylene'] + $initialValues['solvent']);
 
     $productoTerminadoInventory = Inventory::firstOrCreate(
-        [
-            'warehouse_id' => 2,
-            'product_id' => $transformation->inventory->product->product_id
-        ],
-        
+        [ 'warehouse_id' => 2, 'product_id' => $transformation->inventory->product->product_id],
+        ['quantity' => 0]
     );
     $productoTerminadoInventory->quantity += $totalChange;
     $productoTerminadoInventory->save();

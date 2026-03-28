@@ -29,9 +29,9 @@ class ReportController extends Controller
         }
 
         $startDate = Carbon::parse($range_date[0])->format('Y-m-d H:i:s');
-        $endDate = Carbon::parse($range_date[1])->format('Y-m-d H:i:s');
+        $endDate = $range_date[1] ? Carbon::parse($range_date[1])->format('Y-m-d H:i:s') : Carbon::now()->format('Y-m-d H:i:s');
 
-        if (is_string($warehouseIds) && strpos($warehouseIds, ',') !== false) {
+        if (is_string($warehouseIds)) {
             $warehouseIds = explode(',', $warehouseIds);
         }
         if ($warehouseIds == 1 || in_array(1, $warehouseIds)) {
@@ -97,9 +97,7 @@ class ReportController extends Controller
                     ->orderBy('total_quantity_sold', $orderBy)
                     ->whereBetween('sale_details.created_at', [$startDate, $endDate])
                     ->limit(10)
-                    ->whereHas('inventory', function($q) use ($warehouseId) {
-                        $q->where('warehouse_id', $warehouseId);
-                    });
+                    ->where('warehouses.warehouse_id', $warehouseId);
                 $locationsQuery[] = $query->get();
             }
         }else{

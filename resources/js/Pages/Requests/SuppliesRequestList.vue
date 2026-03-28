@@ -67,7 +67,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
         </template>
 
         <SectionCard>
@@ -77,7 +76,7 @@ const columnsTable = [
             <div class="container">
                 <PrimaryButton :href="route('suppliesrequest.store')" class="position-absolute"
                     v-if="can('Crear Solicitudes Insumos')">
-                    Nuevo Registro
+                    Nueva Solicitud
                 </PrimaryButton>
                 <Table class="size-prais-5" :data="suppliesRequest" :columns="columnsTable" />
             </div>

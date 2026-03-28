@@ -7,29 +7,23 @@ import { ref, watch, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ModalPrais from '@/Components/ModalPrais.vue';
 
-// Estado para los modales
 const showConfirmModal = ref(false);
 const showSuccessModal = ref(false);
 const shouldRedirect = ref(false);
 
-// Método para mostrar el modal de confirmación
 const confirmClose = () => {
     showConfirmModal.value = true;
 };
 
-// Método para manejar la confirmación del cierre
 const handleConfirmClose = () => {
     showConfirmModal.value = false;
     submit();
 };
 
-// Método para manejar el cierre exitoso
 const handleSuccess = () => {
     showSuccessModal.value = true;
     shouldRedirect.value = true;
 };
-
-// Actualizar el método submit para manejar el éxito
 
 
 const props = defineProps({
@@ -54,7 +48,6 @@ const props = defineProps({
     }
 });
 
-// Calcular el total de billetes y monedas
 const calculatedCash = () => {
     return (
         form.count_100_bill * 100000 +
@@ -67,9 +60,6 @@ const calculatedCash = () => {
     );
 };
 
-// Verificar si los totales coinciden (comparando en miles)
-
-
 const isValidCashCount = () => {
     const counted = Number(calculatedCash());
     const expected = Number(props.totalCash);
@@ -77,7 +67,6 @@ const isValidCashCount = () => {
     return Math.abs(counted - expected) < 1;
 };
 
-// Verificar si hay diferencia (en miles)
 const cashDifference = () => {
     return Number(calculatedCash()) - Number(props.totalCash);
 };
@@ -137,11 +126,9 @@ const submit = () => {
             handleSuccess();
         },
         onError: () => {
-            // Manejar error si es necesario
         }
     });
 
-    // Verificar y redirigir si es necesario
     watch(showSuccessModal, (newVal) => {
         if (newVal === false && shouldRedirect.value) {
             window.location.href = route('sales.list');
@@ -283,7 +270,6 @@ const submit = () => {
                 </div>
             </form>
 
-            <!-- Modal de Confirmación -->
             <ModalPrais v-model="showConfirmModal">
                 <template #header>
                     Confirmar Cierre
@@ -301,7 +287,6 @@ const submit = () => {
                 </template>
             </ModalPrais>
 
-            <!-- Modal de Éxito -->
             <ModalPrais v-model="showSuccessModal">
                 <template #header>
                     ¡Éxito!

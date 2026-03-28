@@ -77,7 +77,7 @@ const resetForm = () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Detalle Asignacion</h1>
         </template>
 
@@ -88,7 +88,7 @@ const resetForm = () => {
             </template>
                     <form class="table-prais">
                         <table class="table table-hover text-center dt-body-nowrap size-prais-2 mt-5">
-                            <!-- <div class="row cardboxprais cardpurcheorder"> -->
+
                             <thead>
                                 <tr>
                                     <th>
@@ -105,7 +105,7 @@ const resetForm = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <!-- </div> -->
+
                             <tbody id="AdvisorsList">
                                 <tr v-for="(advisor, index) in form.advisorList" :key="index">
                                     <td>Asesor {{ index + 1 }}:</td>
@@ -132,7 +132,7 @@ const resetForm = () => {
                             </div>
                             <div class="col-6 text-end">
                                 <PrimaryButton @click="submit" class="px-5">
-                                    Registrar
+                                    Asignar
                                 </PrimaryButton>
                             </div>
                         </div>

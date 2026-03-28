@@ -68,45 +68,38 @@ const openModal = () => {
     form.transaction_code = null;
 }
 const openModalChange = () => {
-    showModalChange.value = true;
-    showModal.value = false;
     try {
         devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) - form.total;
     } catch (error) {
         devolver.value = 0;
     }
+    if (devolver.value > 0) {
+        showModalChange.value = true;
+        showModal.value = false;
+    } else {
+        showModal.value = false;
+        submit();
+    }
 }
 
+const backendError = ref('');
+
 const submit = () => {
+    backendError.value = '';
     form.post(route('sales.store'), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
         },
         onError: (errors) => {
-            console.log('Error en la validación');
+            console.log(errors)
+            showModal.value = false;
+            showModalChange.value = false;
+            backendError.value = errors?.stock ?? 'Ocurrió un error al registrar la venta. Intenta de nuevo.';
         },
     });
 };
 
-const validateChange = async () => {
-    try {
-        await axios.get(route('sales.validate', { precio: form.total, pago: ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_1_bill * 1000) + (form.total_coins * 1)) }))
-            .then(function (response) {
-                console.log(response);
-            });
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-// const validateChange = () => {
-//     try {
-//         devolver.value = ((form.count_50_bill * 50000) + (form.count_20_bill * 20000) + (form.count_10_bill * 10000) + (form.count_5_bill * 5000) + (form.count_2_bill * 2000) + (form.count_100_bill * 100000) + (form.total_coins * 1)) - form.total;
-//     } catch (error) {
-//         devolver.value = 0;
-//     }
-// }
 const changeReference = () => {
     referenceNew.value.quantity = '';
     referenceNew.value.units = 1;
@@ -133,12 +126,11 @@ const changePayMethod = () => {
 }
 
 const changePerdurable = () => {
-    // Inicializar el array de perdurables con 0 para cada unidad
     referenceNew.value.perdurable = Array(referenceNew.value.units).fill(0);
 }
 
 const togglePerdurable = (index, value) => {
-    // Si ya está seleccionado, lo deseleccionamos
+
     if (referenceNew.value.perdurable[index] === value) {
         referenceNew.value.perdurable[index] = 0;
     } else {
@@ -148,9 +140,7 @@ const togglePerdurable = (index, value) => {
 
 const buttonErrorMessage = ref('');
 
-// Validar si hay referencias de 5ml con menos de 12 unidades en total
 const hasValidReferences = computed(() => {
-    // Sumar todas las unidades de referencias de 5ml
     const totalUnits5ml = form.references
         .filter(ref => ref.quantity === 5)
         .reduce((acc, ref) => acc + ref.units, 0);
@@ -170,7 +160,7 @@ const addReferenceModal = () => {
         'quantity': '',
         'units': 1,
         'container': null,
-        'perdurable': Array(1).fill(0) // Inicializar con 0 para permitir deselección
+        'perdurable': Array(1).fill(0)
     };
 }
 
@@ -217,7 +207,6 @@ const updateTotal = () => {
 }
 
 const addReference = () => {
-    // Convertir quantity a número si es string
     let quantity = typeof referenceNew.value.quantity === 'string' ? parseInt(referenceNew.value.quantity) : referenceNew.value.quantity;
 
     form.references.push(
@@ -230,7 +219,6 @@ const addReference = () => {
         }
     );
 
-    // Actualizar el total
     updateTotal();
 
     showModalReference.value = false;
@@ -279,20 +267,17 @@ const validateStockLive = () => {
 
     let requiredQuantity = 0;
 
-    // 🎁 Bolsa regalo
     if (inventoryItem.product_id === giftBag) {
         requiredQuantity = referenceNew.value.units;
     } else if (referenceNew.value.quantity) {
         requiredQuantity = (referenceNew.value.quantity * referenceNew.value.units) * 0.5;
     }
 
-    // VALIDAR FRAGANCIA
     if (inventoryItem.quantity < requiredQuantity) {
         stockErrorMessage.value = `Stock insuficiente de ${inventoryItem.product.commercial_reference}`;
         return;
     }
 
-    // VALIDAR ENVASE
     if (referenceNew.value.container) {
         const containerInventory = props.inventory.find(
             item => item.product_id === referenceNew.value.container
@@ -303,7 +288,6 @@ const validateStockLive = () => {
             return;
         }
 
-        // VALIDAR DEPENDIENTES
         if (containerInventory.product?.dependents) {
             const dependents = containerInventory.product.dependents.split(',');
 
@@ -340,7 +324,7 @@ watch(
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Nueva Venta</h1>
         </template>
         <SectionCard
@@ -415,6 +399,9 @@ watch(
                             <br>
                             <span v-if="!hasValidReferences" class="text-danger">{{ buttonErrorMessage }}</span>
                         </div>
+                    </div>
+                    <div v-if="backendError" class="alert alert-danger text-center mt-2">
+                        {{ backendError }}
                     </div>
 
                     <ModalPrais v-model="showModalReference" @close="showModalReference = false">
@@ -613,59 +600,6 @@ watch(
                         </template>
                         <template #footer>
                             <div></div>
-                        </template>
-                    </ModalPrais>
-
-                    <ModalPrais v-model="showModalChange" @close="showModalChange = false">
-                        <template #header>
-                            <h3>Cantidad a devolver: {{ Intl.NumberFormat('es-CO', {
-                                style: 'currency', currency: 'COP',
-                                maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(devolver) }}</h3>
-                        </template>
-                        <template #body>
-                            <div class="row">
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_100_bill" :min="0"
-                                        title="Billetes de $100,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_50_bill" :min="0"
-                                        title="Billetes de $50,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_20_bill" :min="0"
-                                        title="Billetes de $20,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_10_bill" :min="0"
-                                        title="Billetes de $10,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_5_bill" :min="0"
-                                        title="Billetes de $5,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_count_2_bill" :min="0"
-                                        title="Billetes de $2,000" />
-                                </div>
-                                <div class="col-6">
-                                    <CountControl v-model="form.rest_total_coins" :min="0" title="Monedas de $100" />
-                                </div>
-                            </div>
-                        </template>
-                        <template #footer>
-                            <div class="row">
-                                <div class="col-6">
-                                    <PrimaryButton @click="openModal">
-                                        Volver
-                                    </PrimaryButton>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <PrimaryButton @click="submit">
-                                        Registrar Venta
-                                    </PrimaryButton>
-                                </div>
-                            </div>
                         </template>
                     </ModalPrais>
 
