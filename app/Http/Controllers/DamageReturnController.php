@@ -7,6 +7,7 @@ use App\Models\DamageReturn;
 use App\Models\Warehouse;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class DamageReturnController extends Controller
 {
@@ -64,33 +65,34 @@ class DamageReturnController extends Controller
             'damageReturn.*.references.*.observations' => 'required|string',
         ]);
 
-        $errors = [];
+        $validator->after(function ($validator) use ($request) {
+            if ($request->has('damageReturn')) {
+                foreach ($request->damageReturn as $locationIndex => $location) {
+                    $warehouseId = $location['warehouse_id'] ?? null;
 
-        if ($request->has('damageReturn')) {
-            foreach ($request->damageReturn as $locationIndex => $location) {
-                $warehouseId = $location['warehouse_id'] ?? null;
+                    foreach ($location['references'] as $referenceIndex => $reference) {
+                        $inventory = Inventory::where('inventory_id', $reference['reference'] ?? null)
+                            ->where('warehouse_id', $warehouseId)
+                            ->first();
 
-                foreach ($location['references'] as $referenceIndex => $reference) {
-                    $inventory = Inventory::where('inventory_id', $reference['reference'] ?? null)
-                        ->where('warehouse_id', $warehouseId)
-                        ->first();
-
-                    if ($inventory && $reference['damage_quantity'] > $inventory->quantity) {
-                        $errors["damageReturn.{$locationIndex}.references.{$referenceIndex}.damage_quantity"] =
-                            "La cantidad ({$reference['damage_quantity']}) excede el inventario disponible ({$inventory->quantity}).";
+                        if ($inventory && $reference['damage_quantity'] > $inventory->quantity) {
+                            $validator->errors()->add(
+                                "damageReturn.{$locationIndex}.references.{$referenceIndex}.damage_quantity",
+                                "La cantidad ({$reference['damage_quantity']}) excede el inventario disponible ({$inventory->quantity})."
+                            );
+                        }
                     }
                 }
             }
-        }
+        });
 
-        if ($validator->fails() || !empty($errors)) {
+        if ($validator->fails()) {
             return back()
                 ->withInput()
-                ->withErrors($validator->errors()->merge($errors));
+                ->withErrors($validator);
         }
 
         try {
-
             $damageReturn = new DamageReturn();
             $damageReturn->status = 'Confirmar';
             $damageReturn->save();
@@ -119,7 +121,7 @@ class DamageReturnController extends Controller
                 ->with('success', 'Devolución creada correctamente.');
 
         } catch (\Exception $e) {
-            \Log::error('Error al crear la devolución: ' . $e->getMessage());
+            Log::error('Error al crear la devolución: ' . $e->getMessage());
 
             return back()
                 ->withInput()

@@ -59,17 +59,14 @@ const props = defineProps({
     }
 });
 
-// Estado para modales
 
 const showRejectModal = ref(false);
 const selectedRequestId = ref(null);
 
-// Formulario para rechazo
 const rejectForm = useForm({
     reason: ''
 });
 
-// Métodos para manejar las acciones
 const handleEdit = (requestId) => {
     router.get(route('requests.edit', requestId));
 };
@@ -107,7 +104,6 @@ const submitReject = () => {
     });
 };
 
-// Configuración de la tabla
 const columnsTable = [
     {
         data: 'request_id',
@@ -151,7 +147,6 @@ const columnsTable = [
     }
     ];
 
-// Manejador de eventos para los botones de acción
 const handleTableClick = (event) => {
     const button = event.target.closest('.action-btn');
     if (!button) return;
@@ -159,17 +154,12 @@ const handleTableClick = (event) => {
     const action = button.dataset.action;
     const id = button.dataset.id;
 
-    console.log('Action:', action); // Para debug
-    console.log('ID:', id); // Para debug
-
     if (action === 'view') {
         handleView(id);
     }
 };
 
-// Agregar el listener cuando el componente se monte
 onMounted(() => {
-    // Asegurarnos de que la tabla esté renderizada
     setTimeout(() => {
         const table = document.querySelector('.table-prais');
         if (table) {
@@ -178,7 +168,6 @@ onMounted(() => {
     }, 100);
 });
 
-// Limpiar el listener cuando el componente se desmonte
 onUnmounted(() => {
     const table = document.querySelector('.table-prais');
     if (table) {

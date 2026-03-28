@@ -44,7 +44,7 @@ const optionNovelties = ref(listNovelties.value.map(novelty => ({ 'title': novel
 
     <BaseLayout :loading="form.processing">
         <template #header>
-            <!-- <Alert /> -->
+
             <h1>Nueva Novedad</h1>
         </template>
 

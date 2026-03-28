@@ -151,7 +151,7 @@ const removeReference = (index) => {
                     
                     <div class="action-buttons">
                         <div class="action-left">
-                            <PrimaryButton :href="route('orders.list')" class="back-button">
+                            <PrimaryButton :href="route('orders.detail', purchaseOrder.purchase_order_id)" class="back-button">
                                 Volver
                             </PrimaryButton>
                         </div>

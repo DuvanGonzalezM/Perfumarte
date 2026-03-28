@@ -12,7 +12,7 @@ class ProductController extends Controller
 {
     public function getAllProducts()
     {
-       $getproducts = Product::with('supplier')->where('status', 1)->get(['product_id', 'reference', 'measurement_unit', 'commercial_reference', 'category', 'supplier_id', 'code']);
+       $getproducts = Product::with('supplier')->where('status', 1)->get();
        $supplierProduct = Supplier::all();
      
        return Inertia::render('Products/ProductsList', [

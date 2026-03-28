@@ -61,18 +61,6 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.boss_user" />
             </div>
 
-            <!-- <div class="mt-4">
-                <TextInput labelValue="Contraseña" id="password" name="password" type="password" v-model="form.password"
-                    autocomplete="current-password" required />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <TextInput labelValue="Confirmar Contraseña" id="password_confirmation" name="password_confirmation"
-                    type="password" v-model="form.password_confirmation" autocomplete="new-password" required />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div> -->
-
             <div class="mt-4">
                 <label :for="enabled">¿Utilizara la caja? </label>
                 <input id="enabled" type="checkbox" v-model="form.enabled" required />

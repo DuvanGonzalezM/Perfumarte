@@ -89,7 +89,6 @@ const newProduct = ref({
     quantity: null
 });
 
-// Calcular productos disponibles (que no están en el inventario actual)
 const availableProducts = computed(() => {
     const currentProducts = formEdit.products || [];
     return props.products.filter(product =>
@@ -97,7 +96,6 @@ const availableProducts = computed(() => {
     );
 });
 
-// Agregar nuevo producto
 const addNewProduct = () => {
 
     formEdit.products.push({
@@ -108,14 +106,12 @@ const addNewProduct = () => {
         action: 'add'
     });
 
-    // Limpiar el formulario
     newProduct.value = {
         product_id: null,
         quantity: null
     };
 };
 
-// Eliminar producto
 const removeProduct = (index) => {
     if (formEdit.products.length > 0) {
         formEdit.products.splice(index, 1);

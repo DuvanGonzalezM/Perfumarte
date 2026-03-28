@@ -92,7 +92,6 @@ const submit = async () => {
 
     <BaseLayout :loading="form.processing ? true : false">
         <template #header>
-            <!-- <Alert /> -->
             <h1>Nueva transformacion laboratorio</h1>
         </template>
 

@@ -28,12 +28,10 @@ const optionProduts = ref(
 
 const showConfirmModal = ref(false);
 
-// Mostrar modal
 const showConfirmation = () => {
     showConfirmModal.value = true;
 };
 
-// Enviar formulario
 const submit = () => {
     form.post(route('store.repackage'), {
         onFinish: () => {
@@ -57,7 +55,6 @@ const submit = () => {
                 <strong>Nuevo reenvase</strong>
             </template>
             <div class="container px-0">
-                <!-- Mostrar mensaje de error general (como "No hay suficiente stock") -->
                 <div v-if="form.errors.quantity" class="alert alert-danger text-center my-3">
                     {{ form.errors.quantity }}
                 </div>
@@ -101,7 +98,6 @@ const submit = () => {
             </div>
         </SectionCard>
 
-        <!-- Modal de Confirmación -->
         <ModalPrais v-model="showConfirmModal" @close="showConfirmModal = false">
             <template #header>
                 Confirmar reenvase

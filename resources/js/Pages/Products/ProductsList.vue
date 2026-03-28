@@ -215,7 +215,6 @@ const disableProduct = () => {
                     </template>
                 </ModalPrais>
 
-                <!-- Modal de Confirmación de Actualización -->
                 <ModalPrais v-model="confirmUpdate" @close="confirmUpdate = false">
                     <template #header>
                         Confirmar Edicion

@@ -56,7 +56,6 @@ const columnsTable = [
 
     <BaseLayout>
         <template #header>
-            <!-- <Alert /> -->
             <h1>Lista de reenvase</h1>
         </template>
 
