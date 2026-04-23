@@ -38,6 +38,7 @@ const swiper = ref(null);
 const requestSeleted = ref(null);
 const quantityTransform = ref(0);
 const disableButton = ref(false);
+const backendError = ref('');
 
 const getRequest = () => {
     if (requestSeleted) {
@@ -47,11 +48,13 @@ const getRequest = () => {
         form.reference = reference.value.inventory.product_id;
         form.request = request.request_id;
         quantityTransform.value = reference.value.quantity;
+        backendError.value = '';
     }
 }
 
 const changeSlide = () => {
     reference.value = references.value[swiper.value.activeIndex];
+    backendError.value = '';
     form.reference = reference.value.inventory.product_id;
     form.escencia = '';
     form.dipropileno = '';
@@ -60,11 +63,11 @@ const changeSlide = () => {
 }
 const submit = async () => {
     try {
+        backendError.value = '';
         disableButton.value = true;
         if (references.value.length == 1) {
             form.status = 'Finalizada';
         }
-        console.log(form);
         await axios.post(route('store.LabTransformation', form))
             .then(function (response) {
                 if(form.status != 'Finalizada'){
@@ -81,7 +84,7 @@ const submit = async () => {
             });
     } catch (error) {
         disableButton.value = false;
-        console.log(error);
+        backendError.value = error.response?.data?.message ?? 'Ocurrió un error al registrar la transformación. Intenta de nuevo.';
     }
 }
 </script>
@@ -160,6 +163,9 @@ const submit = async () => {
                         </div>
                     </template>
                 </SliderPrais>
+                <div v-if="backendError" class="alert alert-danger text-center mt-2">
+                    {{ backendError }}
+                </div>
                 <div class="row my-5">
                     <div class="col-6">
                         <PrimaryButton :href="route('LabTransformation.list')" class="px-5">
