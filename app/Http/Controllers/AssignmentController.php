@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentController extends Controller
 {
@@ -54,32 +55,38 @@ class AssignmentController extends Controller
 
     public function updateAssignment(Request $request)
     {
-        $request->validate([
-            'location_id' => 'required',
-            'user_id' => 'nullable',
+        // Antes ninguno de los dos campos se validaba contra la base: se podía
+        // enviar cualquier identificador.
+        $validated = $request->validate([
+            'location_id' => 'required|integer|exists:locations,location_id',
+            'user_id' => 'nullable|integer|exists:users,user_id',
         ]);
 
-        $location = Location::where('location_id', $request->location_id)
-            ->with([
-                'users_location' => function ($query) {
-                    $query->whereHas('roles', function ($q) {
-                        $q->where('name', 'Supervisor');
-                    });
-                }
-            ])
-            ->first();
+        // El desvinculado y el nuevo vínculo son una sola operación: sin
+        // transacción, un fallo entre ambos dejaba la sede sin supervisor.
+        return DB::transaction(function () use ($validated) {
+            $location = Location::where('location_id', $validated['location_id'])
+                ->with([
+                    'users_location' => function ($query) {
+                        $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'Supervisor');
+                        });
+                    }
+                ])
+                ->firstOrFail();
 
-        if ($location->users_location->count() > 0) {
             foreach ($location->users_location as $user) {
                 $location->users_location()->detach($user->user_id);
             }
-        }
 
-        if ($request->user_id !== null) {
-            User::findOrFail($request->user_id)->location_user()->attach($request->location_id);
-        }
+            if (! empty($validated['user_id'])) {
+                User::findOrFail($validated['user_id'])
+                    ->location_user()
+                    ->syncWithoutDetaching([$validated['location_id']]);
+            }
 
-        return back();
+            return back();
+        });
     }
 
     public function getAllLocation()

@@ -8,7 +8,7 @@ endif
 
 COMPOSE_CMD = docker-compose $(COMPOSE_FILES)
 
-.PHONY: up reload start restart stop down down_all status cli run logs app_key compile dev serve broadcast
+.PHONY: up reload start restart stop down down_all status cli run logs app_key compile dev serve broadcast migrate seed fresh test lint
 
 up reload: recreate ?=
 up reload:
@@ -52,6 +52,25 @@ logs l:
 
 app_key:
 	$(COMPOSE_CMD) exec app php artisan key:generate
+
+# Crea el esquema. Sin este paso la aplicación arranca sin ninguna tabla.
+migrate:
+	$(COMPOSE_CMD) exec app php artisan migrate --force
+
+# Carga roles, permisos y el usuario técnico inicial. Sin este paso no hay
+# ningún permiso en la base y ningún usuario puede acceder a nada.
+seed:
+	$(COMPOSE_CMD) exec app php artisan db:seed --force
+
+# Reconstruye la base desde cero. Destructivo: solo para entornos de desarrollo.
+fresh:
+	$(COMPOSE_CMD) exec app php artisan migrate:fresh --seed
+
+test:
+	$(COMPOSE_CMD) exec app ./vendor/bin/pest
+
+lint:
+	$(COMPOSE_CMD) exec app ./vendor/bin/pint
 
 compile:
 	$(COMPOSE_CMD) exec app npm run build

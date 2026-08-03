@@ -75,3 +75,4 @@ GEMINI.md
 *.pth
 /models/
 /certbot/
+.DS_Store

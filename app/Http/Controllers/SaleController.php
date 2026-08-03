@@ -17,7 +17,15 @@ class SaleController extends Controller
 {
     public function sales()
     {
-        $userLocation = auth()->user()->location_user[0]->location_id;
+        // location_user está vacío para los perfiles sin sede asignada
+        // (Administrador, Gerencia, Jefe de operaciones). Antes esto era
+        // location_user[0]->location_id sobre null: 500 inmediato.
+        $userLocation = auth()->user()->location_user->first()?->location_id;
+
+        if (! $userLocation) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Su usuario no tiene una sede asignada.');
+        }
 
         $sales = Sale::with('user')
             ->whereHas('cashRegister', function ($query) use ($userLocation) {
@@ -38,14 +46,21 @@ class SaleController extends Controller
 
     public function createSales()
     {
+        $userLocation = auth()->user()->location_user->first();
+
+        if (! $userLocation) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Su usuario no tiene una sede asignada.');
+        }
+
         $assessors = User::whereHas('roles', function ($roladvisor) {
             $roladvisor->where('name', 'Asesor comercial')->orWhere('name', 'Usuario');
         })
-            ->whereHas('location_user', function ($query) {
-                $query->where('location_user.location_id', '=', auth()->user()->location_user[0]->location_id);
+            ->whereHas('location_user', function ($query) use ($userLocation) {
+                $query->where('location_user.location_id', '=', $userLocation->location_id);
             })
             ->get();
-        $warehouses = auth()->user()->location_user[0]->warehouses;
+        $warehouses = $userLocation->warehouses;
         $warehouse = [];
         $inventory = null;
         if (count($warehouses) > 0) {
@@ -95,45 +110,118 @@ class SaleController extends Controller
         }
     }
 
+    /**
+     * Medios de pago admitidos. Antes payment_method se guardaba tal cual
+     * llegaba del navegador, sin lista blanca.
+     */
+    private const PAYMENT_METHODS = ['Efectivo', 'Transferencia', 'Tarjeta'];
+
     public function storeSales(Request $request)
     {
+        $userLocation = auth()->user()->location_user->first();
+
+        if (! $userLocation) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Su usuario no tiene una sede asignada.');
+        }
+
+        $validated = $request->validate([
+            'assessor' => 'required|integer|exists:users,user_id',
+            'pay_method' => 'required|string|in:' . implode(',', self::PAYMENT_METHODS),
+            'transaction_code' => 'nullable|string|max:255',
+            'references' => 'required|array|min:1',
+            'references.*.reference' => 'required|integer|exists:inventories,inventory_id',
+            'references.*.quantity' => 'required|integer|min:1',
+            'references.*.units' => 'required|integer|min:1',
+            'references.*.container' => 'nullable|integer|exists:products,product_id',
+            'references.*.perdurable' => 'present|array',
+            'references.*.perdurable.*' => 'numeric|min:0',
+            'count_100_bill' => 'nullable|integer',
+            'count_50_bill' => 'nullable|integer',
+            'count_20_bill' => 'nullable|integer',
+            'count_10_bill' => 'nullable|integer',
+            'count_5_bill' => 'nullable|integer',
+            'count_2_bill' => 'nullable|integer',
+            'total_coins' => 'nullable|integer',
+            'rest_count_100_bill' => 'nullable|integer',
+            'rest_count_50_bill' => 'nullable|integer',
+            'rest_count_20_bill' => 'nullable|integer',
+            'rest_count_10_bill' => 'nullable|integer',
+            'rest_count_5_bill' => 'nullable|integer',
+            'rest_total_coins' => 'nullable|integer',
+        ]);
+
+        // El asesor al que se imputa la venta debe pertenecer a la misma sede.
+        $assessorBelongsToLocation = User::where('user_id', $validated['assessor'])
+            ->whereHas('location_user', fn ($q) => $q->where('location_user.location_id', $userLocation->location_id))
+            ->exists();
+
+        if (! $assessorBelongsToLocation) {
+            return back()->withErrors(['assessor' => 'El asesor seleccionado no pertenece a su sede.']);
+        }
+
         try {
-            return DB::transaction(function () use ($request) {
-                $cashRegister = CashRegister::where('location_id', auth()->user()->location_user[0]->location_id)
+            return DB::transaction(function () use ($request, $validated, $userLocation) {
+                $cashRegister = CashRegister::where('location_id', $userLocation->location_id)
                     ->whereDate('created_at', date('Y-m-d'))
+                    ->lockForUpdate()
                     ->first();
 
-                $warehouse = auth()->user()->location_user[0]->warehouses[0];
+                if (! $cashRegister) {
+                    throw new \Exception('No hay una caja abierta hoy para esta sede.');
+                }
+
+                if ($cashRegister->confirmationclosingcash) {
+                    throw new \Exception('La caja del día ya fue cerrada.');
+                }
+
+                $warehouse = $userLocation->warehouses->first();
+
+                if (! $warehouse) {
+                    throw new \Exception('Su sede no tiene una bodega asociada.');
+                }
 
                 $sale = Sale::create([
                     'cash_register_id' => $cashRegister->cash_register_id,
-                    'total' => $request->total,
-                    'user_id' => $request->assessor,
-                    'payment_method' => $request->pay_method,
-                    'transaction_code' => $request->pay_method == 'Transferencia'
-                        ? $request->transaction_code
+                    'location_id' => $userLocation->location_id,
+                    // El total se recalcula abajo con los precios del servidor.
+                    'total' => 0,
+                    'user_id' => $validated['assessor'],
+                    'payment_method' => $validated['pay_method'],
+                    'transaction_code' => $validated['pay_method'] == 'Transferencia'
+                        ? ($validated['transaction_code'] ?? '')
                         : '',
                 ]);
 
+                // Antes esto encadenaba ->first()->inventory_id: si la bodega no
+                // tiene el producto "Bolsa de regalo", 500 al vender.
                 $giftBagId = Inventory::with('product')
                     ->whereHas('product', function ($query) {
                         $query->where('reference', 'Bolsa de regalo');
                     })
                     ->where('warehouse_id', $warehouse->warehouse_id)
-                    ->first()
-                    ->inventory_id;
+                    ->first()?->inventory_id;
 
+                /*
+                 * lockForUpdate() en todas las lecturas de inventario que luego
+                 * se decrementan. Sin él, dos cajeros que venden a la vez leen
+                 * el mismo stock y el segundo pisa el descuento del primero:
+                 * se venden 10 unidades y el sistema descuenta 5.
+                 */
                 $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                     ->whereHas('product', function ($query) {
                         $query->where('product_id', '2');
                     })
+                    ->lockForUpdate()
                     ->first();
 
-                $referenceIds = collect($request->references)->pluck('reference')->all();
-                $containerProductIds = collect($request->references)->pluck('container')->filter()->values()->all();
+                $references = $validated['references'];
+                $referenceIds = collect($references)->pluck('reference')->all();
+                $containerProductIds = collect($references)->pluck('container')->filter()->values()->all();
 
                 $inventoryMap = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                     ->whereIn('inventory_id', $referenceIds)
+                    ->lockForUpdate()
                     ->get()->keyBy('inventory_id');
 
                 $containerInventoryMap = collect();
@@ -143,6 +231,7 @@ class SaleController extends Controller
                     $containerInventoryMap = Inventory::with('product')
                         ->where('warehouse_id', $warehouse->warehouse_id)
                         ->whereIn('product_id', $containerProductIds)
+                        ->lockForUpdate()
                         ->get()->keyBy('product_id');
 
                     $dependentCodes = $containerInventoryMap
@@ -154,11 +243,14 @@ class SaleController extends Controller
                         $dependentsInventoryMap = Inventory::with('product')
                             ->where('warehouse_id', $warehouse->warehouse_id)
                             ->whereHas('product', fn($q) => $q->whereIn('code', $dependentCodes))
+                            ->lockForUpdate()
                             ->get()->keyBy(fn($item) => $item->product->code);
                     }
                 }
 
-                foreach ($request->references as $reference) {
+                $serverTotal = 0;
+
+                foreach ($references as $reference) {
 
                     $drops = 0;
                     array_map(function ($i) use (&$drops) {
@@ -167,16 +259,17 @@ class SaleController extends Controller
 
                     $price = $drops * $warehouse->price_drops;
 
-                    $unitPrice = ($reference['reference'] == $giftBagId)
+                    $unitPrice = ($giftBagId !== null && $reference['reference'] == $giftBagId)
                         ? 3000
                         : $this->priceReference(
                             $reference['quantity'],
                             $warehouse,
                             $reference['units'],
-                            $request->references
+                            $references
                         );
 
                     $totalPrice = ($unitPrice * $reference['units']) + $price;
+                    $serverTotal += $totalPrice;
 
                     SaleDetail::create([
                         'inventory_id' => $reference['reference'],
@@ -187,7 +280,7 @@ class SaleController extends Controller
                         'price' => $totalPrice,
                     ]);
 
-                    if ($reference['reference'] == $giftBagId) {
+                    if ($giftBagId !== null && $reference['reference'] == $giftBagId) {
                         $quantityToSubtract = $reference['units'];
                     } else {
                         $quantityToSubtract = ($reference['quantity'] * $reference['units']) * 0.5;
@@ -248,26 +341,53 @@ class SaleController extends Controller
                     }
                 }
 
-                $cashRegister->total_collected += $request->total;
-
-                if ($request->pay_method == 'Transferencia') {
-                    $cashRegister->total_digital += $request->total;
+                /*
+                 * El importe lo fija el servidor, no el navegador.
+                 *
+                 * Antes 'total' se tomaba de $request->total sin compararlo
+                 * nunca con los precios calculados aquí: un cajero que
+                 * interceptara la petición podía registrar una venta de
+                 * $180.000 como $1.000, con el stock descontado correctamente
+                 * y el arqueo cuadrando contra la cifra falsificada.
+                 *
+                 * Se registra la discrepancia en vez de rechazar la venta:
+                 * una diferencia también puede venir de un desfase entre el
+                 * cálculo del frontend y el del servidor, y bloquear la caja
+                 * por eso sería peor que dejar constancia.
+                 */
+                if ($request->has('total') && (int) $request->total !== (int) $serverTotal) {
+                    Log::warning('Discrepancia entre el total enviado y el calculado en el servidor', [
+                        'sale_id' => $sale->sale_id,
+                        'user_id' => auth()->id(),
+                        'location_id' => $userLocation->location_id,
+                        'client_total' => $request->total,
+                        'server_total' => $serverTotal,
+                    ]);
                 }
 
-                $cashRegister->count_100_bill += $request->count_100_bill;
-                $cashRegister->count_50_bill += $request->count_50_bill;
-                $cashRegister->count_20_bill += $request->count_20_bill;
-                $cashRegister->count_10_bill += $request->count_10_bill;
-                $cashRegister->count_5_bill += $request->count_5_bill;
-                $cashRegister->count_2_bill += $request->count_2_bill;
-                $cashRegister->total_coins += $request->total_coins;
+                $sale->total = $serverTotal;
+                $sale->save();
 
-                $cashRegister->count_100_bill -= $request->rest_count_100_bill;
-                $cashRegister->count_50_bill -= $request->rest_count_50_bill;
-                $cashRegister->count_20_bill -= $request->rest_count_20_bill;
-                $cashRegister->count_10_bill -= $request->rest_count_10_bill;
-                $cashRegister->count_5_bill -= $request->rest_count_5_bill;
-                $cashRegister->total_coins -= $request->rest_total_coins;
+                $cashRegister->total_collected += $serverTotal;
+
+                if ($validated['pay_method'] == 'Transferencia') {
+                    $cashRegister->total_digital += $serverTotal;
+                }
+
+                $cashRegister->count_100_bill += (int) ($validated['count_100_bill'] ?? 0);
+                $cashRegister->count_50_bill += (int) ($validated['count_50_bill'] ?? 0);
+                $cashRegister->count_20_bill += (int) ($validated['count_20_bill'] ?? 0);
+                $cashRegister->count_10_bill += (int) ($validated['count_10_bill'] ?? 0);
+                $cashRegister->count_5_bill += (int) ($validated['count_5_bill'] ?? 0);
+                $cashRegister->count_2_bill += (int) ($validated['count_2_bill'] ?? 0);
+                $cashRegister->total_coins += (int) ($validated['total_coins'] ?? 0);
+
+                $cashRegister->count_100_bill -= (int) ($validated['rest_count_100_bill'] ?? 0);
+                $cashRegister->count_50_bill -= (int) ($validated['rest_count_50_bill'] ?? 0);
+                $cashRegister->count_20_bill -= (int) ($validated['rest_count_20_bill'] ?? 0);
+                $cashRegister->count_10_bill -= (int) ($validated['rest_count_10_bill'] ?? 0);
+                $cashRegister->count_5_bill -= (int) ($validated['rest_count_5_bill'] ?? 0);
+                $cashRegister->total_coins -= (int) ($validated['rest_total_coins'] ?? 0);
 
                 $cashRegister->save();
 

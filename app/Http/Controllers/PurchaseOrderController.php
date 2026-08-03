@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Notifications\PurchaseOrderCreate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -114,10 +115,17 @@ class PurchaseOrderController extends Controller
             'references.*.quantity' => 'required',
         ]);
     
+        /*
+         * La cabecera, los renglones de entrada y los ajustes de inventario
+         * son una sola operación de negocio y se escribían sin transacción:
+         * un fallo a mitad del bucle dejaba la orden actualizada y el
+         * inventario cuadrado solo en parte.
+         */
+        return DB::transaction(function () use ($request, $purchaseOrderId) {
         PurchaseOrder::where('purchase_order_id', $purchaseOrderId)->update([
             'supplier_order' => $request->supplier_order
         ]);
-    
+
         foreach ($request->references as $reference) {
 
             $warehouse = (strtoupper($reference['unity'] ?? '') == 'KG') ? 1 : 3;
@@ -176,5 +184,6 @@ class PurchaseOrderController extends Controller
         }
     
         return redirect()->route('orders.detail', $purchaseOrderId)->with('success', 'Orden actualizada correctamente');
+        });
     }
 }

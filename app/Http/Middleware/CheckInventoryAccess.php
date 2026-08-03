@@ -18,7 +18,16 @@ class CheckInventoryAccess
             return redirect()->route('logout');
         }
         if ($user->hasRole('Asesor comercial')) {
-            $hasAcceptedToday = InventoryValidation::where('location_id', $user->location_user[0]->location_id)
+            // location_user[0] sobre una relación vacía era un 500 en el
+            // middleware, es decir antes de llegar a ningún controlador.
+            $location = $user->location_user->first();
+
+            if (! $location) {
+                return redirect()->route('logout')
+                    ->with('error', 'El usuario '.$user->username.' no tiene una sede asignada');
+            }
+
+            $hasAcceptedToday = InventoryValidation::where('location_id', $location->location_id)
                 ->whereDate('date', Carbon::today())
                 ->exists();
 

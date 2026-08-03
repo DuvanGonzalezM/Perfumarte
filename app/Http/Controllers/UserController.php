@@ -9,12 +9,21 @@ use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
-{  
+{
+    /**
+     * Vigencia del enlace de activación que el administrador entrega al
+     * usuario para que fije su primera contraseña.
+     */
+    private const ACTIVATION_LINK_TTL_HOURS = 72;
+
     public function getUsers()
     {
         $users = User::with('roles')->withTrashed();
@@ -36,25 +45,40 @@ class UserController extends Controller
 
     public function storeUser(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'username' => 'required|string|max:255|unique:' . User::class,
+            'name' => 'required|string|max:255',
+            'role_id' => 'required|integer|exists:roles,id',
+            'boss_user' => 'nullable|integer',
+            'zone_id' => 'nullable|integer|exists:zones,zone_id',
+            'location_id' => 'nullable|integer|exists:locations,location_id',
+            'enabled' => 'nullable|boolean',
         ]);
 
-        $user = User::create([
-            'username' => (string) $request->username,
-            'name' => (string) $request->name,
-            'password' => Hash::make(Str::password(16, true, true, true, false)),
-            'boss_user' => (int) $request->boss_user,
-            'enabled' => (bool) $request->enabled,
-            'location_id' => (int) $request->location_id,
-            'default_password' => true,
-            'zone_id' => (int) $request->zone_id,
-        ]);
+        $this->assertAssignableRoles([$validated['role_id']]);
 
-        $user->syncRoles($request->role_id);
-        
+        $user = DB::transaction(function () use ($request, $validated) {
+            $user = User::create([
+                'username' => (string) $validated['username'],
+                'name' => (string) $validated['name'],
+                'password' => Hash::make(Str::password(16, true, true, true, false)),
+                'boss_user' => $request->filled('boss_user') ? (int) $request->boss_user : null,
+                'enabled' => $request->boolean('enabled'),
+                'location_id' => $request->filled('location_id') ? (int) $request->location_id : null,
+                'default_password' => true,
+                'zone_id' => $request->filled('zone_id') ? (int) $request->zone_id : null,
+            ]);
+
+            $user->syncRoles($validated['role_id']);
+
+            return $user;
+        });
+
         event(new Registered($user));
-        return redirect()->route('users.list');
+
+        return redirect()->route('users.list')
+            ->with('activation_url', $this->activationUrl($user))
+            ->with('success', 'Usuario creado. Entregue el enlace de activación al titular de la cuenta.');
     }
 
     public function editUser(Request $request, $user_id)
@@ -65,14 +89,11 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($user_id);
-        $user->update([
+        $user->update($this->optionalUserAttributes($request, $user) + [
             'username' => (string) $request->username,
             'name' => (string) $request->name,
-            'boss_user' => (int) $request->boss_user ?? null,
-            'enabled' => (bool) $request->enabled ?? false,
-            'zone_id' => (int) $request->zone_id ?? null,
-            'default_password' => $request->has('default_password') ? $request->default_password : $user->default_password,
         ]);
+
         return redirect()->route('users.list');
     }
 
@@ -89,18 +110,20 @@ class UserController extends Controller
     }
 
     public function enableUser($user_id)
-{
-    try {
-        $user = User::withTrashed()->findOrFail($user_id);
-        $user->restore();
-        $user->default_password = true;
-        $user->save();
-        return redirect()->route('users.list');
-       
-    } catch (\Exception $e) {
-        return back();
+    {
+        try {
+            $user = User::withTrashed()->findOrFail($user_id);
+            $user->restore();
+            $user->default_password = true;
+            $user->save();
+
+            return redirect()->route('users.list')
+                ->with('activation_url', $this->activationUrl($user))
+                ->with('success', 'Usuario reactivado. Entregue el enlace de activación al titular de la cuenta.');
+        } catch (\Exception $e) {
+            return back();
+        }
     }
-}
 
     public function detailUser($user_id)
     {
@@ -128,28 +151,33 @@ class UserController extends Controller
 
     public function updateUserRolePermission(Request $request, $user_id)
     {
-        $request->validate([
-            'roles' => 'required',
-                'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
-                'name' => 'required|string|max:255',  
-            ]);
-    
-        $user = User::findOrFail($user_id);
-        
-        if($request->enabled == 0){
-            $user->location_user()->detach();
-        }
-
-        $user->update([
-            'username' => (string) $request->username,
-            'name' => (string) $request->name,
-            'boss_user' => (int) $request->boss_user ?? null,
-            'enabled' => (bool) $request->enabled ?? false,
-            'default_password' => $request->has('default_password') ? $request->default_password : $user->default_password,
-            'zone_id' => (int) $request->zone_id ?? null,
+        $validated = $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'integer|exists:roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'integer|exists:permissions,id',
+            'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
+            'name' => 'required|string|max:255',
         ]);
-        $user->syncRoles($request->roles);
-        $user->syncPermissions($request->permissions);
+
+        $this->assertAssignableRoles($validated['roles']);
+
+        $user = User::findOrFail($user_id);
+
+        DB::transaction(function () use ($request, $validated, $user) {
+            if ($request->enabled == 0) {
+                $user->location_user()->detach();
+            }
+
+            $user->update($this->optionalUserAttributes($request, $user) + [
+                'username' => (string) $validated['username'],
+                'name' => (string) $validated['name'],
+            ]);
+
+            $user->syncRoles($validated['roles']);
+            $user->syncPermissions($validated['permissions'] ?? []);
+        });
+
         return redirect()->route('users.list');
     }
 
@@ -164,7 +192,10 @@ class UserController extends Controller
             'default_password' => true,
             'password' => Hash::make(Str::password(16, true, true, true, false)),
         ]);
-        return redirect()->route('users.detail', $user_id)->with('success', 'Contraseña restablecida exitosamente');
+
+        return redirect()->route('users.detail', $user_id)
+            ->with('activation_url', $this->activationUrl($user))
+            ->with('success', 'Contraseña restablecida. Entregue el enlace de activación al titular de la cuenta.');
     }
 
     public function getPermissionRol(Request $request, $roles_id='')
@@ -191,10 +222,15 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
         ]);
-        $permission = Permission::make(['guard_name' => 'web','name' => $request->name]); 
+        $permission = Permission::make(['guard_name' => 'web','name' => $request->name]);
         $permission->saveOrFail();
-        $roleAdministrador = Role::whereIn('name', ['Administrador', 'TI'])->firstOrFail();
-        $roleAdministrador->givePermissionTo($permission);
+
+        // Antes esto era firstOrFail(), que devuelve UN solo rol: cada permiso
+        // nuevo quedaba en Administrador o en TI según cuál tuviera el id menor,
+        // nunca en ambos. De ahí la deriva de ACL entre los dos perfiles.
+        Role::whereIn('name', ['Administrador', 'TI'])
+            ->get()
+            ->each(fn (Role $role) => $role->givePermissionTo($permission));
 
         return redirect('permissions');
     }
@@ -237,5 +273,77 @@ class UserController extends Controller
         $role->update(['guard_name' => 'web','name' => $request->name]);
         $role->syncPermissions($request->permissions);
         return redirect('roles');
+    }
+
+    /**
+     * Enlace de activación firmado y con vencimiento.
+     *
+     * Es la única vía por la que una cuenta con contraseña predeterminada puede
+     * fijar su contraseña. El administrador lo entrega al titular por el mismo
+     * canal por el que hoy entrega credenciales.
+     */
+    private function activationUrl(User $user): string
+    {
+        return URL::temporarySignedRoute(
+            'password.change',
+            now()->addHours(self::ACTIVATION_LINK_TTL_HOURS),
+            ['username' => $user->username]
+        );
+    }
+
+    /**
+     * Impide la escalada de privilegios por payload.
+     *
+     * La lectura de detailUser() ya oculta el rol TI a quien no lo tiene, pero
+     * la escritura no validaba nada: bastaba enviar el id del rol TI para
+     * obtener el máximo privilegio.
+     *
+     * @param  array<int, int|string>  $roleIds
+     */
+    private function assertAssignableRoles(array $roleIds): void
+    {
+        if (Auth::user()?->hasRole('TI')) {
+            return;
+        }
+
+        $restricted = Role::whereIn('id', $roleIds)->where('name', 'TI')->exists();
+
+        if ($restricted) {
+            throw ValidationException::withMessages([
+                'roles' => 'No tiene autorización para asignar el rol TI.',
+            ]);
+        }
+    }
+
+    /**
+     * Atributos opcionales del usuario, incluidos solo si vienen en el payload.
+     *
+     * Antes se escribían con `(int) $request->campo ?? null`, que nunca produce
+     * null porque el cast se evalúa primero: omitir `enabled` deshabilitaba al
+     * usuario en silencio y omitir `boss_user`/`zone_id` escribía 0.
+     *
+     * @return array<string, mixed>
+     */
+    private function optionalUserAttributes(Request $request, User $user): array
+    {
+        $attributes = [];
+
+        if ($request->has('boss_user')) {
+            $attributes['boss_user'] = $request->filled('boss_user') ? (int) $request->boss_user : null;
+        }
+
+        if ($request->has('zone_id')) {
+            $attributes['zone_id'] = $request->filled('zone_id') ? (int) $request->zone_id : null;
+        }
+
+        if ($request->has('enabled')) {
+            $attributes['enabled'] = $request->boolean('enabled');
+        }
+
+        if ($request->has('default_password')) {
+            $attributes['default_password'] = $request->boolean('default_password');
+        }
+
+        return $attributes;
     }
 }

@@ -15,7 +15,6 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
-        \App\Http\Middleware\CheckFirstLogin::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -39,6 +38,9 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            // Debe ir después de StartSession: en la pila global se evaluaba
+            // sin sesión y auth()->check() siempre daba false.
+            \App\Http\Middleware\CheckFirstLogin::class,
         ],
 
         'api' => [
@@ -68,5 +70,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'inventory.check' => \App\Http\Middleware\CheckInventoryAccess::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'password.change.access' => \App\Http\Middleware\EnsurePasswordChangeAccess::class,
     ];
 }

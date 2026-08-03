@@ -15,6 +15,7 @@ class Product extends Model
 
     protected $fillable = [
         'reference',
+        'name',
         'measurement_unit',
         'supplier_id',
         'commercial_reference',
@@ -24,6 +25,7 @@ class Product extends Model
         'status',
     ];
     protected $casts = [
+        'status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

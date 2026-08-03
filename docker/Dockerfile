@@ -47,7 +47,10 @@ RUN rm -rf node_modules
 # ----------------------------------------------------------------------------
 
 # Stage 2: Final Image
-FROM php:8.3-fpm
+# La etapa se nombra para que docker-compose pueda apuntar a ella: antes ambos
+# compose fijaban `target: builder` y esta etapa no se construía nunca, de modo
+# que producción corría con dependencias de desarrollo y sin su php.ini.
+FROM php:8.3-fpm AS production
 
 # Instalar solo las extensiones de PHP necesarias para producción
 RUN apt-get update && apt-get install -y \
@@ -59,8 +62,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# pcntl lo necesitan los workers de cola y Reverb; estaba solo en la etapa
+# builder. opcache se habilita explícitamente: sin docker-php-ext-enable el
+# bloque [opcache] del php.ini era inerte.
 RUN docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) pdo pdo_mysql gd zip
+    && docker-php-ext-install -j$(nproc) pdo pcntl pdo_mysql gd zip opcache
 
 WORKDIR /var/www
 

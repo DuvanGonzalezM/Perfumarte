@@ -27,7 +27,7 @@ class returnedDispatchController extends Controller
             ]);
         }
 
-        return Inertia::render('Dispatch/Dispatchdetail', [
+        return Inertia::render('Dispatch/DispatchDetail', [
             'dispatch' => $dispatch
         ]);
     }

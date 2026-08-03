@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\DamageReturn;
 use App\Models\Warehouse;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
@@ -40,7 +41,23 @@ class DamageReturnController extends Controller
     {
         $user = auth()->user();
 
-        $warehouse = $user->location_user[0]->warehouses[0];
+        /*
+         * La ruta está protegida por `can:Crear Devoluciones`, permiso típico
+         * de Administrador, Gerencia y Jefe de operaciones: perfiles que no
+         * tienen filas en location_user. Con la relación vacía,
+         * location_user[0] era null y la lectura de ->warehouses producía un
+         * "Attempt to read property on null" → HTTP 500.
+         *
+         * Es el mismo patrón que ConsumableController ya resolvía con `?? null`
+         * y redirect()->back()->withErrors().
+         */
+        $warehouse = $user->location_user->first()?->warehouses->first();
+
+        if (! $warehouse) {
+            return redirect()->back()->withErrors([
+                'error' => 'Su usuario no tiene una sede con bodega asignada.',
+            ]);
+        }
 
         $inventory = Inventory::with('product')
             ->where('warehouse_id', $warehouse->warehouse_id)
@@ -163,94 +180,136 @@ class DamageReturnController extends Controller
             'details.*.observations' => 'required|string',
         ]);
 
-        $damageReturn = DamageReturn::with(['damageReturnDetail.inventory.product'])->findOrFail($id);
+        try {
+            /*
+             * Sin transacción, el `return ... withErrors()` que había dentro
+             * del bucle abandonaba a medias: los movimientos de stock de las
+             * iteraciones anteriores ya estaban confirmados y la devolución
+             * quedaba en un estado incoherente. Ahora se lanza una excepción y
+             * revierte todo.
+             */
+            return DB::transaction(function () use ($validated, $id) {
+                $damageReturn = DamageReturn::with(['damageReturnDetail.inventory.product'])
+                    ->where('damage_return_id', $id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-        foreach ($validated['details'] as $detailData) {
-            $detail = $damageReturn->damageReturnDetail
-                ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
-                ->first();
-
-            if (!$detail)
-                continue;
-
-            $detail->observations = $detailData['observations'];
-            $detail->received = $detailData['received'] ?? false;
-            $detail->save();
-
-            if ($detailData['received']) {
-                $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
-                    ->where('warehouse_id', $detail->warehouse_id)
-                    ->first();
-
-                if (!$inventoryOrigin || $inventoryOrigin->quantity < $detail->damage_quantity) {
-                    return redirect()->back()->withErrors(['error' => 'Cantidad insuficiente o inventario no encontrado']);
+                if ($damageReturn->status !== 'Confirmar') {
+                    throw new \Exception('Esta devolución ya fue procesada y no se puede modificar.');
                 }
 
-                $inventoryOrigin->quantity -= $detail->damage_quantity;
-                $inventoryOrigin->save();
+                foreach ($validated['details'] as $detailData) {
+                    $detail = $damageReturn->damageReturnDetail
+                        ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
+                        ->first();
 
-                $productCategory = $detail->inventory->product->category ?? '';
-                $targetWarehouseId = ($productCategory === 'Insumo') ? 3 : 2;
+                    if (!$detail)
+                        continue;
 
-                $inventoryTarget = Inventory::where('product_id', $detail->inventory->product_id)
-                    ->where('warehouse_id', $targetWarehouseId)
-                    ->first();
+                    $detail->observations = $detailData['observations'];
+                    $detail->received = $detailData['received'] ?? false;
+                    $detail->save();
 
-                if ($inventoryTarget) {
-                    $inventoryTarget->quantity += $detail->damage_quantity;
-                    $inventoryTarget->save();
+                    if ($detailData['received']) {
+                        $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
+                            ->where('warehouse_id', $detail->warehouse_id)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if (!$inventoryOrigin || $inventoryOrigin->quantity < $detail->damage_quantity) {
+                            throw new \Exception('Cantidad insuficiente o inventario no encontrado');
+                        }
+
+                        $inventoryOrigin->quantity -= $detail->damage_quantity;
+                        $inventoryOrigin->save();
+
+                        $productCategory = $detail->inventory->product->category ?? '';
+                        $targetWarehouseId = ($productCategory === 'Insumo') ? 3 : 2;
+
+                        $inventoryTarget = Inventory::where('product_id', $detail->inventory->product_id)
+                            ->where('warehouse_id', $targetWarehouseId)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if ($inventoryTarget) {
+                            $inventoryTarget->quantity += $detail->damage_quantity;
+                            $inventoryTarget->save();
+                        }
+                    }
                 }
-            }
+
+                $damageReturn->status = 'En aprobacion';
+                $damageReturn->save();
+
+                return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $damageReturn->status = 'En aprobacion';
-        $damageReturn->save();
-
-        return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada');
     }
 
     public function approveReturnFinal(Request $request, $id)
     {
-        $damageReturn = DamageReturn::with('damageReturnDetail.inventory.product')->findOrFail($id);
+        // $request->details se recorría sin validar.
+        $validated = $request->validate([
+            'details' => 'required|array',
+            'details.*.damage_return_detail_id' => 'required|exists:damage_return_detail,damage_return_detail_id',
+            'details.*.discarded' => 'nullable|boolean',
+        ]);
 
-        if ($damageReturn->status !== 'En aprobacion') {
-            return redirect()->back()->withErrors(['error' => 'Esta devolución no está en estado En aprobación.']);
-        }
+        try {
+            return DB::transaction(function () use ($validated, $id) {
+                $damageReturn = DamageReturn::with('damageReturnDetail.inventory.product')
+                    ->where('damage_return_id', $id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-        foreach ($request->details as $detailData) {
-            $detail = $damageReturn->damageReturnDetail
-                ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
-                ->first();
-
-            if (!$detail) {
-                continue;
-            }
-
-            if (!$detail->received && !empty($detailData['discarded'])) {
-                continue;
-            }
-
-            $detail->discarded = !empty($detailData['discarded']) && $detailData['discarded'] == true;
-            $detail->save();
-
-            if ($detail->discarded) {
-                $productCategory = $detail->inventory->product->category ?? '';
-                $targetWarehouseId = ($productCategory === 'Insumo') ? 3 : 2;
-
-                $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-                    ->where('warehouse_id', $targetWarehouseId)
-                    ->first();
-
-                if ($inventory && $inventory->quantity >= $detail->damage_quantity) {
-                    $inventory->quantity -= $detail->damage_quantity;
-                    $inventory->save();
+                // Guarda de estado dentro de la transacción y con la fila
+                // bloqueada: fuera de ella, dos peticiones simultáneas podían
+                // pasarla ambas y dar de baja el stock dos veces.
+                if ($damageReturn->status !== 'En aprobacion') {
+                    throw new \Exception('Esta devolución no está en estado En aprobación.');
                 }
-            }
+
+                foreach ($validated['details'] as $detailData) {
+                    $detail = $damageReturn->damageReturnDetail
+                        ->where('damage_return_detail_id', $detailData['damage_return_detail_id'])
+                        ->first();
+
+                    if (!$detail) {
+                        continue;
+                    }
+
+                    if (!$detail->received && !empty($detailData['discarded'])) {
+                        continue;
+                    }
+
+                    $detail->discarded = !empty($detailData['discarded']) && $detailData['discarded'] == true;
+                    $detail->save();
+
+                    if ($detail->discarded) {
+                        $productCategory = $detail->inventory->product->category ?? '';
+                        $targetWarehouseId = ($productCategory === 'Insumo') ? 3 : 2;
+
+                        $inventory = Inventory::where('product_id', $detail->inventory->product_id)
+                            ->where('warehouse_id', $targetWarehouseId)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if ($inventory && $inventory->quantity >= $detail->damage_quantity) {
+                            $inventory->quantity -= $detail->damage_quantity;
+                            $inventory->save();
+                        }
+                    }
+                }
+
+                $damageReturn->status = 'Aprobado';
+                $damageReturn->save();
+
+                return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada y cantidades dadas de baja.');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $damageReturn->status = 'Aprobado';
-        $damageReturn->save();
-
-        return redirect()->route('damageReturn.list')->with('success', 'Devolución aprobada y cantidades dadas de baja.');
     }
 }

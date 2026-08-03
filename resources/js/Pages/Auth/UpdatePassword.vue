@@ -1,34 +1,44 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import BaseLayout from '@/Layouts/BaseLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Alert from '@/Components/Alert.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
-const props = defineProps({
-    username: { type: String },
-    actionUrl: { type: String, required: true },
-});
 const form = useForm({
+    current_password: '',
     password: '',
     password_confirmation: '',
 });
 
-// actionUrl viene firmado desde el servidor cuando se llega por enlace de
-// activación; route() no puede generarlo porque no conoce la firma.
 const submit = () => {
-    form.put(props.actionUrl);
+    form.post(route('change-password.update'), {
+        onSuccess: () => form.reset(),
+    });
 };
 </script>
 
 <template>
-    <GuestLayout title="Cambiar Contraseña" :loading="form.processing">
+    <BaseLayout :loading="form.processing">
         <Head title="Cambiar Contraseña" />
+        <template #header>
+            <h1>Cambiar Contraseña</h1>
+        </template>
+
         <Alert v-if="form.hasErrors" :message="Object.values(form.errors)[0]" type="danger" icon="fa-circle-xmark" />
-        <div class="text-center mb-1">
-            <p>Su cuenta tiene una contraseña predeterminada. Por razones de seguridad, debe cambiarla antes de continuar.</p>
-        </div>
+
         <form @submit.prevent="submit" class="form-container">
+            <div class="form-group">
+                <TextInput
+                    labelValue="Contraseña Actual"
+                    id="current_password"
+                    name="current_password"
+                    type="password"
+                    v-model="form.current_password"
+                    required
+                />
+            </div>
+
             <div class="form-group">
                 <TextInput
                     labelValue="Nueva Contraseña"
@@ -52,13 +62,10 @@ const submit = () => {
             </div>
 
             <div class="button-wrapper d-flex justify-content-center">
-                <PrimaryButton 
-                    @click="submit" 
-                    :class="form.processing ? 'disabled' : ''"
-                >
-                Cambiar Contraseña
+                <PrimaryButton @click="submit" :class="form.processing ? 'disabled' : ''">
+                    Cambiar Contraseña
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+    </BaseLayout>
 </template>

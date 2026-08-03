@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Location extends Model
 {
     use HasFactory;
+    // Todas las FK del proyecto son ON DELETE CASCADE: borrar una sede
+    // arrasaba con su caja, sus ventas, sus auditorías y su inventario.
+    use SoftDeletes;
 
     protected $primaryKey = 'location_id';
 
@@ -49,6 +53,11 @@ class Location extends Model
     public function users_location(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'location_user', 'location_id', 'user_id');
+    }
+
+    public function cashRegisters(): HasMany
+    {
+        return $this->hasMany(CashRegister::class, 'location_id');
     }
 
     public function requests(): HasMany

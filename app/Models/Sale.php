@@ -17,6 +17,7 @@ class Sale extends Model
 
     protected $fillable = [
         'cash_register_id',
+        'location_id',
         'total',
         'payment_method',
         'transaction_code',

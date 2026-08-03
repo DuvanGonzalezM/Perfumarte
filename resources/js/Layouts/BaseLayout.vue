@@ -7,6 +7,7 @@ import { watchEffect } from 'vue';
 import InfoLocation from '@/Components/InfoLocation.vue';
 import { is } from 'laravel-permission-to-vuejs';
 import Loader from '@/Components/Loader.vue';
+import ActivationLink from '@/Components/ActivationLink.vue';
 
 const { props } = usePage();
 
@@ -51,6 +52,7 @@ watchEffect(() => {
                 </header>
 
                 <main>
+                    <ActivationLink />
                     <slot />
                 </main>
             </div>

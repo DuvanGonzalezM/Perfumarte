@@ -9,3 +9,13 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Defensa en profundidad para `git archive`: aunque estos directorios están en
+# .gitignore y por tanto no se exportarían, quedan excluidos también si alguien
+# los agregara al índice por error.
+/.audith export-ignore
+/.claude export-ignore
+/docker/production/ssl export-ignore
+/certbot export-ignore
+/.DS_Store export-ignore
+AGENTS.md export-ignore

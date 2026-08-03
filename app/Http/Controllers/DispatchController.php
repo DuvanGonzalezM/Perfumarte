@@ -67,35 +67,40 @@ class DispatchController extends Controller
             'dispatches.*.references.*.dispatched_quantity' => 'required',
         ]);
         try {
+            /*
+             * Sin transacción, el DELETE de la línea siguiente quedaba
+             * confirmado aunque el bucle de recreación lanzara: el despacho se
+             * quedaba sin detalle y de forma irrecuperable.
+             */
+            return DB::transaction(function () use ($request, $dispatchId) {
+                DispatchDetail::where('dispatch_id', $dispatchId)->delete();
 
-            DispatchDetail::where('dispatch_id', $dispatchId)->delete();
+                foreach ($request->dispatches as $location) {
+                    foreach ($location['references'] as $reference) {
 
-            foreach ($request->dispatches as $location) {
-                foreach ($location['references'] as $reference) {
+                        $inventory = Inventory::with('product')
+                            ->where('inventory_id', $reference['reference'])
+                            ->whereIn('warehouse_id', [2, 3])
+                            ->lockForUpdate()
+                            ->firstOrFail();
 
-                    $inventory = Inventory::with('product')
-                        ->where('inventory_id', $reference['reference'])
-                        ->whereIn('warehouse_id', [2, 3])
-                        ->firstOrFail();
+                        if ($inventory->quantity < $reference['dispatched_quantity']) {
+                            throw new \Exception("No hay suficiente stock para {$inventory->product->reference}. Disponible: {$inventory->quantity}, Solicitado: {$reference['dispatched_quantity']}");
+                        }
 
-                    if ($inventory->quantity < $reference['dispatched_quantity']) {
-                        throw new \Exception("No hay suficiente stock para {$inventory->product->reference}. Disponible: {$inventory->quantity}, Solicitado: {$reference['dispatched_quantity']}");
+                        DispatchDetail::create([
+                            'dispatch_id' => $dispatchId,
+                            'warehouse_id' => $location['warehouse'],
+                            'inventory_id' => $reference['reference'],
+                            'request_id' => $location['request_id'],
+                            'dispatched_quantity' => $reference['dispatched_quantity'],
+                            'received' => 0
+                        ]);
                     }
-
-                    DispatchDetail::create([
-                        'dispatch_id' => $dispatchId,
-                        'warehouse_id' => $location['warehouse'],
-                        'inventory_id' => $reference['reference'],
-                        'request_id' => $location['request_id'],
-                        'dispatched_quantity' => $reference['dispatched_quantity'],
-                        'received' => 0
-                    ]);
                 }
-            }
 
-            return redirect()->route('dispatch.list')->with('success', 'Despacho actualizado correctamente');
-
-
+                return redirect()->route('dispatch.list')->with('success', 'Despacho actualizado correctamente');
+            });
         } catch (\Exception $e) {
 
             return redirect()->back()
@@ -108,12 +113,28 @@ class DispatchController extends Controller
     {
         try {
             return DB::transaction(function () use ($id) {
-                $dispatch = Dispatch::with('dispatchdetail')->findOrFail($id);
+                /*
+                 * Guarda de estado con bloqueo: sin ella, un doble clic o un
+                 * reintento del navegador aprobaba dos veces el mismo despacho
+                 * y descontaba el stock por duplicado. La transacción sola no
+                 * lo evita; hace falta releer la fila bloqueada y comprobar que
+                 * sigue en el estado de partida.
+                 */
+                $dispatch = Dispatch::with('dispatchdetail')
+                    ->where('dispatch_id', $id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if ($dispatch->status !== 'En aprobacion') {
+                    throw new \Exception('El despacho ya fue procesado.');
+                }
+
                 $requestList = [];
 
                 foreach ($dispatch->dispatchdetail as $detail) {
                     $inventoryOrigin = Inventory::where('inventory_id', $detail->inventory_id)
                         ->whereIn('warehouse_id', [2, 3])
+                        ->lockForUpdate()
                         ->first();
 
                     if (!$inventoryOrigin) {
@@ -222,7 +243,10 @@ class DispatchController extends Controller
             ]);
         }
 
-        return Inertia::render('Dispatch/Dispatchdetail', [
+        // El archivo real es DispatchDetail.vue. En Linux, sensible a
+        // mayúsculas, este nombre no está en public/build/manifest.json y
+        // @vite lanza ViteException → 500 sistemático.
+        return Inertia::render('Dispatch/DispatchDetail', [
             'dispatch' => $dispatch
         ]);
     }
@@ -236,32 +260,51 @@ class DispatchController extends Controller
             'details.*.returned_quantity' => 'required|numeric',
         ]);
 
-        foreach ($request->details as $detailData) {
-            $detail = DispatchDetail::with('inventory')->find($detailData['id']);
+        try {
+            /*
+             * Antes esto reintegraba stock sin transacción y sin comprobar el
+             * estado del despacho: un reintento sumaba de nuevo todas las
+             * cantidades devueltas al inventario.
+             */
+            return DB::transaction(function () use ($request) {
+                $dispatch = Dispatch::where('dispatch_id', $request->dispatch_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            $detail->returned_quantity = $detailData['returned_quantity'];
-            $detail->save();
+                if ($dispatch->status === 'Devuelto') {
+                    throw new \Exception('Las cantidades devueltas de este despacho ya fueron registradas.');
+                }
 
-            $inventory = Inventory::where('product_id', $detail->inventory->product_id)
-                ->whereIn('warehouse_id', [2, 3])
-                ->first();
+                foreach ($request->details as $detailData) {
+                    $detail = DispatchDetail::with('inventory')->find($detailData['id']);
 
-            if ($inventory) {
-                $inventory->quantity += $detailData['returned_quantity'];
-                $inventory->save();
-            } else {
-                Inventory::create([
-                    'product_id' => $detail->inventory->product_id,
-                    'warehouse_id' => 2,
-                    'quantity' => $detailData['returned_quantity'],
-                ]);
-            }
+                    $detail->returned_quantity = $detailData['returned_quantity'];
+                    $detail->save();
+
+                    $inventory = Inventory::where('product_id', $detail->inventory->product_id)
+                        ->whereIn('warehouse_id', [2, 3])
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($inventory) {
+                        $inventory->quantity += $detailData['returned_quantity'];
+                        $inventory->save();
+                    } else {
+                        Inventory::create([
+                            'product_id' => $detail->inventory->product_id,
+                            'warehouse_id' => 2,
+                            'quantity' => $detailData['returned_quantity'],
+                        ]);
+                    }
+                }
+
+                $dispatch->status = 'Devuelto';
+                $dispatch->save();
+
+                return redirect()->route('dispatch.list')->with('success', 'Cantidades devueltas registradas en inventario.');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $dispatch = Dispatch::findOrFail($request->dispatch_id);
-        $dispatch->status = 'Devuelto';
-        $dispatch->save();
-
-        return redirect()->route('dispatch.list')->with('success', 'Cantidades devueltas registradas en inventario.');
     }
 }

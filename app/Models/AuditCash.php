@@ -13,7 +13,8 @@ class AuditCash extends Model
     protected $primaryKey = 'audit_cash_id'; 
 
     protected $fillable = [
-        'id_audits', 
+        'id_audits',
+        'cash_register_id',
         'money_in_box',
         'money_in_digital',
         'confirmation_cash',
