@@ -1,7 +1,6 @@
 volumes:
   public_assets: {}
   nginx-logs: {}
-  certbot-etc: {}
 
 services:
   app:
