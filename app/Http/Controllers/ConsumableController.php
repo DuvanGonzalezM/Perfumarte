@@ -82,14 +82,18 @@ class ConsumableController extends Controller
         $user = auth()->user();
         $isSpecialRole = $user->hasRole(['Administrador', 'Gerencia', 'Jefe de operaciones']);
 
+        $warehouseId = $isSpecialRole
+            ? 3
+            : $user->location_user->first()?->warehouses->first()?->warehouse_id;
+
+        if (! $warehouseId) {
+            return back()
+                ->withInput()
+                ->withErrors(['general' => 'Su usuario no tiene una sede con bodega asignada.']);
+        }
+
         if ($request->has('consumable')) {
             foreach ($request->consumable as $locationIndex => $location) {
-                $warehouseId = $location['warehouse_id'] ?? null;
-
-                if ($isSpecialRole) {
-                    $warehouseId = 3; 
-                }
-
                 foreach ($location['references'] as $referenceIndex => $reference) {
                     $inventory = Inventory::where('inventory_id', $reference['reference'] ?? null)
                         ->where('warehouse_id', $warehouseId)
@@ -114,16 +118,10 @@ class ConsumableController extends Controller
         }
 
         try {
-            return DB::transaction(function () use ($request, $user, $isSpecialRole) {
+            return DB::transaction(function () use ($request, $user, $warehouseId) {
                 $savedConsumables = [];
 
                 foreach ($request->consumable as $location) {
-                    $warehouseId = $location['warehouse_id'] ?? null;
-
-                    if ($isSpecialRole) {
-                        $warehouseId = 3;
-                    }
-
                     foreach ($location['references'] as $reference) {
                         $inventory = Inventory::where('inventory_id', $reference['reference'])
                             ->where('warehouse_id', $warehouseId)

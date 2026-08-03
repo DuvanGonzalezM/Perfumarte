@@ -14,7 +14,7 @@ const props = defineProps({
     },
 });
 watchEffect(() => {
-    window.Echo.channel('purchase-order')
+    window.Echo.private('purchase-order')
         .listen('CreatePurchaseOrder', (e) => {
             props.purchaseOrders.push(e.purchaseOrder);
         });

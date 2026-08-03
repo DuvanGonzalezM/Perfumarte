@@ -20,6 +20,10 @@ class AuditController extends Controller
 {
     public function getCashAuditByLocation($locationId)
     {
+        if (! $this->userCanAuditLocation($locationId)) {
+            abort(403, 'No tiene autorización sobre esta sede.');
+        }
+
         $today = now()->toDateString();
         $location = Location::find($locationId);
 
@@ -29,25 +33,14 @@ class AuditController extends Controller
             return redirect()->route('audits')->with('error', 'Auditoría no encontrada.');
         }
 
-        $cashSales = Sale::with([
-            'cashRegister.location' => function ($query) use ($locationId) {
-                $query->where('location_id', $locationId);
-            }
-        ])
+        $salesOfDay = fn (string $paymentMethod) => Sale::with(['cashRegister.location', 'saleDetails'])
+            ->where('cash_register_id', $cashRegister->cash_register_id)
             ->whereDate('created_at', $today)
-            ->where('payment_method', 'Efectivo')
-            ->with('saleDetails')
+            ->where('payment_method', $paymentMethod)
             ->get();
 
-        $digitalSales = Sale::with([
-            'cashRegister.location' => function ($query) use ($locationId) {
-                $query->where('location_id', $locationId);
-            }
-        ])
-            ->whereDate('created_at', $today)
-            ->where('payment_method', 'Transferencia')
-            ->with('saleDetails')
-            ->get();
+        $cashSales = $salesOfDay('Efectivo');
+        $digitalSales = $salesOfDay('Transferencia');
 
         return Inertia::render('Audit/AuditCash', [
             'cashRegister' => $cashRegister,
@@ -130,6 +123,10 @@ class AuditController extends Controller
     {
         $audit = Audit::with('location')->findOrFail($id);
 
+        if (! $this->userCanAuditLocation($audit->location_id)) {
+            abort(403, 'No tiene autorización sobre esta sede.');
+        }
+
         $auditCash = AuditCash::where('id_audits', $audit->id_audits)->first();
 
         return Inertia::render('Audit/AuditDetailCash', [
@@ -147,6 +144,10 @@ class AuditController extends Controller
                 'products' => [],
                 'error' => 'No se ha seleccionado una sede válida.'
             ]);
+        }
+
+        if (! $this->userCanAuditLocation($locationId)) {
+            abort(403, 'No tiene autorización sobre esta sede.');
         }
 
         $productsAudit = Inventory::whereHas('warehouse', function ($query) use ($locationId) {
@@ -203,6 +204,11 @@ class AuditController extends Controller
     public function auditInventoryDetail($id_audits)
     {
         $auditInventoryDetail = Audit::with('auditInventory.inventory.product', 'location')->where('id_audits', $id_audits)->first();
+
+        if ($auditInventoryDetail && ! $this->userCanAuditLocation($auditInventoryDetail->location_id)) {
+            abort(403, 'No tiene autorización sobre esta sede.');
+        }
+
         return Inertia::render('Audit/AuditDetailInventory', ['auditInventoryDetail' => $auditInventoryDetail]);
     }
 }

@@ -40,38 +40,46 @@ class PurchaseOrderController extends Controller
                 'references.*.reference' => 'required',
                 'references.*.quantity' => 'required',
             ]);
-            $purchaseOrder = PurchaseOrder::create([
-                'supplier_order' => $request->supplier_order
-            ]);
-    
-            foreach ($request->references as $reference) {
-                $warehouse = 3;
-                if (strtoupper($reference['unity']) == 'KG') {
-                    $warehouse = 1;
-                    $reference['quantity'] *= 1000;
-                }
-    
-                $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $reference['reference'])->first();
-                if ($inventory) {
-                    $quantity = $inventory->quantity + $reference['quantity'];
-                    $inventory->update([
-                        'quantity' => $quantity
-                    ]);
-                } else{
-                    Inventory::create([
-                        'warehouse_id' => $warehouse,
+            $purchaseOrder = DB::transaction(function () use ($request) {
+                $purchaseOrder = PurchaseOrder::create([
+                    'supplier_order' => $request->supplier_order
+                ]);
+
+                foreach ($request->references as $reference) {
+                    $warehouse = 3;
+                    if (strtoupper($reference['unity']) == 'KG') {
+                        $warehouse = 1;
+                        $reference['quantity'] *= 1000;
+                    }
+
+                    $inventory = Inventory::where('warehouse_id', $warehouse)
+                        ->where('product_id', $reference['reference'])
+                        ->lockForUpdate()
+                        ->first();
+                    if ($inventory) {
+                        $quantity = $inventory->quantity + $reference['quantity'];
+                        $inventory->update([
+                            'quantity' => $quantity
+                        ]);
+                    } else{
+                        Inventory::create([
+                            'warehouse_id' => $warehouse,
+                            'product_id' => $reference['reference'],
+                            'quantity' => $reference['quantity']
+                        ]);
+                    }
+
+                    ProductEntry::create([
+                        'purchase_order_id' => $purchaseOrder->purchase_order_id,
                         'product_id' => $reference['reference'],
-                        'quantity' => $reference['quantity']
+                        'quantity' => $reference['quantity'],
+                        'batch' => $reference['batch']
                     ]);
                 }
 
-                ProductEntry::create([
-                    'purchase_order_id' => $purchaseOrder->purchase_order_id,
-                    'product_id' => $reference['reference'],
-                    'quantity' => $reference['quantity'],
-                    'batch' => $reference['batch']
-                ]);
-            }
+                return $purchaseOrder;
+            });
+
             $users = User::whereHas('roles', function ($query) {
                 $query->where('name', 'Administrador');
             })->get();

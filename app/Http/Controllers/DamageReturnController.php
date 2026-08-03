@@ -66,17 +66,22 @@ class DamageReturnController extends Controller
     public function storeDamageReturn(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'damageReturn.*.warehouse_id' => 'required|exists:warehouses,warehouse_id',
             'damageReturn.*.references.*.reference' => 'required|exists:inventories,inventory_id',
             'damageReturn.*.references.*.damage_quantity' => 'required|integer|min:1',
             'damageReturn.*.references.*.observations' => 'required|string',
         ]);
 
-        $validator->after(function ($validator) use ($request) {
+        $warehouseId = auth()->user()->location_user->first()?->warehouses->first()?->warehouse_id;
+
+        if (! $warehouseId) {
+            return back()->withInput()->withErrors([
+                'general' => 'Su usuario no tiene una sede con bodega asignada.',
+            ]);
+        }
+
+        $validator->after(function ($validator) use ($request, $warehouseId) {
             if ($request->has('damageReturn')) {
                 foreach ($request->damageReturn as $locationIndex => $location) {
-                    $warehouseId = $location['warehouse_id'] ?? null;
-
                     foreach ($location['references'] as $referenceIndex => $reference) {
                         $inventory = Inventory::where('inventory_id', $reference['reference'] ?? null)
                             ->where('warehouse_id', $warehouseId)
@@ -100,32 +105,32 @@ class DamageReturnController extends Controller
         }
 
         try {
-            $damageReturn = new DamageReturn();
-            $damageReturn->status = 'Confirmar';
-            $damageReturn->save();
+            return DB::transaction(function () use ($request, $warehouseId) {
+                $damageReturn = new DamageReturn();
+                $damageReturn->status = 'Confirmar';
+                $damageReturn->save();
 
-            foreach ($request->damageReturn as $location) {
-                $warehouseId = $location['warehouse_id'];
+                foreach ($request->damageReturn as $location) {
+                    foreach ($location['references'] as $reference) {
+                        $inventory = Inventory::where('inventory_id', $reference['reference'])
+                            ->where('warehouse_id', $warehouseId)
+                            ->firstOrFail();
 
-                foreach ($location['references'] as $reference) {
-                    $inventory = Inventory::where('inventory_id', $reference['reference'])
-                        ->where('warehouse_id', $warehouseId)
-                        ->firstOrFail();
-
-                    $damageReturnDetail = new DamageReturnDetail();
-                    $damageReturnDetail->damage_return_id = $damageReturn->damage_return_id;
-                    $damageReturnDetail->inventory_id = $inventory->inventory_id;
-                    $damageReturnDetail->warehouse_id = $warehouseId;
-                    $damageReturnDetail->damage_quantity = $reference['damage_quantity'];
-                    $damageReturnDetail->observations = $reference['observations'];
-                    $damageReturnDetail->received = false;
-                    $damageReturnDetail->discarded = false;
-                    $damageReturnDetail->save();
+                        $damageReturnDetail = new DamageReturnDetail();
+                        $damageReturnDetail->damage_return_id = $damageReturn->damage_return_id;
+                        $damageReturnDetail->inventory_id = $inventory->inventory_id;
+                        $damageReturnDetail->warehouse_id = $warehouseId;
+                        $damageReturnDetail->damage_quantity = $reference['damage_quantity'];
+                        $damageReturnDetail->observations = $reference['observations'];
+                        $damageReturnDetail->received = false;
+                        $damageReturnDetail->discarded = false;
+                        $damageReturnDetail->save();
+                    }
                 }
-            }
 
-            return redirect()->route('damageReturn.list')
-                ->with('success', 'Devolución creada correctamente.');
+                return redirect()->route('damageReturn.list')
+                    ->with('success', 'Devolución creada correctamente.');
+            });
 
         } catch (\Exception $e) {
             Log::error('Error al crear la devolución: ' . $e->getMessage());

@@ -85,6 +85,9 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($user_id);
+
+        $this->assertCanManage($user);
+
         $user->update($this->optionalUserAttributes($request, $user) + [
             'username' => (string) $request->username,
             'name' => (string) $request->name,
@@ -95,11 +98,13 @@ class UserController extends Controller
 
     public function destroyUser($user_id)
     {
+        $this->assertCanManage(User::findOrFail($user_id));
+
         try {
             $user = User::findOrFail($user_id);
             $user->delete();
             return redirect()->route('users.list');
-           
+
         } catch (\Exception $e) {
             return back();
         }
@@ -107,6 +112,8 @@ class UserController extends Controller
 
     public function enableUser($user_id)
     {
+        $this->assertCanManage(User::withTrashed()->findOrFail($user_id));
+
         try {
             $user = User::withTrashed()->findOrFail($user_id);
             $user->restore();
@@ -160,6 +167,9 @@ class UserController extends Controller
 
         $user = User::findOrFail($user_id);
 
+        $this->assertCanManage($user);
+        $this->assertAssignablePermissions($validated['permissions'] ?? []);
+
         DB::transaction(function () use ($request, $validated, $user) {
             if ($request->enabled == 0) {
                 $user->location_user()->detach();
@@ -184,6 +194,9 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($user_id);
+
+        $this->assertCanManage($user);
+
         $user->update([
             'default_password' => true,
             'password' => Hash::make(Str::password(16, true, true, true, false)),
@@ -288,6 +301,33 @@ class UserController extends Controller
         if ($restricted) {
             throw ValidationException::withMessages([
                 'roles' => 'No tiene autorización para asignar el rol TI.',
+            ]);
+        }
+    }
+
+    private function assertCanManage(User $target): void
+    {
+        if (Auth::user()?->hasRole('TI')) {
+            return;
+        }
+
+        if ($target->hasRole('TI')) {
+            abort(403, 'No tiene autorización para administrar una cuenta TI.');
+        }
+    }
+
+    private function assertAssignablePermissions(array $permissionIds): void
+    {
+        if (Auth::user()?->hasRole('TI') || empty($permissionIds)) {
+            return;
+        }
+
+        $requested = Permission::whereIn('id', $permissionIds)->pluck('name');
+        $own = Auth::user()->getAllPermissions()->pluck('name');
+
+        if ($requested->diff($own)->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'permissions' => 'No tiene autorización para asignar permisos que usted no posee.',
             ]);
         }
     }

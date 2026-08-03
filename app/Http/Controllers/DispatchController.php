@@ -183,30 +183,31 @@ class DispatchController extends Controller
         ]);
 
         try {
+            return DB::transaction(function () use ($request) {
+                $dispatch = new Dispatch();
+                $dispatch->status = 'En aprobacion';
+                $dispatch->save();
 
-            $dispatch = new Dispatch();
-            $dispatch->status = 'En aprobacion';
-            $dispatch->save();
+                foreach ($request->dispatches as $location) {
+                    foreach ($location['references'] as $reference) {
+                        $inventory = Inventory::where('inventory_id', $reference['reference'])
+                            ->whereIn('warehouse_id', [2, 3])
+                            ->firstOrFail();
 
-            foreach ($request->dispatches as $location) {
-                foreach ($location['references'] as $reference) {
-                    $inventory = Inventory::where('inventory_id', $reference['reference'])
-                        ->whereIn('warehouse_id', [2, 3])
-                        ->firstOrFail();
+                        $detail = new DispatchDetail();
+                        $detail->warehouse_id = $location['warehouse'];
+                        $detail->dispatch_id = $dispatch->dispatch_id;
+                        $detail->inventory_id = $inventory->inventory_id;
+                        $detail->request_id = $location['request_id'];
+                        $detail->dispatched_quantity = $reference['dispatched_quantity'];
+                        $detail->received = 0;
+                        $detail->save();
 
-                    $detail = new DispatchDetail();
-                    $detail->warehouse_id = $location['warehouse'];
-                    $detail->dispatch_id = $dispatch->dispatch_id;
-                    $detail->inventory_id = $inventory->inventory_id;
-                    $detail->request_id = $location['request_id'];
-                    $detail->dispatched_quantity = $reference['dispatched_quantity'];
-                    $detail->received = 0;
-                    $detail->save();
-
+                    }
                 }
-            }
 
-            return redirect()->route('dispatch.list')->with('success');
+                return redirect()->route('dispatch.list')->with('success');
+            });
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -235,18 +236,17 @@ class DispatchController extends Controller
         ]);
     }
 
-    public function storeReturnedQuantities(Request $request)
+    public function storeReturnedQuantities(Request $request, $dispatch_id)
     {
-        $request->validate([
-            'dispatch_id' => 'required|exists:dispatches,dispatch_id',
+        $validated = $request->validate([
             'details' => 'required|array',
-            'details.*.id' => 'required|exists:dispatches_detail,dispatchs_detail_id',
-            'details.*.returned_quantity' => 'required|numeric',
+            'details.*.id' => 'required|integer|exists:dispatches_detail,dispatchs_detail_id',
+            'details.*.returned_quantity' => 'required|integer|min:0',
         ]);
 
         try {
-            return DB::transaction(function () use ($request) {
-                $dispatch = Dispatch::where('dispatch_id', $request->dispatch_id)
+            return DB::transaction(function () use ($validated, $dispatch_id) {
+                $dispatch = Dispatch::where('dispatch_id', $dispatch_id)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -254,8 +254,25 @@ class DispatchController extends Controller
                     throw new \Exception('Las cantidades devueltas de este despacho ya fueron registradas.');
                 }
 
-                foreach ($request->details as $detailData) {
-                    $detail = DispatchDetail::with('inventory')->find($detailData['id']);
+                $detailIds = array_column($validated['details'], 'id');
+
+                $details = DispatchDetail::with('inventory')
+                    ->whereIn('dispatchs_detail_id', $detailIds)
+                    ->where('dispatch_id', $dispatch->dispatch_id)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('dispatchs_detail_id');
+
+                if ($details->count() !== count($detailIds)) {
+                    throw new \Exception('Alguno de los detalles no pertenece a este despacho.');
+                }
+
+                foreach ($validated['details'] as $detailData) {
+                    $detail = $details->get($detailData['id']);
+
+                    if ($detailData['returned_quantity'] > $detail->dispatched_quantity) {
+                        throw new \Exception('La cantidad devuelta no puede superar la despachada.');
+                    }
 
                     $detail->returned_quantity = $detailData['returned_quantity'];
                     $detail->save();

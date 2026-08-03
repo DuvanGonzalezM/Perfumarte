@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\Models\PurchaseOrder;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -30,7 +29,7 @@ class CreatePurchaseOrder implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('purchase-order'),
+            new PrivateChannel('purchase-order'),
         ];
     }
 }

@@ -38,18 +38,43 @@ class SupplyReceptionController extends Controller
     {
         $validated = $request->validate([
             'products' => 'required|array',
+            'products.*.dispatchs_detail_id' => 'required|integer|exists:dispatches_detail,dispatchs_detail_id',
             'products.*.received' => 'nullable|boolean',
             'products.*.observation' => 'nullable|string',
             'products.*.quantity' => 'required|numeric|min:0'
         ]);
 
-        if (count($request['products']) === 0) {
+        if (count($validated['products']) === 0) {
             return redirect()->route('inventory.current', ['message' => '', 'status' => 200]);
         }
 
+        $warehouse = auth()->user()->location_user->first()?->warehouses->first();
+
+        if (! $warehouse) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Su usuario no tiene una sede con bodega asignada.');
+        }
+
         try {
-            return DB::transaction(function () use ($request) {
-                $dispatch = Dispatch::where('dispatch_id', $request['products'][0]['dispatch_id'])
+            return DB::transaction(function () use ($validated, $warehouse) {
+                $detailIds = array_column($validated['products'], 'dispatchs_detail_id');
+
+                $details = DispatchDetail::with('inventory')
+                    ->whereIn('dispatchs_detail_id', $detailIds)
+                    ->where('warehouse_id', $warehouse->warehouse_id)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('dispatchs_detail_id');
+
+                if ($details->count() !== count($detailIds)) {
+                    throw new \Exception('El despacho recibido no corresponde a su bodega.');
+                }
+
+                if ($details->pluck('dispatch_id')->unique()->count() !== 1) {
+                    throw new \Exception('Los detalles recibidos pertenecen a despachos distintos.');
+                }
+
+                $dispatch = Dispatch::where('dispatch_id', $details->first()->dispatch_id)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -59,9 +84,8 @@ class SupplyReceptionController extends Controller
 
                 $dispatch->update(['status' => 'Recibido']);
 
-                foreach ($request['products'] as $product) {
-                    $dispatchDetail = DispatchDetail::where('dispatchs_detail_id', $product['dispatchs_detail_id'])
-                        ->first();
+                foreach ($validated['products'] as $product) {
+                    $dispatchDetail = $details->get($product['dispatchs_detail_id']);
 
                 if ($dispatchDetail) {
                     $dispatchDetail->update([
@@ -75,7 +99,7 @@ class SupplyReceptionController extends Controller
                             ->lockForUpdate()
                             ->first();
 
-                        $incomingQuantity = $product['quantity'];
+                        $incomingQuantity = min((float) $product['quantity'], (float) $dispatchDetail->dispatched_quantity);
 
                         $category = optional($dispatchDetail->inventory->product)->category;
 

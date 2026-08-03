@@ -369,7 +369,16 @@ class SaleController extends Controller
 
     public function salesDetail($sale_id)
     {
-        $sale = Sale::with(['saleDetails.inventory.product', 'user'])->where('sale_id', $sale_id)->first();
+        $locationIds = auth()->user()->location_user->pluck('location_id');
+
+        $sale = Sale::with(['saleDetails.inventory.product', 'user'])
+            ->when($locationIds->isNotEmpty(), fn ($query) => $query->whereHas(
+                'cashRegister',
+                fn ($cashRegister) => $cashRegister->whereIn('location_id', $locationIds)
+            ))
+            ->where('sale_id', $sale_id)
+            ->firstOrFail();
+
         return Inertia::render('Sale/SaleDetail', ['sale' => $sale]);
     }
 }

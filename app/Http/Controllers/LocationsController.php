@@ -67,7 +67,10 @@ class LocationsController extends Controller
         $location = Location::findOrFail($id);
 
         $hasOpenCashRegister = $location->cashRegisters()
-            ->where('confirmationclosingcash', false)
+            ->where(function ($query) {
+                $query->whereNull('confirmationclosingcash')
+                    ->orWhere('confirmationclosingcash', false);
+            })
             ->exists();
 
         if ($hasOpenCashRegister) {

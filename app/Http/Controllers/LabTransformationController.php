@@ -33,10 +33,10 @@ class LabTransformationController extends Controller
         $warehouse = '2';
 
         $request->validate([
-            'reference' => 'required',
-            'escencia' => 'required',
-            'dipropileno' => 'required',
-            'disolvente' => 'required',
+            'reference' => 'required|integer|exists:products,product_id',
+            'escencia' => 'required|numeric|min:0',
+            'dipropileno' => 'required|numeric|min:0',
+            'disolvente' => 'required|numeric|min:0',
             'request' => 'required',
             'status' => 'required'
         ]);
@@ -45,11 +45,11 @@ class LabTransformationController extends Controller
             return DB::transaction(function () use ($request, $warehouse) {
                 $quantityFragance = $request['escencia'] + $request['dipropileno'] + $request['disolvente'];
 
-                $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->first();
+                $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->lockForUpdate()->first();
 
-                $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->first();
-                $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->first();
-                $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->first();
+                $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->lockForUpdate()->first();
+                $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->lockForUpdate()->first();
+                $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->lockForUpdate()->first();
 
                 if (!$escencia || $escencia->quantity < $request['escencia']) {
                     throw new \Exception('Stock insuficiente de esencia.');
@@ -121,53 +121,59 @@ class LabTransformationController extends Controller
         'solvent' => 'required|numeric|min:0',
     ]);
 
-    $transformation = Transformation::with(['inventory.product'])->findOrFail($transformationId);
+    return DB::transaction(function () use ($request, $transformationId) {
+        $transformation = Transformation::with(['inventory.product'])
+            ->where('transformation_id', $transformationId)
+            ->lockForUpdate()
+            ->firstOrFail();
 
-    $initialValues = [
-        'escence' => $transformation->escence,
-        'dipropylene' => $transformation->dipropylene,
-        'solvent' => $transformation->solvent
-    ];
+        $initialValues = [
+            'escence' => $transformation->escence,
+            'dipropylene' => $transformation->dipropylene,
+            'solvent' => $transformation->solvent
+        ];
 
-    $transformation->update([
-        'inventory_id' => $request['inventory_id'],
-        'escence' => $request['escence'],
-        'dipropylene' => $request['dipropylene'],
-        'solvent' => $request['solvent'],
-    ]);
- 
-    $escenciaProductId = $transformation->inventory->product->product_id; 
-    $escenciaInventory = Inventory::firstOrCreate(
-        ['warehouse_id' => 1, 'product_id' => $escenciaProductId],
-        ['quantity' => 0]
-    );
-    $escenciaInventory->quantity -= ($request['escence'] - $initialValues['escence']);
-    $escenciaInventory->save();
+        $escenciaProductId = $transformation->inventory->product->product_id;
 
-    $dipropilenoInventory = Inventory::firstOrCreate(
-        ['warehouse_id' => 1, 'product_id' => 1],
-        ['quantity' => 0]
-    );
-    $dipropilenoInventory->quantity -= ($request['dipropylene'] - $initialValues['dipropylene']);
-    $dipropilenoInventory->save();
+        $transformation->update([
+            'inventory_id' => $request['inventory_id'],
+            'escence' => $request['escence'],
+            'dipropylene' => $request['dipropylene'],
+            'solvent' => $request['solvent'],
+        ]);
 
-    $disolventeInventory = Inventory::firstOrCreate(
-        ['warehouse_id' => 1, 'product_id' => 2],
-        ['quantity' => 0]
-    );
-    $disolventeInventory->quantity -= ($request['solvent'] - $initialValues['solvent']);
-    $disolventeInventory->save();
+        $escenciaInventory = Inventory::firstOrCreate(
+            ['warehouse_id' => 1, 'product_id' => $escenciaProductId],
+            ['quantity' => 0]
+        );
+        $escenciaInventory->quantity -= ($request['escence'] - $initialValues['escence']);
+        $escenciaInventory->save();
 
-    $totalChange = ($request['escence'] + $request['dipropylene'] + $request['solvent']) - 
-                  ($initialValues['escence'] + $initialValues['dipropylene'] + $initialValues['solvent']);
+        $dipropilenoInventory = Inventory::firstOrCreate(
+            ['warehouse_id' => 1, 'product_id' => 1],
+            ['quantity' => 0]
+        );
+        $dipropilenoInventory->quantity -= ($request['dipropylene'] - $initialValues['dipropylene']);
+        $dipropilenoInventory->save();
 
-    $productoTerminadoInventory = Inventory::firstOrCreate(
-        [ 'warehouse_id' => 2, 'product_id' => $transformation->inventory->product->product_id],
-        ['quantity' => 0]
-    );
-    $productoTerminadoInventory->quantity += $totalChange;
-    $productoTerminadoInventory->save();
+        $disolventeInventory = Inventory::firstOrCreate(
+            ['warehouse_id' => 1, 'product_id' => 2],
+            ['quantity' => 0]
+        );
+        $disolventeInventory->quantity -= ($request['solvent'] - $initialValues['solvent']);
+        $disolventeInventory->save();
 
-    return redirect()->route('LabTransformation.list');
+        $totalChange = ($request['escence'] + $request['dipropylene'] + $request['solvent']) -
+                      ($initialValues['escence'] + $initialValues['dipropylene'] + $initialValues['solvent']);
+
+        $productoTerminadoInventory = Inventory::firstOrCreate(
+            ['warehouse_id' => 2, 'product_id' => $escenciaProductId],
+            ['quantity' => 0]
+        );
+        $productoTerminadoInventory->quantity += $totalChange;
+        $productoTerminadoInventory->save();
+
+        return redirect()->route('LabTransformation.list');
+    });
 }
 }
