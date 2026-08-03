@@ -30,15 +30,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        /*
-         * Toda comprobación sobre el estado de la cuenta va DESPUÉS de
-         * authenticate(). Antes se hacían antes, y la de default_password
-         * redirigía al formulario de cambio de contraseña sin validar la
-         * credencial: bastaba enviar un username válido con cualquier
-         * contraseña para obtener la URL con la que tomar control de la
-         * cuenta. Las cuentas con contraseña predeterminada se activan ahora
-         * mediante el enlace firmado que emite el administrador.
-         */
         $request->authenticate();
 
         $user = $request->user()->loadMissing('roles');

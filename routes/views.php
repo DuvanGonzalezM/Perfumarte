@@ -99,15 +99,12 @@ Route::middleware('auth')->group(function () {
             Route::get('stock/multiple-bodega', 'getMultipleInventory')->name('stock.multiple');
             Route::get('api/bodega/{warehouse_id}', 'getInventory')->name('api.warehouse');
         });
-        // Operación destructiva: exigía solo 'Ver Stock', un permiso de lectura.
         Route::group(['middleware' => ['can:Editar Stock']], function () {
             Route::put('stock/update', 'updateInventory')->name('stock.inventory.update');
         });
     });
 
     Route::controller(UserController::class)->group(function () {
-        // Antes estas tres rutas no exigían ningún permiso: cualquier usuario
-        // autenticado listaba todos los usuarios con sus roles y permisos.
         Route::group(['middleware' => ['can:Ver Usuarios']], function () {
             Route::get('users', 'getUsers')->name('users.list');
             Route::get('users/{user_id}', 'detailUser')->name('users.detail');
@@ -167,9 +164,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(LabTransformationController::class)->group(function () {
-        // El menú lateral enlaza LabTransformation.list bajo el permiso
-        // 'Ver Transformaciones', pero la ruta exigía 'Ver Reenvases': quien
-        // veía la opción recibía un 403 al pulsarla.
         Route::group(['middleware' => ['can:Ver Transformaciones']], function () {
             Route::get('transformaciones-de-laboratorio', 'getAllTransformation')->name('LabTransformation.list');
             Route::get('transformaciones-de-laboratorio/detalle-de-transformacion/{transformationId}', 'detailLabTransformation')->name('Labtransformation.detail');
@@ -203,9 +197,6 @@ Route::middleware('auth')->group(function () {
         Route::get('inventario actual', function () {
             return redirect()->route('inventory.current');
         });
-        // 'inventory/accept' crea InventoryValidation y CashRegister y no
-        // exigía ningún permiso. Y 'inventory.current' se protegía por rol
-        // mientras el menú lo enlazaba por permiso: quien veía la opción
         // recibía un 403.
         Route::group(['middleware' => ['can:Ver Inventario Sede']], function () {
             Route::get('inventario-inicial', 'start')->name('inventory.start');
@@ -264,8 +255,6 @@ Route::middleware('auth')->group(function () {
     });
     
     Route::controller(ReportController::class)->group(function () {
-        // 'generate.report' descargaba los informes financieros de toda la
-        // compañía para cualquier usuario autenticado, sin permiso alguno.
         Route::group(['middleware' => ['can:Ver Reportes']], function () {
             Route::get('reportes', 'getReports')->name('reports');
         });
@@ -306,7 +295,6 @@ Route::middleware('auth')->group(function () {
     });
     
     Route::controller(CashRegisterController::class)->group(function () {
-        // El cierre de caja no exigía ningún permiso.
         Route::group(['middleware' => ['can:Cerrar Caja']], function () {
             Route::get('ver-caja', 'closeCashRegister')->name('cash_register.close');
             Route::post('cerrar-caja', 'store')->name('cash.close');

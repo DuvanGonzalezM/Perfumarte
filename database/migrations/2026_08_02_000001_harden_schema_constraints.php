@@ -5,22 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Restricciones e índices que faltaban.
- *
- *  - users.username no tenía unique a nivel de base de datos: la unicidad
- *    dependía solo de la regla de validación, que no protege frente a dos
- *    peticiones concurrentes ni frente a una escritura directa.
- *  - boss_user y zone_id se declararon como string() con constrained()
- *    encadenado, que sobre una columna de texto es inerte: no se creó ninguna
- *    clave foránea real.
- *  - Cinco tablas se filtran por columnas sin índice.
- *
- * Todas las operaciones están guardadas para poder ejecutarse sobre una base
- * con datos sin romper el despliegue: si un dato existente impide aplicar una
- * restricción, se informa y se continúa en vez de abortar la migración
- * completa.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -52,14 +36,6 @@ return new class extends Migration
         }
     }
 
-    /**
-     * Convierte una columna de texto que guarda un identificador en una clave
-     * foránea real.
-     *
-     * Los valores que no apuntan a ninguna fila existente —incluido el 0 que
-     * escribía el patrón `(int) $request->campo ?? null`— pasan a NULL antes de
-     * crear la restricción.
-     */
     private function convertToRealForeignKey(string $table, string $column, string $referencedTable, string $referencedColumn): void
     {
         if ($this->foreignKeyExists($table, "{$table}_{$column}_foreign")) {

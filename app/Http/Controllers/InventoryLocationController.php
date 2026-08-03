@@ -55,15 +55,6 @@ class InventoryLocationController extends Controller
                 ->with('error', 'Su usuario no tiene una sede asignada.');
         }
 
-        /*
-         * Las dos escrituras son una sola operación de negocio —abrir el día
-         * en la sede— y no estaban en transacción: si la creación de la caja
-         * fallaba, quedaba la validación de inventario del día sin caja
-         * asociada y la sede no podía vender.
-         *
-         * La guarda de existencia evita además que un doble envío abra dos
-         * cajas para el mismo día.
-         */
         return DB::transaction(function () use ($request, $location) {
             $alreadyAccepted = InventoryValidation::where('location_id', $location->location_id)
                 ->whereDate('date', Carbon::today())

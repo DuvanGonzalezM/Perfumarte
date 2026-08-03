@@ -22,14 +22,6 @@ const props = defineProps({
 
 const paginVisibility = computed(() => props.data.length > 10);
 
-/*
- * Traducción incrustada. Antes se cargaba desde
- * https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-CO.json y DataTables no
- * inicializa la tabla hasta que ese $.ajax —sin timeout— resuelve: si la red
- * corporativa descarta la salida HTTPS, la tabla no se dibuja durante todo el
- * tiempo de espera del navegador. Era la única dependencia externa en runtime
- * del frontend y la compartían 35 páginas.
- */
 const spanishLanguage = {
     processing: 'Procesando...',
     lengthMenu: 'Mostrar _MENU_ registros',

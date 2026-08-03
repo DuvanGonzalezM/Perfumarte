@@ -17,9 +17,6 @@ class SaleController extends Controller
 {
     public function sales()
     {
-        // location_user está vacío para los perfiles sin sede asignada
-        // (Administrador, Gerencia, Jefe de operaciones). Antes esto era
-        // location_user[0]->location_id sobre null: 500 inmediato.
         $userLocation = auth()->user()->location_user->first()?->location_id;
 
         if (! $userLocation) {
@@ -110,10 +107,6 @@ class SaleController extends Controller
         }
     }
 
-    /**
-     * Medios de pago admitidos. Antes payment_method se guardaba tal cual
-     * llegaba del navegador, sin lista blanca.
-     */
     private const PAYMENT_METHODS = ['Efectivo', 'Transferencia', 'Tarjeta'];
 
     public function storeSales(Request $request)
@@ -151,7 +144,6 @@ class SaleController extends Controller
             'rest_total_coins' => 'nullable|integer',
         ]);
 
-        // El asesor al que se imputa la venta debe pertenecer a la misma sede.
         $assessorBelongsToLocation = User::where('user_id', $validated['assessor'])
             ->whereHas('location_user', fn ($q) => $q->where('location_user.location_id', $userLocation->location_id))
             ->exists();
@@ -184,7 +176,6 @@ class SaleController extends Controller
                 $sale = Sale::create([
                     'cash_register_id' => $cashRegister->cash_register_id,
                     'location_id' => $userLocation->location_id,
-                    // El total se recalcula abajo con los precios del servidor.
                     'total' => 0,
                     'user_id' => $validated['assessor'],
                     'payment_method' => $validated['pay_method'],
@@ -193,8 +184,6 @@ class SaleController extends Controller
                         : '',
                 ]);
 
-                // Antes esto encadenaba ->first()->inventory_id: si la bodega no
-                // tiene el producto "Bolsa de regalo", 500 al vender.
                 $giftBagId = Inventory::with('product')
                     ->whereHas('product', function ($query) {
                         $query->where('reference', 'Bolsa de regalo');
@@ -202,12 +191,6 @@ class SaleController extends Controller
                     ->where('warehouse_id', $warehouse->warehouse_id)
                     ->first()?->inventory_id;
 
-                /*
-                 * lockForUpdate() en todas las lecturas de inventario que luego
-                 * se decrementan. Sin él, dos cajeros que venden a la vez leen
-                 * el mismo stock y el segundo pisa el descuento del primero:
-                 * se venden 10 unidades y el sistema descuenta 5.
-                 */
                 $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                     ->whereHas('product', function ($query) {
                         $query->where('product_id', '2');
@@ -341,20 +324,6 @@ class SaleController extends Controller
                     }
                 }
 
-                /*
-                 * El importe lo fija el servidor, no el navegador.
-                 *
-                 * Antes 'total' se tomaba de $request->total sin compararlo
-                 * nunca con los precios calculados aquí: un cajero que
-                 * interceptara la petición podía registrar una venta de
-                 * $180.000 como $1.000, con el stock descontado correctamente
-                 * y el arqueo cuadrando contra la cifra falsificada.
-                 *
-                 * Se registra la discrepancia en vez de rechazar la venta:
-                 * una diferencia también puede venir de un desfase entre el
-                 * cálculo del frontend y el del servidor, y bloquear la caja
-                 * por eso sería peor que dejar constancia.
-                 */
                 if ($request->has('total') && (int) $request->total !== (int) $serverTotal) {
                     Log::warning('Discrepancia entre el total enviado y el calculado en el servidor', [
                         'sale_id' => $sale->sale_id,

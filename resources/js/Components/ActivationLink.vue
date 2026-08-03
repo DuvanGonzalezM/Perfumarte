@@ -14,8 +14,6 @@ const copy = async () => {
         copied.value = true;
         setTimeout(() => (copied.value = false), 3000);
     } catch (e) {
-        // Sin permiso de portapapeles el administrador puede seleccionar el
-        // texto a mano: el enlace se muestra completo de todos modos.
         copied.value = false;
     }
 };

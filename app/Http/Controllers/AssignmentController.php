@@ -36,9 +36,7 @@ class AssignmentController extends Controller
             }
         ])->get();
 
-
         $supervisorsQuery = User::role('Supervisor');
-        
 
         if (!$user->hasRole('Administrador')) {
             $supervisorsQuery->where('boss_user', $user->user_id);
@@ -55,15 +53,11 @@ class AssignmentController extends Controller
 
     public function updateAssignment(Request $request)
     {
-        // Antes ninguno de los dos campos se validaba contra la base: se podía
-        // enviar cualquier identificador.
         $validated = $request->validate([
             'location_id' => 'required|integer|exists:locations,location_id',
             'user_id' => 'nullable|integer|exists:users,user_id',
         ]);
 
-        // El desvinculado y el nuevo vínculo son una sola operación: sin
-        // transacción, un fallo entre ambos dejaba la sede sin supervisor.
         return DB::transaction(function () use ($validated) {
             $location = Location::where('location_id', $validated['location_id'])
                 ->with([

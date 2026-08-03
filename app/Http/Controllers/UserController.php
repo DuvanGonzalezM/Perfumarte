@@ -18,10 +18,6 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    /**
-     * Vigencia del enlace de activación que el administrador entrega al
-     * usuario para que fije su primera contraseña.
-     */
     private const ACTIVATION_LINK_TTL_HOURS = 72;
 
     public function getUsers()
@@ -225,9 +221,6 @@ class UserController extends Controller
         $permission = Permission::make(['guard_name' => 'web','name' => $request->name]);
         $permission->saveOrFail();
 
-        // Antes esto era firstOrFail(), que devuelve UN solo rol: cada permiso
-        // nuevo quedaba en Administrador o en TI según cuál tuviera el id menor,
-        // nunca en ambos. De ahí la deriva de ACL entre los dos perfiles.
         Role::whereIn('name', ['Administrador', 'TI'])
             ->get()
             ->each(fn (Role $role) => $role->givePermissionTo($permission));
@@ -275,13 +268,6 @@ class UserController extends Controller
         return redirect('roles');
     }
 
-    /**
-     * Enlace de activación firmado y con vencimiento.
-     *
-     * Es la única vía por la que una cuenta con contraseña predeterminada puede
-     * fijar su contraseña. El administrador lo entrega al titular por el mismo
-     * canal por el que hoy entrega credenciales.
-     */
     private function activationUrl(User $user): string
     {
         return URL::temporarySignedRoute(
@@ -291,15 +277,6 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Impide la escalada de privilegios por payload.
-     *
-     * La lectura de detailUser() ya oculta el rol TI a quien no lo tiene, pero
-     * la escritura no validaba nada: bastaba enviar el id del rol TI para
-     * obtener el máximo privilegio.
-     *
-     * @param  array<int, int|string>  $roleIds
-     */
     private function assertAssignableRoles(array $roleIds): void
     {
         if (Auth::user()?->hasRole('TI')) {
@@ -315,15 +292,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Atributos opcionales del usuario, incluidos solo si vienen en el payload.
-     *
-     * Antes se escribían con `(int) $request->campo ?? null`, que nunca produce
-     * null porque el cast se evalúa primero: omitir `enabled` deshabilitaba al
-     * usuario en silencio y omitir `boss_user`/`zone_id` escribía 0.
-     *
-     * @return array<string, mixed>
-     */
     private function optionalUserAttributes(Request $request, User $user): array
     {
         $attributes = [];

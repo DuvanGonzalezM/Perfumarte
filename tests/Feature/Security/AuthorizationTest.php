@@ -14,15 +14,6 @@ beforeEach(function () {
     $this->seed(RolePermissionSeeder::class);
 });
 
-/**
- * Regresión del IDOR de escritura en stock.
- *
- * `PUT stock/update` vivía bajo `can:Ver Stock` —un permiso de LECTURA— y no
- * validaba la pertenencia de `warehouse_id`. Las referencias ausentes del
- * payload se borraban FÍSICAMENTE y arrastraban por cascada `sale_details`,
- * de modo que un asesor comercial podía vaciar el inventario de otra sede y
- * destruir su histórico de ventas con una sola petición.
- */
 test('ver stock ya no autoriza a modificar el inventario', function () {
     $asesor = User::factory()->create();
     $asesor->assignRole('Asesor comercial');
@@ -46,8 +37,6 @@ test('un payload vacío ya no borra físicamente el inventario', function () {
     $this->actingAs($jefe)
         ->put('/stock/update', ['warehouse_id' => $warehouse->warehouse_id, 'products' => []]);
 
-    // La fila sigue existiendo: solo se pone a cero. Antes se borraba y la
-    // cascada se llevaba por delante sale_details y otras seis tablas.
     $inventory->refresh();
     expect($inventory->exists)->toBeTrue();
     expect((float) $inventory->quantity)->toBe(0.0);
@@ -69,12 +58,6 @@ test('no se puede modificar el inventario de una bodega de otra sede', function 
         ->assertForbidden();
 });
 
-/**
- * Regresión de la escalada al rol TI.
- *
- * `detailUser()` ocultaba el rol TI a quien no lo tuviera, pero la escritura no
- * validaba nada: bastaba enviar el id del rol TI en el payload.
- */
 test('un usuario que no es TI no puede asignarse el rol TI', function () {
     $administrador = User::factory()->create();
     $administrador->assignRole('Administrador');
@@ -111,9 +94,6 @@ test('un usuario TI sí puede asignar el rol TI', function () {
     expect($destino->fresh()->hasRole('TI'))->toBeTrue();
 });
 
-/**
- * Regresión de las rutas sin ningún control de autorización.
- */
 test('el listado de usuarios ya no es accesible para cualquier autenticado', function () {
     $asesor = User::factory()->create();
     $asesor->assignRole('Asesor comercial');
@@ -137,12 +117,6 @@ test('el cierre de caja exige permiso', function () {
     $this->actingAs($laboratorio)->get('/ver-caja')->assertForbidden();
 });
 
-/**
- * Habilita a un asesor comercial para operar en su sede.
- *
- * El middleware CheckInventoryAccess desvía a `inventory.start` a todo asesor
- * que no haya aceptado el inventario del día.
- */
 function habilitarJornada(User $usuario, Location $location): void
 {
     \App\Models\InventoryValidation::create([
@@ -153,11 +127,6 @@ function habilitarJornada(User $usuario, Location $location): void
     ]);
 }
 
-/**
- * Crea la cadena mínima sede → bodega → inventario para las pruebas.
- *
- * @return array{0: Location, 1: Warehouse, 2: Inventory}
- */
 function crearInventarioDePrueba(): array
 {
     $zoneId = DB::table('zones')->insertGetId([

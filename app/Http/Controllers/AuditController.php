@@ -60,8 +60,6 @@ class AuditController extends Controller
 
     public function confirmCashAudit(Request $request, $locationId)
     {
-        // showAudits() ya filtra las auditorías por las sedes del usuario; esta
-        // escritura no comprobaba nada y permitía auditar la caja de cualquier
         // sede de la red.
         if (! $this->userCanAuditLocation($locationId)) {
             abort(403, 'No tiene autorización sobre esta sede.');
@@ -81,8 +79,6 @@ class AuditController extends Controller
             'observations' => 'nullable|string'
         ]);
 
-        // Auditoría y detalle son una sola operación: sin transacción podía
-        // quedar un Audit sin su AuditCash.
         DB::transaction(function () use ($validatedData, $locationId, $cashRegister) {
             $audit = new Audit();
             $audit->user_id = auth()->id();
@@ -104,12 +100,6 @@ class AuditController extends Controller
         return redirect()->route('audits')->with('success', 'Cash audit confirmed successfully');
     }
 
-    /**
-     * Una sede es auditable si el usuario la tiene asignada.
-     *
-     * Los perfiles centrales, sin filas en location_user, auditan toda la red:
-     * para ellos el control es el permiso `Auditar` que exige la ruta.
-     */
     private function userCanAuditLocation($locationId): bool
     {
         $locationIds = auth()->user()->location_user->pluck('location_id')->map(fn ($id) => (int) $id);

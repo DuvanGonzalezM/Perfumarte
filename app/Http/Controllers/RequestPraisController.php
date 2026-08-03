@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-
 class RequestPraisController extends Controller
 {
     public function getAllRequest()
@@ -103,11 +102,6 @@ class RequestPraisController extends Controller
             'references.*.reference' => 'required|exists:inventories,inventory_id',
             'references.*.quantity' => 'required|integer|min:1'
         ]);
-        /*
-         * El DELETE del detalle y su recreación son una sola operación: sin
-         * transacción, un fallo en el bucle dejaba la solicitud sin renglones
-         * y sin forma de recuperarlos.
-         */
         return DB::transaction(function () use ($request, $requestId) {
             $requestPrais = RequestPrais::where('request_id', $requestId)
                 ->lockForUpdate()
@@ -138,7 +132,6 @@ class RequestPraisController extends Controller
         ]);
     }
 
-
     public function detailTransformation($requestId)
     {
         $tranformationRequest = RequestPrais::with([
@@ -150,7 +143,6 @@ class RequestPraisController extends Controller
             'transformationRequest' => $tranformationRequest
         ]);
     }
-
 
     public function createTransformation()
     {

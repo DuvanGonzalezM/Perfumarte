@@ -159,6 +159,10 @@ make lint     # formateo (Laravel Pint)
 Las pruebas `Feature` usan `RefreshDatabase` y requieren una base MySQL
 accesible; se ejecutan dentro del contenedor.
 
+Las pruebas que renderizan una página Inertia necesitan el manifiesto de Vite,
+que genera `make compile`. Si no está presente, esas pruebas se omiten con un
+mensaje explícito en lugar de fallar.
+
 ## 🔒 Seguridad
 
 - Autenticación por sesión con contraseñas hasheadas con bcrypt.

@@ -5,22 +5,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\URL;
 
-/**
- * Regresión de la toma de control de cuentas sin autenticación.
- *
- * Estado anterior:
- *
- *  - `routes/auth.php` exponía GET y PUT `change-password/{username}` bajo el
- *    middleware `guest`, sin ninguna comprobación.
- *  - `PasswordChangeController` filtraba con `whereAnd()`, que no existe en
- *    Eloquent: caía en dynamicWhere() y no agregaba ni una condición al SQL.
- *  - `AuthenticatedSessionController` redirigía a esa URL ANTES de validar la
- *    contraseña, de modo que el propio login entregaba al atacante la
- *    dirección exacta con la que tomar la cuenta.
- *
- * Bastaba enviar un username válido con cualquier contraseña para fijarle una
- * nueva y entrar.
- */
 beforeEach(function () {
     Http::fake([
         '*' => Http::response(['success' => true], 200),
@@ -56,8 +40,6 @@ test('el login ya no revela qué cuentas tienen contraseña predeterminada', fun
         'captcha_token' => 'test',
     ]);
 
-    // Antes esto redirigía a password.change y confirmaba el estado de la
-    // cuenta antes de validar credencial alguna.
     $response->assertSessionHasErrors('username');
     $this->assertGuest();
 });
@@ -100,7 +82,6 @@ test('un enlace firmado vencido no sirve', function () {
 });
 
 test('una cuenta deshabilitada no puede activarse ni con enlace válido', function () {
-    // El filtro `enabled` se perdía por completo con whereAnd().
     $usuario = User::factory()->withDefaultPassword()->disabled()->create();
 
     $url = URL::temporarySignedRoute(

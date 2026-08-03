@@ -115,12 +115,6 @@ class PurchaseOrderController extends Controller
             'references.*.quantity' => 'required',
         ]);
     
-        /*
-         * La cabecera, los renglones de entrada y los ajustes de inventario
-         * son una sola operación de negocio y se escribían sin transacción:
-         * un fallo a mitad del bucle dejaba la orden actualizada y el
-         * inventario cuadrado solo en parte.
-         */
         return DB::transaction(function () use ($request, $purchaseOrderId) {
         PurchaseOrder::where('purchase_order_id', $purchaseOrderId)->update([
             'supplier_order' => $request->supplier_order

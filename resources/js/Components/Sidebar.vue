@@ -165,8 +165,6 @@ const buttons = [
         active: page.component.startsWith('Consumable'),
         can: 'Ver Consumibles',
     },
-    // Novedades tenía rutas y páginas completas pero ningún enlace en todo el
-    // frontend: el módulo era inalcanzable.
     {
         name: 'Novedades',
         href: route('novelties.list'),

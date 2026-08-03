@@ -67,11 +67,6 @@ class DispatchController extends Controller
             'dispatches.*.references.*.dispatched_quantity' => 'required',
         ]);
         try {
-            /*
-             * Sin transacción, el DELETE de la línea siguiente quedaba
-             * confirmado aunque el bucle de recreación lanzara: el despacho se
-             * quedaba sin detalle y de forma irrecuperable.
-             */
             return DB::transaction(function () use ($request, $dispatchId) {
                 DispatchDetail::where('dispatch_id', $dispatchId)->delete();
 
@@ -113,13 +108,6 @@ class DispatchController extends Controller
     {
         try {
             return DB::transaction(function () use ($id) {
-                /*
-                 * Guarda de estado con bloqueo: sin ella, un doble clic o un
-                 * reintento del navegador aprobaba dos veces el mismo despacho
-                 * y descontaba el stock por duplicado. La transacción sola no
-                 * lo evita; hace falta releer la fila bloqueada y comprobar que
-                 * sigue en el estado de partida.
-                 */
                 $dispatch = Dispatch::with('dispatchdetail')
                     ->where('dispatch_id', $id)
                     ->lockForUpdate()
@@ -168,7 +156,6 @@ class DispatchController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-
 
     public function createDispatch()
     {
@@ -243,9 +230,6 @@ class DispatchController extends Controller
             ]);
         }
 
-        // El archivo real es DispatchDetail.vue. En Linux, sensible a
-        // mayúsculas, este nombre no está en public/build/manifest.json y
-        // @vite lanza ViteException → 500 sistemático.
         return Inertia::render('Dispatch/DispatchDetail', [
             'dispatch' => $dispatch
         ]);
@@ -261,11 +245,6 @@ class DispatchController extends Controller
         ]);
 
         try {
-            /*
-             * Antes esto reintegraba stock sin transacción y sin comprobar el
-             * estado del despacho: un reintento sumaba de nuevo todas las
-             * cantidades devueltas al inventario.
-             */
             return DB::transaction(function () use ($request) {
                 $dispatch = Dispatch::where('dispatch_id', $request->dispatch_id)
                     ->lockForUpdate()

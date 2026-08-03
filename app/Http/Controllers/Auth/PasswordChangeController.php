@@ -13,9 +13,6 @@ use Inertia\Inertia;
 
 class PasswordChangeController extends Controller
 {
-    /**
-     * Vigencia de la URL firmada que recibe el formulario.
-     */
     private const ACTION_URL_TTL_MINUTES = 30;
 
     /**
@@ -38,9 +35,6 @@ class PasswordChangeController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Antes esto usaba whereAnd(), que no existe en Eloquent: caía en
-        // dynamicWhere() y no agregaba ni una condición al SQL, de modo que
-        // ninguno de los dos filtros se aplicaba.
         $user = User::where('username', $username)
             ->where('enabled', true)
             ->where('default_password', true)
@@ -60,13 +54,6 @@ class PasswordChangeController extends Controller
             ->with('status', 'Contraseña actualizada. Ya puede iniciar sesión.');
     }
 
-    /**
-     * URL a la que apunta el formulario.
-     *
-     * El titular autenticado usa la ruta normal; quien llega por enlace de
-     * activación necesita que el PUT también vaya firmado, porque
-     * EnsurePasswordChangeAccess lo exige.
-     */
     private function actionUrl(string $username): string
     {
         if (Auth::check() && Auth::user()->username === $username) {

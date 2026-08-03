@@ -45,8 +45,6 @@ class User extends Authenticatable
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'default_password' => 'boolean',
-        // Sin este cast, y con PDO::ATTR_EMULATE_PREPARES, MySQL devuelve el
-        // tinyint(1) como la cadena "1" y cualquier comparación estricta falla.
         'enabled' => 'boolean',
     ];
 

@@ -37,15 +37,6 @@ class RepackageController extends Controller
         ]);
     
         try {
-            /*
-             * El movimiento entre bodegas es un traslado: descuento en origen,
-             * ingreso en destino y registro del cambio. Se escribía sin
-             * transacción, de modo que un fallo a mitad podía descontar el
-             * stock de esencias sin acreditarlo en la bodega de reenvase.
-             *
-             * La comprobación de stock vivía además fuera de toda transacción y
-             * sin bloqueo, con la lectura desacoplada de la escritura.
-             */
             return DB::transaction(function () use ($request, $warehouse, $esenceWarehouse) {
                 $inventoryOut = Inventory::where('warehouse_id', $esenceWarehouse)
                     ->where('product_id', $request['reference'])
@@ -102,8 +93,6 @@ class RepackageController extends Controller
             'quantity' => 'required|numeric',
         ]);
     
-        // Mismo traslado entre bodegas que storeRepackage, con el mismo defecto:
-        // tres escrituras encadenadas sin transacción ni bloqueo.
         return DB::transaction(function () use ($request, $repackageId) {
             $repackage = ChangeWarehouse::with(['inventory.product'])
                 ->where('change_warehouse_id', $repackageId)

@@ -4,18 +4,15 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Http;
 
-// LoginRequest exige captcha_token y la regla Recaptcha consulta a Google.
 beforeEach(function () {
     Http::fake(['*' => Http::response(['success' => true], 200)]);
 });
 
-/*
- * La versión anterior de este archivo autenticaba con `email`, campo que la
- * tabla `users` no tiene: las cuatro pruebas fallaban con "Unknown column".
- * El sistema autentica por `username`.
- */
-
 test('la pantalla de login se renderiza', function () {
+    if (! file_exists(public_path('build/manifest.json'))) {
+        $this->markTestSkipped('Ejecute `make compile` antes: faltan los assets compilados.');
+    }
+
     $this->get('/login')->assertStatus(200);
 });
 

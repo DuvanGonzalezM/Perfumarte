@@ -38,8 +38,6 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-            // Debe ir después de StartSession: en la pila global se evaluaba
-            // sin sesión y auth()->check() siempre daba false.
             \App\Http\Middleware\CheckFirstLogin::class,
         ],
 

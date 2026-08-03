@@ -14,8 +14,6 @@ const form = useForm({
     password_confirmation: '',
 });
 
-// actionUrl viene firmado desde el servidor cuando se llega por enlace de
-// activación; route() no puede generarlo porque no conoce la firma.
 const submit = () => {
     form.put(props.actionUrl);
 };

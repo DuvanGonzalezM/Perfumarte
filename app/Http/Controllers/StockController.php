@@ -44,7 +44,6 @@ class StockController extends Controller
         return $query->where('user_id', '=', auth()->id());
     })->get();
 
-    // Sin bodegas asignadas, ->first()->warehouse_id era un 500.
     $inventory = $warehouses->isEmpty()
         ? collect()
         : Inventory::with('product.supplier')
@@ -67,20 +66,6 @@ class StockController extends Controller
     ]);
 }
 
-    /**
-     * Ajuste manual de inventario de una bodega.
-     *
-     * Cuatro defectos acumulados antes de esta corrección:
-     *
-     *  1. La ruta vivía bajo `can:Ver Stock`, un permiso de LECTURA, de modo
-     *     que un asesor comercial podía ejecutar una operación destructiva.
-     *  2. `warehouse_id` no se validaba ni se comprobaba su pertenencia:
-     *     cualquiera podía apuntar a la bodega de otra sede.
-     *  3. Las filas ausentes del payload se BORRABAN físicamente y arrastraban
-     *     por cascada `sale_details`, destruyendo el histórico de ventas. Con
-     *     `products: []` se vaciaba el inventario de una sede entera.
-     *  4. Todo ello sin transacción.
-     */
     public function updateInventory(Request $request)
     {
         $validated = $request->validate([
@@ -104,12 +89,6 @@ class StockController extends Controller
             $currentInventoryMap = $currentInventory->keyBy('product_id');
             $submittedIds = array_column($validated['products'], 'product_id');
 
-            /*
-             * Las referencias que ya no vienen en el payload se ponen a cero en
-             * lugar de borrarse: la fila de inventario es el destino de las FK
-             * de sale_details, dispatches_detail, audit_inventory y otras seis
-             * tablas, todas con ON DELETE CASCADE y ninguna con SoftDeletes.
-             */
             foreach ($currentInventory as $item) {
                 if (! in_array($item->product_id, $submittedIds)) {
                     $item->update(['quantity' => 0]);
@@ -134,13 +113,6 @@ class StockController extends Controller
         return redirect()->route('stock.multiple');
     }
 
-    /**
-     * Una bodega es administrable si pertenece a alguna sede del usuario.
-     *
-     * Los perfiles centrales (Administrador, Gerencia, Jefe de operaciones) no
-     * tienen filas en location_user y operan sobre toda la red; para ellos el
-     * control efectivo es el permiso `Editar Stock` que exige la ruta.
-     */
     private function userCanManageWarehouse(Warehouse $warehouse): bool
     {
         $locationIds = auth()->user()->location_user->pluck('location_id');

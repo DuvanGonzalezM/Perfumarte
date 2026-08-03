@@ -15,8 +15,6 @@ class SupplyReceptionController extends Controller
 {
     public function show()
     {
-        // location_user[0]->warehouses[0] sobre una relación vacía era un 500
-        // para todo perfil sin sede asignada.
         $warehouse = auth()->user()->location_user->first()?->warehouses->first();
 
         if (! $warehouse) {
@@ -50,11 +48,6 @@ class SupplyReceptionController extends Controller
         }
 
         try {
-            /*
-             * Antes esto entraba stock sin transacción y sin comprobar el
-             * estado del despacho: un reintento del navegador volvía a sumar
-             * todas las cantidades recibidas al inventario.
-             */
             return DB::transaction(function () use ($request) {
                 $dispatch = Dispatch::where('dispatch_id', $request['products'][0]['dispatch_id'])
                     ->lockForUpdate()

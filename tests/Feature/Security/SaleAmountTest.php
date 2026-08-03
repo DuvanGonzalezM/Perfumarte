@@ -5,18 +5,6 @@ use App\Models\Sale;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 
-/**
- * Regresión del importe de venta controlado por el cliente.
- *
- * `storeSales` no tenía una sola llamada a validate(): guardaba
- * `'total' => $request->total` y sumaba esa misma cifra a
- * `cash_registers.total_collected`, sin compararla nunca con los precios que
- * el propio servidor calculaba y escribía en `sale_details.price`.
- *
- * Un cajero que interceptara la petición podía registrar una venta de $180.000
- * como $1.000: el stock se descontaba bien, el detalle reflejaba los precios
- * reales y el arqueo cuadraba contra la cifra falsificada.
- */
 beforeEach(function () {
     $this->seed(RolePermissionSeeder::class);
 });
@@ -43,7 +31,6 @@ test('el total de la venta lo fija el servidor, no el navegador', function () {
         'confirmationclosingcash' => false,
     ]);
 
-    // price30 de la bodega es 5000 y se venden 2 unidades: 10 000.
     $totalRealEsperado = 10000;
 
     $this->actingAs($cajero)->post('/ventas/nueva-venta', [
@@ -67,8 +54,6 @@ test('el total de la venta lo fija el servidor, no el navegador', function () {
 });
 
 test('la venta queda imputada a la sede del cajero', function () {
-    // sales.location_id no existía en las migraciones y storeSales nunca la
-    // escribía, de modo que el listado de ventas por sede salía siempre vacío.
     [$location, $warehouse, $inventory] = crearInventarioDePrueba();
 
     $cajero = User::factory()->create();
@@ -126,8 +111,6 @@ test('no se admite un medio de pago fuera de la lista blanca', function () {
 });
 
 test('el stock fraccionado ya no se trunca al descontarse', function () {
-    // (quantity * units) * 0.5 da 2.5 para una venta de 5 ml: sobre la columna
-    // entera anterior MySQL truncaba a 2 y el inventario perdía media unidad
     // en cada venta.
     [$location, $warehouse, $inventory] = crearInventarioDePrueba();
 
@@ -156,6 +139,5 @@ test('el stock fraccionado ya no se trunca al descontarse', function () {
         ]],
     ]);
 
-    // 100 - (5 * 1 * 0.5) = 97.5, no 98.
     expect((float) $inventory->fresh()->quantity)->toBe(97.5);
 });

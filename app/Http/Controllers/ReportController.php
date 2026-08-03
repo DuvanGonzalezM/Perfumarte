@@ -270,7 +270,6 @@ class ReportController extends Controller
         }
         
         $report = Report::create([
-            // Trazabilidad de quién descarga información financiera.
             'user_id' => auth()->id(),
             'type_report' => $nameReport,
             'start_date_report' => $startDate,

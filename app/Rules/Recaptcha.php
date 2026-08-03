@@ -23,8 +23,6 @@ class Recaptcha implements ValidationRule
                 'response' => $value,
             ])->json();
         } catch (\Throwable $e) {
-            // Si Google no responde, el acceso se deniega en vez de reventar
-            // con un 500 sobre un array nulo.
             $fail('No se pudo validar el captcha. Intente de nuevo.');
 
             return;

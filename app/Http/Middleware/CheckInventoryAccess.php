@@ -18,8 +18,6 @@ class CheckInventoryAccess
             return redirect()->route('logout');
         }
         if ($user->hasRole('Asesor comercial')) {
-            // location_user[0] sobre una relación vacía era un 500 en el
-            // middleware, es decir antes de llegar a ningún controlador.
             $location = $user->location_user->first();
 
             if (! $location) {

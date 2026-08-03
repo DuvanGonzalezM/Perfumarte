@@ -41,16 +41,6 @@ class DamageReturnController extends Controller
     {
         $user = auth()->user();
 
-        /*
-         * La ruta está protegida por `can:Crear Devoluciones`, permiso típico
-         * de Administrador, Gerencia y Jefe de operaciones: perfiles que no
-         * tienen filas en location_user. Con la relación vacía,
-         * location_user[0] era null y la lectura de ->warehouses producía un
-         * "Attempt to read property on null" → HTTP 500.
-         *
-         * Es el mismo patrón que ConsumableController ya resolvía con `?? null`
-         * y redirect()->back()->withErrors().
-         */
         $warehouse = $user->location_user->first()?->warehouses->first();
 
         if (! $warehouse) {
@@ -181,13 +171,6 @@ class DamageReturnController extends Controller
         ]);
 
         try {
-            /*
-             * Sin transacción, el `return ... withErrors()` que había dentro
-             * del bucle abandonaba a medias: los movimientos de stock de las
-             * iteraciones anteriores ya estaban confirmados y la devolución
-             * quedaba en un estado incoherente. Ahora se lanza una excepción y
-             * revierte todo.
-             */
             return DB::transaction(function () use ($validated, $id) {
                 $damageReturn = DamageReturn::with(['damageReturnDetail.inventory.product'])
                     ->where('damage_return_id', $id)
@@ -250,7 +233,6 @@ class DamageReturnController extends Controller
 
     public function approveReturnFinal(Request $request, $id)
     {
-        // $request->details se recorría sin validar.
         $validated = $request->validate([
             'details' => 'required|array',
             'details.*.damage_return_detail_id' => 'required|exists:damage_return_detail,damage_return_detail_id',
@@ -264,9 +246,6 @@ class DamageReturnController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                // Guarda de estado dentro de la transacción y con la fila
-                // bloqueada: fuera de ella, dos peticiones simultáneas podían
-                // pasarla ambas y dar de baja el stock dos veces.
                 if ($damageReturn->status !== 'En aprobacion') {
                     throw new \Exception('Esta devolución no está en estado En aprobación.');
                 }

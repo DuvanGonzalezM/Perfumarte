@@ -61,10 +61,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
                 PDO::ATTR_EMULATE_PREPARES => true,
-                // PDO::ATTR_PERSISTENT retirado: con PHP-FPM las conexiones
-                // persistentes sobreviven al final de la petición y arrastran
-                // estado de transacción y de variables de sesión entre
-                // peticiones distintas.
             ]) : [],
         ],
 

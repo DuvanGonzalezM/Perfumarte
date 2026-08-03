@@ -16,7 +16,6 @@ use App\Models\Role;
 use App\Models\CashRegister;
 use App\Models\Sale;
 
-
 class LocationsController extends Controller
 {
     public function getLocations(Request $request)
@@ -67,8 +66,6 @@ class LocationsController extends Controller
     {
         $location = Location::findOrFail($id);
 
-        // Con SoftDeletes en Location esto ya no cascadea, pero se conserva la
-        // sede visible mientras tenga caja abierta sin cerrar.
         $hasOpenCashRegister = $location->cashRegisters()
             ->where('confirmationclosingcash', false)
             ->exists();

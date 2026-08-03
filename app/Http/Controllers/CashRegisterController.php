@@ -109,25 +109,12 @@ class CashRegisterController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                /*
-                 * La comprobación anterior comparaba con === contra
-                 * users.location_id, que es nullable y que con prepares
-                 * emulados llega como string: la pertenencia se decidía por
-                 * una comparación estricta entre tipos que no siempre
-                 * coinciden. Se usa la relación location_user, que es la que
-                 * emplea el resto del sistema.
-                 */
                 $locationIds = auth()->user()->location_user->pluck('location_id')->map(fn ($id) => (int) $id);
 
                 if ($locationIds->isNotEmpty() && ! $locationIds->contains((int) $cashRegister->location_id)) {
                     throw new \Exception('No tienes permiso para cerrar esta caja');
                 }
 
-                /*
-                 * Guarda de idempotencia: sin ella una caja ya cerrada podía
-                 * volver a cerrarse con cifras distintas, sobrescribiendo el
-                 * arqueo original sin dejar rastro.
-                 */
                 if ($cashRegister->confirmationclosingcash) {
                     throw new \Exception('La caja de este día ya fue cerrada.');
                 }

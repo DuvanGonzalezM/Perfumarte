@@ -65,13 +65,6 @@ const readNotification = async (notification, redirect, all=false) => {
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.name }}</strong>
                 <li class="my-2">
-                    <!--
-                        Antes estos accesos se condicionaban por ROL con una
-                        lista fija, así que TI, Subdirector, Supervisor y Jefe
-                        de operaciones no veían Usuarios ni Sedes aunque
-                        tuvieran el permiso. Se condicionan por permiso, igual
-                        que el resto del menú.
-                    -->
                     <a :href="route('users.list')" v-if="can('Ver Usuarios')">
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios

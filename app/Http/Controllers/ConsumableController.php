@@ -114,8 +114,6 @@ class ConsumableController extends Controller
         }
 
         try {
-            // El registro del consumo y el descuento de inventario son una
-            // sola operación y se escribían sin transacción ni bloqueo.
             return DB::transaction(function () use ($request, $user, $isSpecialRole) {
                 $savedConsumables = [];
 
@@ -184,7 +182,6 @@ class ConsumableController extends Controller
         ]);
     }
 
-
     public function approvedConsumableReturn(Request $request, $id)
     {
         $validated = $request->validate([
@@ -198,8 +195,6 @@ class ConsumableController extends Controller
         ]);
 
         try {
-            // Mismo defecto que en DamageReturnController: el return dentro del
-            // bucle abandonaba dejando confirmados los movimientos de stock ya
             // aplicados.
             return DB::transaction(function () use ($validated, $id) {
                 $damageReturn = DamageReturn::with(['damageReturnDetail.inventory.product'])
@@ -260,7 +255,6 @@ class ConsumableController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-
 
     public function approveReturnFinal(Request $request, $id)
     {

@@ -8,39 +8,8 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
-/**
- * Fuente de verdad de roles y permisos.
- *
- * Hasta ahora los ~50 permisos y los roles de Spatie existían únicamente como
- * datos creados a mano por la interfaz en el entorno productivo: un
- * `php artisan migrate --seed` producía un sistema sin ningún permiso, en el
- * que nadie podía entrar a nada, y el proyecto no era reproducible desde cero.
- *
- * El inventario de permisos se extrajo del propio código, que es la fuente de
- * verdad de facto: los `can:` y `role:` de routes/views.php y los `can()` e
- * `is()` de resources/js.
- *
- * ---------------------------------------------------------------------------
- * IMPORTANTE — sobre la matriz permiso→rol
- * ---------------------------------------------------------------------------
- * Los NOMBRES de los permisos son exactos: están tomados del código y cualquier
- * discrepancia produciría un 403. La ASIGNACIÓN de permisos a cada rol, en
- * cambio, es una PROPUESTA razonada a partir de la semántica de cada perfil:
- * reconstruirla con exactitud exigiría un `SELECT name FROM permissions` y la
- * tabla role_has_permissions del entorno productivo, a los que no se tiene
- * acceso. Debe validarse con el negocio antes de darla por definitiva.
- *
- * El seeder es aditivo e idempotente: usa firstOrCreate y givePermissionTo, no
- * syncPermissions, de modo que ejecutarlo sobre una base con datos no revoca
- * ninguna asignación existente.
- */
 class RolePermissionSeeder extends Seeder
 {
-    /**
-     * Todos los permisos que el código comprueba.
-     *
-     * @var array<string, array<int, string>>
-     */
     private const PERMISSIONS = [
         'Dashboard' => [
             'Ver Dashboard',
@@ -127,29 +96,14 @@ class RolePermissionSeeder extends Seeder
         ],
     ];
 
-    /**
-     * Permisos reservados al perfil técnico.
-     *
-     * @var array<int, string>
-     */
     private const TI_ONLY = [
         'Crear Roles',
         'Crear Permisos',
     ];
 
-    /**
-     * Matriz propuesta de permisos por rol.
-     *
-     * '*' significa todos los permisos.
-     *
-     * @var array<string, array<int, string>|string>
-     */
     private const ROLE_MATRIX = [
-        // Perfil técnico: control total, incluida la gestión de roles.
         'TI' => '*',
 
-        // Administración funcional: todo salvo la gestión de roles y permisos,
-        // que las rutas reservan a TI.
         'Administrador' => '*',
 
         'Gerencia' => [
@@ -222,7 +176,6 @@ class RolePermissionSeeder extends Seeder
             'Ver Novedades', 'Crear Novedades',
         ],
 
-        // Perfiles de solo lectura para seguimiento.
         'Control gerencia' => [
             'Ver Dashboard', 'Ver Stock', 'Ver Despachos', 'Ver Ventas',
             'Ver Sedes', 'Ver Reportes',
@@ -232,8 +185,6 @@ class RolePermissionSeeder extends Seeder
             'Ver Dashboard', 'Ver Stock', 'Ver Ventas', 'Ver Reportes',
         ],
 
-        // Rol mínimo: SaleController lo trata como asesor a efectos de
-        // imputación de ventas.
         'Usuario' => [
             'Ver Inventario Sede', 'Ver Ventas',
         ],
@@ -261,7 +212,6 @@ class RolePermissionSeeder extends Seeder
                 $granted = array_values(array_diff($granted, self::TI_ONLY));
             }
 
-            // Aditivo a propósito: no revoca lo que ya estuviera concedido.
             $role->givePermissionTo($granted);
         }
 

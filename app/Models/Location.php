@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Location extends Model
 {
     use HasFactory;
-    // Todas las FK del proyecto son ON DELETE CASCADE: borrar una sede
-    // arrasaba con su caja, sus ventas, sus auditorías y su inventario.
     use SoftDeletes;
 
     protected $primaryKey = 'location_id';
