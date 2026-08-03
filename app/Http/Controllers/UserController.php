@@ -71,7 +71,7 @@ class UserController extends Controller
             'boss_user' => (int) $request->boss_user ?? null,
             'enabled' => (bool) $request->enabled ?? false,
             'zone_id' => (int) $request->zone_id ?? null,
-            'default_password' => $request->has('default_password') ? 0 : $user->default_password,
+            'default_password' => $request->has('default_password') ? $request->default_password : $user->default_password,
         ]);
         return redirect()->route('users.list');
     }
@@ -145,7 +145,7 @@ class UserController extends Controller
             'name' => (string) $request->name,
             'boss_user' => (int) $request->boss_user ?? null,
             'enabled' => (bool) $request->enabled ?? false,
-            'default_password' => $request->has('default_password') ? 0 : $user->default_password,
+            'default_password' => $request->has('default_password') ? $request->default_password : $user->default_password,
             'zone_id' => (int) $request->zone_id ?? null,
         ]);
         $user->syncRoles($request->roles);
