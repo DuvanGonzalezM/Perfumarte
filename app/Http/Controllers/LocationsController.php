@@ -65,8 +65,23 @@ class LocationsController extends Controller
 
     public function destroyLocation($id)
     {
-        Location::destroy($id);
-        return redirect()->route('locations.list');
+        $location = Location::findOrFail($id);
+
+        // Con SoftDeletes en Location esto ya no cascadea, pero se conserva la
+        // sede visible mientras tenga caja abierta sin cerrar.
+        $hasOpenCashRegister = $location->cashRegisters()
+            ->where('confirmationclosingcash', false)
+            ->exists();
+
+        if ($hasOpenCashRegister) {
+            return redirect()->route('locations.list')
+                ->with('error', 'La sede tiene una caja sin cerrar. Ciérrela antes de eliminarla.');
+        }
+
+        $location->delete();
+
+        return redirect()->route('locations.list')
+            ->with('success', 'Sede eliminada. Su histórico de ventas y auditorías se conserva.');
     }
 
     public function updateLocation(Request $request, $id)

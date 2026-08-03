@@ -159,14 +159,21 @@ const buttons = [
         can: 'Ver Devoluciones',
     },
     {
-        name: 'Consumibles',              
+        name: 'Consumibles',
         href: route('consumable.list'),
-        icon: 'fa-solid fa-trash-can',   
+        icon: 'fa-solid fa-trash-can',
         active: page.component.startsWith('Consumable'),
         can: 'Ver Consumibles',
     },
-
-
+    // Novedades tenía rutas y páginas completas pero ningún enlace en todo el
+    // frontend: el módulo era inalcanzable.
+    {
+        name: 'Novedades',
+        href: route('novelties.list'),
+        icon: 'fa-solid fa-bell',
+        active: page.component.startsWith('Novelty'),
+        can: 'Ver Novedades',
+    },
 ];
 </script>
 

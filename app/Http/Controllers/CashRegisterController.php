@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CashRegister;
 use App\Models\Sale;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -102,28 +103,54 @@ class CashRegisterController extends Controller
 
         $totalCollected = (float) $totalCash + (float) $request->total_digital;
 
-        $cashRegister = CashRegister::findOrFail($request->cashRegisterId);
-        
-        if ($cashRegister->location_id !== auth()->user()->location_id) {
-            return redirect()->back()
-                ->with('error', 'No tienes permiso para cerrar esta caja');
+        try {
+            return DB::transaction(function () use ($request, $totalCollected) {
+                $cashRegister = CashRegister::where('cash_register_id', $request->cashRegisterId)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                /*
+                 * La comprobación anterior comparaba con === contra
+                 * users.location_id, que es nullable y que con prepares
+                 * emulados llega como string: la pertenencia se decidía por
+                 * una comparación estricta entre tipos que no siempre
+                 * coinciden. Se usa la relación location_user, que es la que
+                 * emplea el resto del sistema.
+                 */
+                $locationIds = auth()->user()->location_user->pluck('location_id')->map(fn ($id) => (int) $id);
+
+                if ($locationIds->isNotEmpty() && ! $locationIds->contains((int) $cashRegister->location_id)) {
+                    throw new \Exception('No tienes permiso para cerrar esta caja');
+                }
+
+                /*
+                 * Guarda de idempotencia: sin ella una caja ya cerrada podía
+                 * volver a cerrarse con cifras distintas, sobrescribiendo el
+                 * arqueo original sin dejar rastro.
+                 */
+                if ($cashRegister->confirmationclosingcash) {
+                    throw new \Exception('La caja de este día ya fue cerrada.');
+                }
+
+                $cashRegister->update([
+                    'total_collected' => $totalCollected,
+                    'total_digital' => (float) $request->total_digital,
+                    'count_100_bill' => $request->count_100_bill,
+                    'count_50_bill' => $request->count_50_bill,
+                    'count_20_bill' => $request->count_20_bill,
+                    'count_10_bill' => $request->count_10_bill,
+                    'count_5_bill' => $request->count_5_bill,
+                    'count_2_bill' => $request->count_2_bill,
+                    'total_coins' => $request->total_coins,
+                    'observations' => $request->observations,
+                    'confirmationclosingcash' => true
+                ]);
+
+                return redirect()->route('sales.list')
+                    ->with('success', 'Cierre de caja realizado con éxito');
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        $cashRegister->update([
-            'total_collected' => $totalCollected,
-            'total_digital' => (float) $request->total_digital,
-            'count_100_bill' => $request->count_100_bill,
-            'count_50_bill' => $request->count_50_bill,
-            'count_20_bill' => $request->count_20_bill,
-            'count_10_bill' => $request->count_10_bill,
-            'count_5_bill' => $request->count_5_bill,
-            'count_2_bill' => $request->count_2_bill,
-            'total_coins' => $request->total_coins,
-            'observations' => $request->observations,
-            'confirmationclosingcash' => true
-        ]);
-
-        return redirect()->route('sales.list')
-            ->with('success', 'Cierre de caja realizado con éxito');
     }
 }

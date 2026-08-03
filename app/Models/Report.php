@@ -13,6 +13,7 @@ class Report extends Model
     protected $primaryKey = 'report_id';
 
     protected $fillable = [
+        'user_id',
         'type_report',
         'start_date_report',
         'end_date_report',

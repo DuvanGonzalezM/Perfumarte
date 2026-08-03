@@ -1,6 +1,6 @@
 <script setup>
 import Notification from './Notification.vue';
-import { is } from 'laravel-permission-to-vuejs';
+import { can } from 'laravel-permission-to-vuejs';
 import { ref, onMounted, watchEffect } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -65,12 +65,19 @@ const readNotification = async (notification, redirect, all=false) => {
             <ul class="dropdown-menu dropdown-menu-end">
                 <strong>{{ $page.props.auth.user.name }}</strong>
                 <li class="my-2">
-                    <a :href="route('users.list')" v-if="is('Administrador | Gerencia| Auxiliar administrativo')">
+                    <!--
+                        Antes estos accesos se condicionaban por ROL con una
+                        lista fija, así que TI, Subdirector, Supervisor y Jefe
+                        de operaciones no veían Usuarios ni Sedes aunque
+                        tuvieran el permiso. Se condicionan por permiso, igual
+                        que el resto del menú.
+                    -->
+                    <a :href="route('users.list')" v-if="can('Ver Usuarios')">
                         <i class="fa-solid fa-users me-2"></i>
                         Usuarios
                     </a>
-                    <hr>
-                    <a :href="route('locations.list')" v-if="is('Administrador | Gerencia | Auxiliar administrativo')">
+                    <hr v-if="can('Ver Usuarios') && can('Ver Sedes')">
+                    <a :href="route('locations.list')" v-if="can('Ver Sedes')">
                         <i class="fa-solid fa-warehouse me-2"></i>
                         Sedes
                     </a>

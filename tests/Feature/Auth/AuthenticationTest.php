@@ -2,41 +2,53 @@
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Http;
 
-test('login screen can be rendered', function () {
-    $response = $this->get('/login');
-
-    $response->assertStatus(200);
+// LoginRequest exige captcha_token y la regla Recaptcha consulta a Google.
+beforeEach(function () {
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
 });
 
-test('users can authenticate using the login screen', function () {
+/*
+ * La versión anterior de este archivo autenticaba con `email`, campo que la
+ * tabla `users` no tiene: las cuatro pruebas fallaban con "Unknown column".
+ * El sistema autentica por `username`.
+ */
+
+test('la pantalla de login se renderiza', function () {
+    $this->get('/login')->assertStatus(200);
+});
+
+test('un usuario puede autenticarse con su username y contraseña', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->username,
         'password' => 'password',
+        'captcha_token' => 'test',
     ]);
 
     $this->assertAuthenticated();
     $response->assertRedirect(RouteServiceProvider::HOME);
 });
 
-test('users can not authenticate with invalid password', function () {
+test('no se autentica con una contraseña incorrecta', function () {
     $user = User::factory()->create();
 
     $this->post('/login', [
-        'email' => $user->email,
-        'password' => 'wrong-password',
+        'username' => $user->username,
+        'password' => 'contrasena-incorrecta',
+        'captcha_token' => 'test',
     ]);
 
     $this->assertGuest();
 });
 
-test('users can logout', function () {
+test('un usuario puede cerrar sesión', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post('/logout');
+    $response = $this->actingAs($user)->get('/logout');
 
     $this->assertGuest();
-    $response->assertRedirect('/');
+    $response->assertRedirect(route('login'));
 });

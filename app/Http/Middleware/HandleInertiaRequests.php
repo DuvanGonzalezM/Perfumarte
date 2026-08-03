@@ -36,6 +36,13 @@ class HandleInertiaRequests extends Middleware
                 'user' => User::with('location_user.zone', 'unreadNotifications', 'roles')->where('user_id', $request->user()->user_id ?? '')->first(),
             ],
             'recaptcha_site_key' => config('services.google_recaptcha.site_key'),
+            // Los controladores ya usaban with('success'|'error'), pero nada
+            // compartía la sesión flash con Inertia y los mensajes se perdían.
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'activation_url' => fn () => $request->session()->get('activation_url'),
+            ],
        ]);
     }
 }

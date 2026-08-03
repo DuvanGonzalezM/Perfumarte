@@ -14,6 +14,7 @@ use App\Models\Inventory;
 use Inertia\Inertia;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuditController extends Controller
 {
@@ -59,6 +60,13 @@ class AuditController extends Controller
 
     public function confirmCashAudit(Request $request, $locationId)
     {
+        // showAudits() ya filtra las auditorías por las sedes del usuario; esta
+        // escritura no comprobaba nada y permitía auditar la caja de cualquier
+        // sede de la red.
+        if (! $this->userCanAuditLocation($locationId)) {
+            abort(403, 'No tiene autorización sobre esta sede.');
+        }
+
         $cashRegister = CashRegister::with('sales.saleDetails')->where('location_id', $locationId)->first();
 
         if (!$cashRegister) {
@@ -73,23 +81,40 @@ class AuditController extends Controller
             'observations' => 'nullable|string'
         ]);
 
-        $audit = new Audit();
-        $audit->user_id = auth()->id();
-        $audit->location_id = $locationId;
-        $audit->type_audit = '1';
-        $audit->save();
+        // Auditoría y detalle son una sola operación: sin transacción podía
+        // quedar un Audit sin su AuditCash.
+        DB::transaction(function () use ($validatedData, $locationId, $cashRegister) {
+            $audit = new Audit();
+            $audit->user_id = auth()->id();
+            $audit->location_id = $locationId;
+            $audit->type_audit = '1';
+            $audit->save();
 
-        $auditCash = new AuditCash();
-        $auditCash->id_audits = $audit->id_audits;
-        $auditCash->cash_register_id = $cashRegister->cash_register_id;
-        $auditCash->money_in_box = $validatedData['total_cash_sales'];
-        $auditCash->money_in_digital = $validatedData['total_digital_sales'];
-        $auditCash->confirmation_cash = $validatedData['confirmationCash'];
-        $auditCash->confirmation_digital = $validatedData['confirmationDigital'];
-        $auditCash->observation = $validatedData['observations'];
-        $auditCash->save();
+            $auditCash = new AuditCash();
+            $auditCash->id_audits = $audit->id_audits;
+            $auditCash->cash_register_id = $cashRegister->cash_register_id;
+            $auditCash->money_in_box = $validatedData['total_cash_sales'];
+            $auditCash->money_in_digital = $validatedData['total_digital_sales'];
+            $auditCash->confirmation_cash = $validatedData['confirmationCash'];
+            $auditCash->confirmation_digital = $validatedData['confirmationDigital'];
+            $auditCash->observation = $validatedData['observations'];
+            $auditCash->save();
+        });
 
         return redirect()->route('audits')->with('success', 'Cash audit confirmed successfully');
+    }
+
+    /**
+     * Una sede es auditable si el usuario la tiene asignada.
+     *
+     * Los perfiles centrales, sin filas en location_user, auditan toda la red:
+     * para ellos el control es el permiso `Auditar` que exige la ruta.
+     */
+    private function userCanAuditLocation($locationId): bool
+    {
+        $locationIds = auth()->user()->location_user->pluck('location_id')->map(fn ($id) => (int) $id);
+
+        return $locationIds->isEmpty() || $locationIds->contains((int) $locationId);
     }
 
     public function showAudits()
@@ -157,24 +182,31 @@ class AuditController extends Controller
             'products.*.quantity' => 'required|numeric',
             'products.*.confirmed' => 'required|boolean',
             'products.*.observations' => 'nullable',
-            'location_id' => 'required|integer',
+            'location_id' => 'required|integer|exists:locations,location_id',
         ]);
 
-        $audit = Audit::create([
-            'user_id' => auth()->user()->user_id,
-            'type_audit' => 2,
-            'location_id' => $validatedData['location_id'],
-        ]);
-
-        foreach ($validatedData['products'] as $product) {
-            AuditInventory::create([
-                'id_audits' => $audit->id_audits,
-                'inventory_id' => $product['inventory_id'],
-                'quantity_system' => $product['quantity'],
-                'confirmation_inventory' => $product['confirmed'],
-                'observation' => $product['observations'],
-            ]);
+        if (! $this->userCanAuditLocation($validatedData['location_id'])) {
+            abort(403, 'No tiene autorización sobre esta sede.');
         }
+
+        DB::transaction(function () use ($validatedData) {
+            $audit = Audit::create([
+                'user_id' => auth()->user()->user_id,
+                'type_audit' => 2,
+                'location_id' => $validatedData['location_id'],
+            ]);
+
+            foreach ($validatedData['products'] as $product) {
+                AuditInventory::create([
+                    'id_audits' => $audit->id_audits,
+                    'inventory_id' => $product['inventory_id'],
+                    'quantity_system' => $product['quantity'],
+                    'confirmation_inventory' => $product['confirmed'],
+                    'observation' => $product['observations'],
+                ]);
+            }
+        });
+
         return redirect()->route('audits')->with('success', 'Auditoría registrada exitosamente.');
     }
 

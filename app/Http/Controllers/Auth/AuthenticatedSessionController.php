@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,21 +30,26 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        try {
-            $user = User::with('roles')->where('username', $request->username)->firstOrFail();
-        } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Estas credenciales no coinciden con nuestros registros.');
-        }
-        if ($user && $user->deleted_at) {
-            return redirect()->route('login')->with('error', 'Estas credenciales no coinciden con nuestros registros.');
-        }
-        if ($user && $user->default_password && !$user->deleted_at) {
-            return redirect()->route('password.change', ['username' => $user->username]);
-        }
-        if($user && $user->hasRole('Asesor comercial') && $user->enabled == 0){
+        /*
+         * Toda comprobación sobre el estado de la cuenta va DESPUÉS de
+         * authenticate(). Antes se hacían antes, y la de default_password
+         * redirigía al formulario de cambio de contraseña sin validar la
+         * credencial: bastaba enviar un username válido con cualquier
+         * contraseña para obtener la URL con la que tomar control de la
+         * cuenta. Las cuentas con contraseña predeterminada se activan ahora
+         * mediante el enlace firmado que emite el administrador.
+         */
+        $request->authenticate();
+
+        $user = $request->user()->loadMissing('roles');
+
+        if ($user->hasRole('Asesor comercial') && $user->enabled == 0) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             return redirect()->route('login')->with('error', 'El usuario '.$user->username.' no esta habilitado');
         }
-        $request->authenticate();
 
         $request->session()->regenerate();
         $request->session()->put('user_id', $request->user()->user_id);

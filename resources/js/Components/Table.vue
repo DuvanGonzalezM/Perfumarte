@@ -22,10 +22,38 @@ const props = defineProps({
 
 const paginVisibility = computed(() => props.data.length > 10);
 
-const options = computed(() => ({
-    language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-CO.json'
+/*
+ * Traducción incrustada. Antes se cargaba desde
+ * https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-CO.json y DataTables no
+ * inicializa la tabla hasta que ese $.ajax —sin timeout— resuelve: si la red
+ * corporativa descarta la salida HTTPS, la tabla no se dibuja durante todo el
+ * tiempo de espera del navegador. Era la única dependencia externa en runtime
+ * del frontend y la compartían 35 páginas.
+ */
+const spanishLanguage = {
+    processing: 'Procesando...',
+    lengthMenu: 'Mostrar _MENU_ registros',
+    zeroRecords: 'No se encontraron resultados',
+    emptyTable: 'Ningún dato disponible en esta tabla',
+    info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+    infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+    infoFiltered: '(filtrado de un total de _MAX_ registros)',
+    search: 'Buscar:',
+    loadingRecords: 'Cargando...',
+    paginate: {
+        first: 'Primero',
+        last: 'Último',
+        next: 'Siguiente',
+        previous: 'Anterior',
     },
+    aria: {
+        sortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sortDescending: ': Activar para ordenar la columna de manera descendente',
+    },
+};
+
+const options = computed(() => ({
+    language: spanishLanguage,
     lengthChange: false,
     info: true, // siempre mostrar info
     order: props.order,
