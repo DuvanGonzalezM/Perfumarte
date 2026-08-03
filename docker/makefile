@@ -8,7 +8,7 @@ endif
 
 COMPOSE_CMD = docker-compose $(COMPOSE_FILES)
 
-.PHONY: up reload start restart stop down down_all status cli run logs app_key compile dev serve broadcast migrate seed fresh test lint
+.PHONY: up reload start restart stop down down_all status cli run logs app_key bootstrap compile dev serve broadcast migrate seed fresh test lint
 
 up reload: recreate ?=
 up reload:
@@ -52,6 +52,13 @@ logs l:
 
 app_key:
 	$(COMPOSE_CMD) exec app php artisan key:generate
+
+# Arranque sobre una base de datos nueva: migraciones + roles/permisos + cuenta
+# TI inicial. Pide la contraseña por teclado. Repetirlo es seguro: si la cuenta
+# TI ya existe, no la toca. Opciones: make bootstrap opts="--link"
+bootstrap: opts ?=
+bootstrap:
+	$(COMPOSE_CMD) exec app php artisan prais:bootstrap $(opts)
 
 # Crea el esquema. Sin este paso la aplicación arranca sin ninguna tabla.
 migrate:
