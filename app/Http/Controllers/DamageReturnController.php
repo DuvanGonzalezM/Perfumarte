@@ -4,6 +4,7 @@ use App\Models\DamageReturnDetail;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Models\DamageReturn;
+use App\Models\Product;
 use App\Models\Warehouse;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ class DamageReturnController extends Controller
         $inventory = Inventory::with('product')
             ->where('warehouse_id', $warehouse->warehouse_id)
             ->whereHas('product', function ($query) {
-                $query->whereNotIn('product_id', [1, 2]);
+                $query->whereNotIn('product_id', Product::rawMaterialIds());
             })
             ->get();
 

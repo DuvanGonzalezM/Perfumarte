@@ -131,9 +131,16 @@ que es la única capaz de crear al resto de usuarios.
 | Paso | Efecto | Si ya está hecho |
 |---|---|---|
 | Verificación previa | `APP_KEY` presente, conexión a la base, y en producción `APP_DEBUG=false` | — |
-| `migrate --force` | Crea el esquema completo (36 tablas) | No repite migraciones aplicadas |
+| `migrate --force` | Crea el esquema completo | No repite migraciones aplicadas |
 | `RolePermissionSeeder` | 55 permisos y 12 roles que las rutas comprueban | Los refresca sin duplicar |
+| `CoreCatalogSeeder` | Zonas, planta, las tres bodegas centrales, un proveedor y los productos con rol operativo | Los actualiza sin duplicar |
 | Cuenta TI | Crea la cuenta con rol `TI` | **No la toca**: avisa y termina bien |
+
+`CoreCatalogSeeder` no es catálogo comercial: son los registros sin los cuales
+laboratorio, despachos y ventas no arrancan. Sus valores de negocio (nombres de
+zonas, dirección de la planta, datos del proveedor, referencias de envases) son
+plantillas marcadas en el propio archivo: ajústelos, o cargue el catálogo real y
+márquele los roles operativos desde *Productos*.
 
 Es seguro repetirlo en cada despliegue: nunca crea una segunda cuenta TI ni pisa la
 existente.
@@ -254,8 +261,18 @@ make test     # suite de pruebas (Pest)
 make lint     # formateo (Laravel Pint)
 ```
 
-Las pruebas `Feature` usan `RefreshDatabase` y requieren una base MySQL accesible; se
-ejecutan dentro del contenedor.
+> ⚠️ **Las pruebas necesitan su propia base de datos.** Las pruebas `Feature` usan
+> `RefreshDatabase`, que empieza por `migrate:fresh`: si apuntan a la base de trabajo, la
+> borran entera. `phpunit.xml` fija `DB_DATABASE=perfumarte_testing` y hereda el resto de
+> credenciales del `.env`. Créela una sola vez antes del primer `make test`:
+>
+> ```sql
+> CREATE DATABASE perfumarte_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+> ```
+>
+> Si la conexión apunta a una base cuyo nombre no termina en `_testing`, el arranque de las
+> pruebas se detiene con un error explícito (`tests/CreatesApplication.php`) en vez de
+> destruir los datos.
 
 Las pruebas que renderizan una página Inertia necesitan el manifiesto de Vite, que genera
 `make compile`. Si no está presente, esas pruebas se omiten con un mensaje explícito en

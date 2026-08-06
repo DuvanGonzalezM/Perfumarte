@@ -4,7 +4,7 @@
             <i class="fas" :class="icon"></i>
         </div>
         <div class="ms-2">
-            {{ message }}
+            <template v-if="message">{{ message }}</template>
             <slot></slot>
         </div>
     </div>
@@ -18,9 +18,11 @@ const props = defineProps({
         type: String,
         default: 'success'
     },
+    // Sin texto por defecto: una alerta puede traer solo contenido en el slot,
+    // y un marcador de ejemplo se colaba a la pantalla del usuario.
     message: {
         type: String,
-        default: 'Este es un ejemplo de una alerta para Perfumarte'
+        default: ''
     },
     icon: {
         type: String,

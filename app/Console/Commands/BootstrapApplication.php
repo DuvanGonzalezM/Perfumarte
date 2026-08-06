@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Support\InitialAdminProvisioner;
+use Database\Seeders\CoreCatalogSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +58,14 @@ class BootstrapApplication extends Command
 
         if ($this->call('db:seed', ['--class' => RolePermissionSeeder::class, '--force' => true]) !== self::SUCCESS) {
             $this->components->error('Falló la carga de roles y permisos: no se creó ninguna cuenta.');
+
+            return self::FAILURE;
+        }
+
+        $this->components->info('Cargando zonas, planta, bodegas y productos de referencia');
+
+        if ($this->call('db:seed', ['--class' => CoreCatalogSeeder::class, '--force' => true]) !== self::SUCCESS) {
+            $this->components->error('Falló la carga del catálogo base: los módulos de laboratorio, despachos y ventas no funcionarán.');
 
             return self::FAILURE;
         }

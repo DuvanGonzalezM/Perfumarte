@@ -27,7 +27,7 @@ const copy = async () => {
         </div>
         <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
             <code class="activation-link__url">{{ url }}</code>
-            <button type="button" class="btn btn-sm btn-outline-dark" @click="copy">
+            <button type="button" class="btn btn-sm activation-link__copy" @click="copy">
                 {{ copied ? 'Copiado' : 'Copiar' }}
             </button>
         </div>
@@ -35,11 +35,31 @@ const copy = async () => {
 </template>
 
 <style scoped>
+/*
+ * Sobre el fondo oscuro de la aplicación, el color por defecto de <code> y el
+ * realce translúcido negro dejaban el enlace prácticamente ilegible. Este es el
+ * dato que el administrador tiene que leer y entregar, así que va en blanco
+ * sobre un realce oscuro y con selección completa al hacer clic.
+ */
 .activation-link__url {
     word-break: break-all;
-    background: rgba(0, 0, 0, 0.06);
-    padding: 0.25rem 0.5rem;
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+    padding: 0.35rem 0.6rem;
     border-radius: 0.25rem;
     font-size: 0.85rem;
+    user-select: all;
+}
+
+.activation-link__copy {
+    border: 1px solid #ffe69c;
+    color: #ffe69c;
+    background: transparent;
+}
+
+.activation-link__copy:hover,
+.activation-link__copy:focus {
+    background: #ffe69c;
+    color: #322400;
 }
 </style>

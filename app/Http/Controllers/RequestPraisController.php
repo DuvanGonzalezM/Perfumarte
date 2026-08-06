@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Inventory;
+use App\Models\Product;
 use App\Models\RequestDetail;
 use App\Models\RequestPrais;
 use Illuminate\Http\Request;
@@ -146,7 +147,7 @@ class RequestPraisController extends Controller
 
     public function createTransformation()
     {
-        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', [1, 2])->get();
+        $inventories = Inventory::with('product')->where('warehouse_id', '1')->whereNotIn('product_id', Product::rawMaterialIds())->get();
 
         return Inertia::render('RequestTransformation/CreateTransformation', [
             'inventories' => $inventories

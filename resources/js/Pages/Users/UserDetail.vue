@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import SelectSearch from '@/Components/SelectSearch.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ModalPrais from '@/Components/ModalPrais.vue';
 
 
@@ -25,12 +25,15 @@ const props = defineProps({
     },
     boss: {
         type: Array,
+    },
+    hierarchy: {
+        type: Object,
+        default: () => ({ bossRole: {}, cashRegisterRoles: [], zoneRoles: [] }),
     }
 });
 
 const rolesIdUser = props.user.roles.length > 0 ? props.user.roles.map((role) => role.id) : null;
 const permissionsIdUser = props.user.permissions.length > 0 ? props.user.permissions.map((permission) => permission.id) : null;
-const optionsBoss = ref(props.boss.map((user_boss) => [{ 'title': user_boss.name, 'value': user_boss.user_id }][0]));
 const optionsZones = ref(props.zones.map((zone) => [{ 'title': zone.zone_name, 'value': zone.zone_id }][0]));
 const showConfirmEditModal = ref(null);
 const showConfirmDeleteModal = ref(null);
@@ -42,7 +45,6 @@ const form = useForm({
     name: props.user.name,
     username: props.user.username,
     boss_user: props.user.boss_user != 0 ? parseInt(props.user.boss_user) : null,
-    location_id: 1,
     zone_id: props.user.zone_id != 0 ? parseInt(props.user.zone_id) : null,
     enabled: props.user.enabled != 0 ? true : false,
     roles: rolesIdUser,
@@ -59,6 +61,36 @@ const showSuccessDeleteModal = ref(null);
 const showSuccessResetPasswordModal = ref(null);
 
 const optionsRoles = ref(props.roles.map((rol) => [{ 'title': rol.name, 'value': rol.id }][0]));
+
+// Misma jerarquía que en el alta (config/prais.php): el primer rol asignado que
+// dependa de otra cuenta manda sobre el resto del formulario.
+const requiredBoss = computed(() => (form.roles ?? [])
+    .map((roleId) => props.hierarchy.bossRole?.[roleId])
+    .find((entry) => entry) ?? null);
+
+const bossOptions = computed(() => {
+    if (!requiredBoss.value) {
+        return [];
+    }
+
+    return props.boss
+        .filter((user_boss) => user_boss.roles?.some((role) => role.id === requiredBoss.value.role_id))
+        .map((user_boss) => ({ 'title': user_boss.name, 'value': user_boss.user_id }));
+});
+
+const missingBoss = computed(() => requiredBoss.value !== null && bossOptions.value.length === 0);
+
+const needsCashRegister = computed(() => (form.roles ?? [])
+    .some((roleId) => props.hierarchy.cashRegisterRoles?.includes(roleId)));
+
+const needsZone = computed(() => (form.roles ?? [])
+    .some((roleId) => props.hierarchy.zoneRoles?.includes(roleId)));
+
+watch(requiredBoss, (current, previous) => {
+    if (current?.role_id !== previous?.role_id) {
+        form.boss_user = null;
+    }
+});
 const optionsPermission = ref(props.permissions.map((permission) => [{ 'title': permission.name, 'value': permission.id }][0]));
 
 if (form.roles) {
@@ -173,17 +205,19 @@ const enableUser = () => {
                             v-model="form.username" required autocomplete="username" />
                         <InputError class="mt-2" :message="form.errors.username" />
                     </div>
-                    <div class="col-md-6 mb-4"
-                        v-if="[4, 5, 6].find(role => form.roles.includes(role)) && ![7].find(role => form.roles.includes(role))">
-                        <SelectSearch v-model="form.boss_user" :options="optionsBoss" labelValue="Jefe" required />
+                    <div class="col-md-6 mb-4" v-if="requiredBoss">
+                        <SelectSearch v-if="!missingBoss" v-model="form.boss_user" :options="bossOptions"
+                            :labelValue="`Jefe (${requiredBoss.role_name})`" required />
+                        <InputError v-else
+                            :message="`Este rol depende de un ${requiredBoss.role_name} y no existe ninguna cuenta con ese rol.`" />
                         <InputError class="mt-2" :message="form.errors.boss_user" />
                     </div>
-                    <div class="col-md-6 mb-4" v-if="[5].find(role => form.roles.includes(role))">
+                    <div class="col-md-6 mb-4" v-if="needsCashRegister">
                         <label :for="enabled">¿Utilizara la caja? </label>
-                        <input id="enabled" name="enabled" type="checkbox" v-model="form.enabled" required />
+                        <input id="enabled" name="enabled" type="checkbox" v-model="form.enabled" />
                         <InputError class="mt-2" :message="form.errors.enabled" />
                     </div>
-                    <div class="col-md-6 mb-4" v-if="[7].find(role => form.roles.includes(role))">
+                    <div class="col-md-6 mb-4" v-if="needsZone">
                         <SelectSearch v-model="form.zone_id" :options="optionsZones" labelValue="Zona" required />
                         <InputError class="mt-2" :message="form.errors.zone_id" />
                     </div>

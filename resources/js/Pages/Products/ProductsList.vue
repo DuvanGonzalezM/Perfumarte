@@ -16,6 +16,10 @@ const props = defineProps({
     },
     supplierProduct: {
         type: Array,
+    },
+    operationalRoles: {
+        type: Array,
+        default: () => [],
     }
 });
 
@@ -27,6 +31,7 @@ const form = useForm({
     category: '',
     supplier_id: '',
     code: '',
+    operational_role: '',
 });
 
 const showModal = ref(false);
@@ -85,6 +90,13 @@ const optionCategory = ref(listCategory.value.map(category => ({ 'title': catego
 const optionMeasurement = ref(listMeasurement.value.map(measurement => ({ 'title': measurement.name, 'value': measurement.name }))); 
 const optionSupplier = ref(props.supplierProduct.map(supplier => ({ 'title': supplier.name, 'value': supplier.supplier_id })));
 
+// Rol operativo: cómo venta y laboratorio encuentran este producto sin
+// depender de su id. La mayoría de productos no lleva ninguno.
+const optionOperationalRole = ref([
+    { 'title': 'Ninguno', 'value': '' },
+    ...props.operationalRoles.map(role => ({ 'title': role.label, 'value': role.value })),
+]);
+
 const openModal = (rowData) => {
     form.product_id = rowData.product_id;
     form.reference = rowData.reference;
@@ -93,6 +105,7 @@ const openModal = (rowData) => {
     form.category = rowData.category;
     form.supplier_id = rowData.supplier?.supplier_id;
     form.code = rowData.code;
+    form.operational_role = rowData.operational_role ?? '';
     showModal.value = true;
 }
 
@@ -177,6 +190,10 @@ const disableProduct = () => {
                             </div>
                             <div class="col-md-12 my-3">
                                 <SelectSearch v-model="form.category" :options="optionCategory" :error="form.errors.category" />
+                            </div>
+                            <div class="col-md-12 my-3">
+                                <SelectSearch v-model="form.operational_role" :options="optionOperationalRole"
+                                    labelValue="Rol operativo" :error="form.errors.operational_role" />
                             </div>
                             <div class="col-md-12 my-3">
                                 <SelectSearch v-model="form.supplier_id" :options="optionSupplier"

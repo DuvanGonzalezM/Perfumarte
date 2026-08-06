@@ -31,12 +31,14 @@ class UserController extends Controller
         $users = $users->get();
         $roles = Role::all();
         $zones = Zone::all();
-        $boss = User::with(['roles', 'zone'])->withTrashed()
-            ->whereHas('roles', function ($query) {
-                $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
-            })
-            ->get(['user_id', 'name', 'zone_id']);
-        return Inertia::render('Users/UsersList', ['users' => $users, 'roles' => $roles, 'zones' => $zones, 'boss' => $boss]);
+
+        return Inertia::render('Users/UsersList', [
+            'users' => $users,
+            'roles' => $roles,
+            'zones' => $zones,
+            'boss' => $this->bossCandidates(),
+            'hierarchy' => $this->hierarchyPayload(),
+        ]);
     }
 
     public function storeUser(Request $request)
@@ -45,13 +47,14 @@ class UserController extends Controller
             'username' => 'required|string|max:255|unique:' . User::class,
             'name' => 'required|string|max:255',
             'role_id' => 'required|integer|exists:roles,id',
-            'boss_user' => 'nullable|integer',
+            'boss_user' => 'nullable|integer|exists:users,user_id',
             'zone_id' => 'nullable|integer|exists:zones,zone_id',
             'location_id' => 'nullable|integer|exists:locations,location_id',
             'enabled' => 'nullable|boolean',
         ]);
 
         $this->assertAssignableRoles([$validated['role_id']]);
+        $this->assertValidBoss([$validated['role_id']], $validated['boss_user'] ?? null);
 
         $user = DB::transaction(function () use ($request, $validated) {
             $user = User::create([
@@ -59,7 +62,7 @@ class UserController extends Controller
                 'name' => (string) $validated['name'],
                 'password' => Hash::make(Str::password(16, true, true, true, false)),
                 'boss_user' => $request->filled('boss_user') ? (int) $request->boss_user : null,
-                'enabled' => $request->boolean('enabled'),
+                'enabled' => $this->resolveEnabled($request, [$validated['role_id']]),
                 'location_id' => $request->filled('location_id') ? (int) $request->location_id : null,
                 'default_password' => true,
                 'zone_id' => $request->filled('zone_id') ? (int) $request->zone_id : null,
@@ -82,15 +85,25 @@ class UserController extends Controller
         $request->validate([
             'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
             'name' => 'required|string|max:255',
+            'boss_user' => 'nullable|integer|exists:users,user_id',
         ]);
 
         $user = User::findOrFail($user_id);
 
         $this->assertCanManage($user);
 
+        if ($request->has('boss_user')) {
+            $this->assertValidBoss(
+                $user->roles->pluck('id')->all(),
+                $request->filled('boss_user') ? (int) $request->boss_user : null,
+                (int) $user_id
+            );
+        }
+
         $user->update($this->optionalUserAttributes($request, $user) + [
             'username' => (string) $request->username,
             'name' => (string) $request->name,
+            'enabled' => $this->resolveEnabled($request, $user->roles->pluck('id')->all()),
         ]);
 
         return redirect()->route('users.list');
@@ -142,11 +155,16 @@ class UserController extends Controller
         }
         $roles = $roles->get();
         $permissions = Permission::all();
-        $boss = User::select('user_id', 'name')->whereHas('roles', function ($query) {
-            $query->where('name', 'Subdirector')->orWhere('name', 'Supervisor');
-        })->get();
+
         if ($user) {
-            return Inertia::render('Users/UserDetail', ['user' => $user, 'roles' => $roles, 'zones' => $zones, 'permissions' => $permissions, 'boss' => $boss]);
+            return Inertia::render('Users/UserDetail', [
+                'user' => $user,
+                'roles' => $roles,
+                'zones' => $zones,
+                'permissions' => $permissions,
+                'boss' => $this->bossCandidates(),
+                'hierarchy' => $this->hierarchyPayload(),
+            ]);
         } else {
             return redirect()->route('users.list');
         }
@@ -159,6 +177,7 @@ class UserController extends Controller
             'roles.*' => 'integer|exists:roles,id',
             'permissions' => 'nullable|array',
             'permissions.*' => 'integer|exists:permissions,id',
+            'boss_user' => 'nullable|integer|exists:users,user_id',
             'username' => 'required|string|max:255|unique:users,username,' . $user_id . ',user_id',
             'name' => 'required|string|max:255',
         ]);
@@ -169,15 +188,23 @@ class UserController extends Controller
 
         $this->assertCanManage($user);
         $this->assertAssignablePermissions($validated['permissions'] ?? []);
+        $this->assertValidBoss(
+            $validated['roles'],
+            $request->filled('boss_user') ? (int) $request->boss_user : null,
+            (int) $user_id
+        );
 
-        DB::transaction(function () use ($request, $validated, $user) {
-            if ($request->enabled == 0) {
+        $enabled = $this->resolveEnabled($request, $validated['roles']);
+
+        DB::transaction(function () use ($request, $validated, $user, $enabled) {
+            if (! $enabled) {
                 $user->location_user()->detach();
             }
 
             $user->update($this->optionalUserAttributes($request, $user) + [
                 'username' => (string) $validated['username'],
                 'name' => (string) $validated['name'],
+                'enabled' => $enabled,
             ]);
 
             $user->syncRoles($validated['roles']);
@@ -281,6 +308,116 @@ class UserController extends Controller
         return redirect('roles');
     }
 
+    /**
+     * `enabled` es la bandera de cuenta activa: la comprueban el login
+     * (AuthenticatedSessionController), el middleware de inventario
+     * (CheckInventoryAccess) y el enlace de activación
+     * (PasswordChangeController). Pero el formulario solo la pregunta —como
+     * «¿utilizará la caja?»— a los roles que operan caja.
+     *
+     * Sin esta distinción, toda cuenta creada con cualquier otro rol nacía con
+     * `enabled = 0` y su enlace de activación era rechazado con «La cuenta no
+     * admite el cambio de contraseña por esta vía».
+     */
+    private function resolveEnabled(Request $request, array $roleIds): bool
+    {
+        $cashRoles = config('prais.hierarchy.cash_register_roles', []);
+
+        $usesCashRegister = Role::whereIn('id', $roleIds)
+            ->whereIn('name', $cashRoles)
+            ->exists();
+
+        return $usesCashRegister ? $request->boolean('enabled') : true;
+    }
+
+    /**
+     * Usuarios que pueden figurar como jefe: los que tienen alguno de los roles
+     * que la jerarquía declara como superiores. Se excluyen las cuentas
+     * eliminadas: colgar a alguien de un jefe dado de baja deja la línea rota.
+     */
+    private function bossCandidates()
+    {
+        $bossRoles = array_values(array_unique(config('prais.hierarchy.boss_role', [])));
+
+        return User::with(['roles', 'zone'])
+            ->whereHas('roles', fn ($query) => $query->whereIn('name', $bossRoles))
+            ->get(['user_id', 'name', 'zone_id']);
+    }
+
+    /**
+     * Traduce la jerarquía declarada por nombre de rol a los ids que maneja el
+     * formulario, para que la vista no vuelva a llevar ids quemados.
+     */
+    private function hierarchyPayload(): array
+    {
+        $roleIds = Role::pluck('id', 'name');
+
+        $bossRole = [];
+        foreach (config('prais.hierarchy.boss_role', []) as $roleName => $bossRoleName) {
+            if (isset($roleIds[$roleName], $roleIds[$bossRoleName])) {
+                $bossRole[$roleIds[$roleName]] = [
+                    'role_id' => $roleIds[$bossRoleName],
+                    'role_name' => $bossRoleName,
+                ];
+            }
+        }
+
+        $toIds = fn (array $names) => collect($names)
+            ->map(fn ($name) => $roleIds[$name] ?? null)
+            ->filter()
+            ->values();
+
+        return [
+            'bossRole' => $bossRole,
+            'cashRegisterRoles' => $toIds(config('prais.hierarchy.cash_register_roles', [])),
+            'zoneRoles' => $toIds(config('prais.hierarchy.zone_roles', [])),
+        ];
+    }
+
+    /**
+     * Rol que debe tener el jefe de un usuario con los roles indicados, o null
+     * si ninguno de esos roles depende de otra cuenta.
+     */
+    private function requiredBossRole(array $roleIds): ?string
+    {
+        $map = config('prais.hierarchy.boss_role', []);
+
+        foreach (Role::whereIn('id', $roleIds)->pluck('name') as $name) {
+            if (isset($map[$name])) {
+                return $map[$name];
+            }
+        }
+
+        return null;
+    }
+
+    private function assertValidBoss(array $roleIds, ?int $bossId, ?int $targetUserId = null): void
+    {
+        $bossRole = $this->requiredBossRole($roleIds);
+
+        if ($bossRole === null) {
+            return;
+        }
+
+        if ($bossId === null) {
+            throw ValidationException::withMessages([
+                'boss_user' => "Este rol depende de un jefe con rol {$bossRole}. Cree primero esa cuenta.",
+            ]);
+        }
+
+        if ($targetUserId !== null && $bossId === $targetUserId) {
+            throw ValidationException::withMessages([
+                'boss_user' => 'Un usuario no puede ser su propio jefe.',
+            ]);
+        }
+
+        if (! User::find($bossId)?->hasRole($bossRole)) {
+            throw ValidationException::withMessages([
+                'boss_user' => "El jefe asignado debe ser un usuario activo con rol {$bossRole}.",
+            ]);
+        }
+    }
+
     private function activationUrl(User $user): string
     {
         return URL::temporarySignedRoute(
@@ -344,9 +481,8 @@ class UserController extends Controller
             $attributes['zone_id'] = $request->filled('zone_id') ? (int) $request->zone_id : null;
         }
 
-        if ($request->has('enabled')) {
-            $attributes['enabled'] = $request->boolean('enabled');
-        }
+        // `enabled` no se toma en crudo: lo resuelve resolveEnabled() en cada
+        // acción, que sabe si el rol responde la pregunta de la caja.
 
         if ($request->has('default_password')) {
             $attributes['default_password'] = $request->boolean('default_password');

@@ -8,7 +8,7 @@ import Table from '@/Components/Table.vue';
 import TextInput from '@/Components/TextInput.vue';
 import BaseLayout from '@/Layouts/BaseLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { is } from 'laravel-permission-to-vuejs';
 
 const props = defineProps({
@@ -23,6 +23,10 @@ const props = defineProps({
     },
     zones: {
         type: Array,
+    },
+    hierarchy: {
+        type: Object,
+        default: () => ({ bossRole: {}, cashRegisterRoles: [], zoneRoles: [] }),
     }
 });
 
@@ -32,19 +36,57 @@ const form = useForm({
     username: '',
     role_id: '',
     boss_user: '',
-    location_id: 1,
     zone_id: null,
     enabled: '',
 });
 
 const optionsRoles = ref(props.roles.map((rol) => [{ 'title': rol.name, 'value': rol.id }][0]))
-const optionsBoss = ref(props.boss.map((user) => ({
-    'title': `${user.roles?.[0]?.name || 'Sin rol'} - ${user.name} - Zona: ${user.zone_id ?? 'Sin zona'}`,
-    'value': user.user_id
-})))
 const optionsZones = ref(props.zones.map((zone) => [{ 'title': zone.zone_name, 'value': zone.zone_id }][0]))
+
+// La jerarquía llega del backend (config/prais.php). El rol elegido decide si la
+// cuenta depende de un jefe, y de qué rol debe ser ese jefe.
+const requiredBoss = computed(() => props.hierarchy.bossRole?.[form.role_id] ?? null);
+
+const bossOptions = computed(() => {
+    if (!requiredBoss.value) {
+        return [];
+    }
+
+    return props.boss
+        .filter((user) => user.roles?.some((role) => role.id === requiredBoss.value.role_id))
+        .map((user) => ({
+            'title': `${user.name} - Zona: ${user.zone_id ?? 'Sin zona'}`,
+            'value': user.user_id
+        }));
+});
+
+// No hay a quién colgar la cuenta: se avisa y se bloquea el envío.
+const missingBoss = computed(() => requiredBoss.value !== null && bossOptions.value.length === 0);
+
+const needsCashRegister = computed(() => props.hierarchy.cashRegisterRoles?.includes(form.role_id));
+const needsZone = computed(() => props.hierarchy.zoneRoles?.includes(form.role_id));
+
+// Al cambiar de rol el jefe anterior deja de ser válido.
+watch(() => form.role_id, () => {
+    form.boss_user = '';
+});
 const showModal = ref(false);
 const showSuccessCreateModal = ref(null);
+
+// Campos que el formulario alcanza a pintar según el rol elegido. Todo error de
+// validación fuera de esta lista se muestra al pie del modal: de lo contrario el
+// backend rechaza la creación y el usuario no ve ningún mensaje.
+const shownFields = computed(() => {
+    const fields = ['name', 'username', 'role_id'];
+    if (requiredBoss.value) fields.push('boss_user');
+    if (needsCashRegister.value) fields.push('enabled');
+    else if (needsZone.value) fields.push('zone_id');
+    return fields;
+});
+
+const unhandledErrors = computed(() => Object.entries(form.errors)
+    .filter(([field]) => !shownFields.value.includes(field))
+    .map(([, message]) => message));
 
 const openModal = () => {
     form.reset();
@@ -164,25 +206,31 @@ const columnsTable = [
                     <InputError class="mt-2" :message="form.errors.role_id" />
                 </div>
 
-                <div class="mt-4" v-if="[4, 5, 6].includes(form.role_id)">
-                    <SelectSearch v-model="form.boss_user" :options="optionsBoss" labelValue="Jefe"
-                        required />
+                <div class="mt-4" v-if="requiredBoss">
+                    <SelectSearch v-if="!missingBoss" v-model="form.boss_user" :options="bossOptions"
+                        :labelValue="`Jefe (${requiredBoss.role_name})`" required />
+                    <InputError v-else
+                        :message="`El rol seleccionado depende de un ${requiredBoss.role_name} y todavía no existe ninguna cuenta con ese rol. Créela primero.`" />
                     <InputError class="mt-2" :message="form.errors.boss_user" />
                 </div>
-                <div class="mt-4" v-if="[5].includes(form.role_id)">
+                <div class="mt-4" v-if="needsCashRegister">
                     <label :for="enabled">¿Utilizara la caja? </label>
-                    <input id="enabled" type="checkbox" v-model="form.enabled" required />
+                    <input id="enabled" type="checkbox" v-model="form.enabled" />
                     <InputError class="mt-2" :message="form.errors.enabled" />
                 </div>
-                <div class="mt-4" v-else-if="[7].includes(form.role_id)">
+                <div class="mt-4" v-else-if="needsZone">
                     <SelectSearch v-model="form.zone_id" :options="optionsZones" labelValue="Zona"
                         required />
                     <InputError class="mt-2" :message="form.errors.zone_id" />
                 </div>
+
+                <div class="mt-4" v-if="unhandledErrors.length">
+                    <InputError v-for="(message, index) in unhandledErrors" :key="index" :message="message" />
+                </div>
             </form>
         </template>
         <template #footer>
-            <PrimaryButton @click="submit" class="px-5">
+            <PrimaryButton @click="submit" class="px-5" :disabled="missingBoss">
                 Crear
             </PrimaryButton>
             <PrimaryButton @click="showModal = false" class="px-5">

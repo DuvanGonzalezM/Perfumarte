@@ -21,8 +21,17 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <!--
+            Base de pruebas SEPARADA. Las pruebas Feature usan RefreshDatabase,
+            que ejecuta migrate:fresh: apuntarlas a la base de trabajo la borra
+            entera. Créela una sola vez con el mismo usuario del .env:
+
+                CREATE DATABASE perfumarte_testing
+                  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+            El resto de credenciales (host, puerto, usuario) se heredan del .env.
+        -->
+        <env name="DB_DATABASE" value="perfumarte_testing"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

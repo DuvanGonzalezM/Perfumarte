@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CashRegister;
 use App\Models\Inventory;
+use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\User;
@@ -65,7 +66,13 @@ class SaleController extends Controller
             $inventory = Inventory::with('product')->where('warehouse_id', $warehouse->warehouse_id)->get();
         }
 
-        return Inertia::render('Sale/CreateSale', ['assessors' => $assessors, 'inventory' => $inventory, 'warehouse' => $warehouse]);
+        return Inertia::render('Sale/CreateSale', [
+            'assessors' => $assessors,
+            'inventory' => $inventory,
+            'warehouse' => $warehouse,
+            'containersBySize' => config('prais.product_roles.containers_by_size'),
+            'giftBagProductId' => Product::findByRole('gift_bag')?->product_id,
+        ]);
     }
 
     public function priceReference(  $quantity, $warehouse, $totalUnits = 0, $allReferences = [])
@@ -186,14 +193,14 @@ class SaleController extends Controller
 
                 $giftBagId = Inventory::with('product')
                     ->whereHas('product', function ($query) {
-                        $query->where('reference', 'Bolsa de regalo');
+                        $query->operationalRole('gift_bag');
                     })
                     ->where('warehouse_id', $warehouse->warehouse_id)
                     ->first()?->inventory_id;
 
                 $disolventeInventory = Inventory::where('warehouse_id', $warehouse->warehouse_id)
                     ->whereHas('product', function ($query) {
-                        $query->where('product_id', '2');
+                        $query->operationalRole('solvent');
                     })
                     ->lockForUpdate()
                     ->first();

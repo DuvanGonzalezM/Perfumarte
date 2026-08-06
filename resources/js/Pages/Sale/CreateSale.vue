@@ -20,6 +20,16 @@ const props = defineProps({
     },
     warehouse: {
         type: Object,
+    },
+    // Presentación en ml => rol operativo del envase (config/prais.php).
+    containersBySize: {
+        type: Object,
+        default: () => ({}),
+    },
+    // Producto marcado como bolsa de regalo, o null si nadie lo tiene asignado.
+    giftBagProductId: {
+        type: Number,
+        default: null,
     }
 });
 
@@ -46,12 +56,17 @@ const form = useForm({
     rest_total_coins: null,
 });
 
-const containerNames = {
-    '30': props.inventory.filter((reference) => (reference.product_id == 385 || reference.product_id == 386) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
-    '50': props.inventory.filter((reference) => (reference.product_id == 388 || reference.product_id == 389 || reference.product_id == 390 || reference.product_id == 391) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
-    '100': props.inventory.filter((reference) => (reference.product_id == 392 || reference.product_id == 393 || reference.product_id == 394) && reference.quantity > 0).map((reference) => [{ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id }][0]),
-};
-const giftBag = 372;
+// Los envases se reconocen por el rol operativo del producto, no por su id: el
+// catálogo se recarga y los ids cambian, la marca viaja con el dato.
+const containerNames = Object.fromEntries(
+    Object.entries(props.containersBySize).map(([size, role]) => [
+        size,
+        props.inventory
+            .filter((reference) => reference.product?.operational_role === role && reference.quantity > 0)
+            .map((reference) => ({ 'title': `${reference.product.commercial_reference}`, 'value': reference.product_id })),
+    ])
+);
+const giftBag = props.giftBagProductId;
 const optionAssesors = ref(props.assessors.map((assessor) => [{ 'title': assessor.name, 'value': assessor.user_id }][0]));
 const optionProducts = ref(props.inventory.filter((reference) => (reference.product.category != 'Insumo' && reference.quantity > 0) || reference.product_id == giftBag).map((reference) => [{ 'title': `${reference.product.commercial_reference} - ${reference.product.category}`, 'value': reference.inventory_id }][0]));
 const optionPayMethod = ref([{ 'title': 'Efectivo', 'value': 'Efectivo' }, { 'title': 'Transferencia', 'value': 'Transferencia' }]);

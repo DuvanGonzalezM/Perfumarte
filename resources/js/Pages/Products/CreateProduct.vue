@@ -12,6 +12,10 @@ const props = defineProps({
     supplierProduct: {
         type: Array,
     },
+    operationalRoles: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const form = useForm({
@@ -21,6 +25,7 @@ const form = useForm({
     category: '',
     supplier_id: '',
     code: '',
+    operational_role: '',
 });
 
 const listCategory = ref([
@@ -41,6 +46,13 @@ const optionMeasurement = ref(listMeasurement.value.map(measurement => ({ 'title
 const optionCategory = ref(listCategory.value.map(category => ({ 'title': category.name, 'value': category.name })));
 
 const optionSupplier = ref(props.supplierProduct.map(supplier => [{ 'title': supplier.name, 'value': supplier.supplier_id }][0]));
+
+// Rol operativo: cómo venta y laboratorio encuentran este producto sin
+// depender de su id. La mayoría de productos no lleva ninguno.
+const optionOperationalRole = ref([
+    { 'title': 'Ninguno', 'value': '' },
+    ...props.operationalRoles.map(role => ({ 'title': role.label, 'value': role.value })),
+]);
 
 const showConfirmModal = ref(false);
 
@@ -106,6 +118,14 @@ const confirmCreate = () => {
                                 <td>
                                     <SelectSearch v-model="form.category" :options="optionCategory"
                                     :messageError="Object.keys(form.errors).length ? form.errors.category : null" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>ROL OPERATIVO</td>
+                                <td>
+                                    <SelectSearch v-model="form.operational_role" :options="optionOperationalRole"
+                                    :messageError="Object.keys(form.errors).length ? form.errors.operational_role : null" />
                                 </td>
                             </tr>
 

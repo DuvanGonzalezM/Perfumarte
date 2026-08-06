@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\Product;
 use App\Models\RequestPrais;
 use App\Models\Transformation;
 use Inertia\Inertia;
@@ -23,7 +24,12 @@ class LabTransformationController extends Controller
 
     public function createLabTransformation()
     {
-        $newProduct = Inventory::with('product')->where('warehouse_id', '=', '1')->whereNotIn('product_id', ['1', '2'])->get();
+        // Las esencias son todo lo que hay en materia prima menos los dos
+        // insumos que se mezclan con ellas.
+        $newProduct = Inventory::with('product')
+            ->where('warehouse_id', '=', '1')
+            ->whereNotIn('product_id', Product::rawMaterialIds())
+            ->get();
         $requests = RequestPrais::with(['detailRequest.inventory.product', 'user.location'])->where('request_type', 2)->whereIn('status', ['Pendiente', 'En proceso'])->get();
         return Inertia::render('LabTransformations/CreateLabTransformation', ['newProduct' => $newProduct, 'requests' => $requests]);
     }
@@ -48,8 +54,8 @@ class LabTransformationController extends Controller
                 $inventory = Inventory::where('warehouse_id', $warehouse)->where('product_id', $request['reference'])->lockForUpdate()->first();
 
                 $escencia = Inventory::where('warehouse_id', '1')->where('product_id', $request['reference'])->lockForUpdate()->first();
-                $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', '1')->lockForUpdate()->first();
-                $solvent = Inventory::where('warehouse_id', '1')->where('product_id', '2')->lockForUpdate()->first();
+                $dipropylene = Inventory::where('warehouse_id', '1')->where('product_id', $this->rawMaterialId('dipropylene'))->lockForUpdate()->first();
+                $solvent = Inventory::where('warehouse_id', '1')->where('product_id', $this->rawMaterialId('solvent'))->lockForUpdate()->first();
 
                 if (!$escencia || $escencia->quantity < $request['escencia']) {
                     throw new \Exception('Stock insuficiente de esencia.');
@@ -150,14 +156,14 @@ class LabTransformationController extends Controller
         $escenciaInventory->save();
 
         $dipropilenoInventory = Inventory::firstOrCreate(
-            ['warehouse_id' => 1, 'product_id' => 1],
+            ['warehouse_id' => 1, 'product_id' => $this->rawMaterialId('dipropylene')],
             ['quantity' => 0]
         );
         $dipropilenoInventory->quantity -= ($request['dipropylene'] - $initialValues['dipropylene']);
         $dipropilenoInventory->save();
 
         $disolventeInventory = Inventory::firstOrCreate(
-            ['warehouse_id' => 1, 'product_id' => 2],
+            ['warehouse_id' => 1, 'product_id' => $this->rawMaterialId('solvent')],
             ['quantity' => 0]
         );
         $disolventeInventory->quantity -= ($request['solvent'] - $initialValues['solvent']);
@@ -176,4 +182,24 @@ class LabTransformationController extends Controller
         return redirect()->route('LabTransformation.list');
     });
 }
+
+    /**
+     * Insumo de laboratorio identificado por su rol operativo. Si nadie lo
+     * tiene asignado se corta aquí con un mensaje entendible, en vez de
+     * descontar inventario del producto equivocado.
+     */
+    private function rawMaterialId(string $role): int
+    {
+        $product = Product::findByRole($role);
+
+        if (! $product) {
+            $label = config("prais.product_roles.labels.{$role}", $role);
+
+            throw new \RuntimeException(
+                "Ningún producto activo tiene el rol «{$label}». Asígneselo desde Productos antes de operar el laboratorio."
+            );
+        }
+
+        return $product->product_id;
+    }
 }

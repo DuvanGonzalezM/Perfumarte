@@ -1,35 +1,42 @@
 /* Estilos para el componente Alert */
+
+/*
+ * El fondo de la aplicación es oscuro ($backgroundColor: #282827), así que los
+ * textos van en las variantes CLARAS de cada color. Las oscuras de Bootstrap
+ * (#664d03 en warning, #055160 en info) están pensadas para fondo blanco y aquí
+ * quedaban ilegibles.
+ */
 .alert-prais {
     padding: 1rem !important;
     margin-bottom: 1rem !important;
     border-radius: 0.5rem !important;
     display: flex !important;
     align-items: center !important;
-    
+
     &.alert-success {
         background-color: rgba(25, 135, 84, 0.2) !important;
         border: 1px solid #198754 !important;
-        color: #198754 !important;
+        color: #a3cfbb !important;
     }
-    
+
     &.alert-danger {
         background-color: rgba(220, 53, 69, 0.2) !important;
         border: 1px solid #dc3545 !important;
-        color: #dc3545 !important;
+        color: #f1aeb5 !important;
     }
-    
+
     &.alert-warning {
         background-color: rgba(255, 193, 7, 0.2) !important;
         border: 1px solid #ffc107 !important;
-        color: #664d03 !important;
+        color: #ffe69c !important;
     }
-    
+
     &.alert-info {
         background-color: rgba(13, 202, 240, 0.2) !important;
         border: 1px solid #0dcaf0 !important;
-        color: #055160 !important;
+        color: #9eeaf9 !important;
     }
-    
+
     @include respond-to('tablet') {
         font-size: 0.9rem !important;
         padding: 0.75rem !important;
